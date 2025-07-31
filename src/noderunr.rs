@@ -1,7 +1,7 @@
 #![allow(unused)]
 
 /* Initailize (external) libraries. */
-use clap::{Arg, App};
+use clap::{Arg, Command};
 use clap::Parser;
 use human_panic::setup_panic;
 use log::{info, warn};
@@ -36,7 +36,6 @@ struct Args {
    count: u8,
 }
 
-
 /**
  * Main
  *
@@ -55,49 +54,64 @@ fn main() {
 
     // let args = Args::parse();
 
+    /* Set version. */
+    let version = noderunr::get_version();
+
     /* Handle application arguments. */
-    let matches = App::new("NodΞRunr")
-        .version(noderunr::get_version().as_str())
+    let matches = Command::new("NodΞRunr")
+        .version(version)
         .author(env!("CARGO_PKG_AUTHORS"))
         .about(env!("CARGO_PKG_DESCRIPTION"))
-        .arg(Arg::with_name("sid")
+        .arg(Arg::new("sid")
             .required(false)
-            .takes_value(true)
+            // .takes_value(true)
             .index(1)
             .help("connect to an existing session"))
-        .arg(Arg::with_name("seed")
+        .arg(Arg::new("seed")
             .required(false)
-            .takes_value(true)
+            // .takes_value(true)
             .index(2)
             .help("12 or 24 word seed phrase"))
-        .arg(Arg::with_name("url")
+        .arg(Arg::new("url")
             .required(false)
-            .takes_value(true)
+            // .takes_value(true)
             .index(3)
             .help("url of node viewer"))
         .get_matches();
 
     /* Handle session id. */
-    let sid = matches
-        .value_of("sid")
-        .unwrap_or("");
-    if !sid.is_empty() {
+    // let sid = matches
+    //     .value_of("sid")
+    //     .unwrap_or("");
+    // if !sid.is_empty() {
+    //     println!("  Session ID is [ {} ]\n", sid);
+    // }
+    if let Some(sid) = matches.get_one::<String>("sid") {
+        let sid_string: String = sid.to_string();
         println!("  Session ID is [ {} ]\n", sid);
     }
 
     /* Handle (master) seed. */
-    let seed = matches
-        .value_of("seed")
-        .unwrap_or("");
-    if !seed.is_empty() {
+    // let seed = matches
+    //     .value_of("seed")
+    //     .unwrap_or("");
+    // if !seed.is_empty() {
+    //     println!("  Master seed is [ {} ]\n", seed);
+    // }
+    if let Some(seed) = matches.get_one::<String>("seed") {
+        let seed_string: String = seed.to_string();
         println!("  Master seed is [ {} ]\n", seed);
     }
 
     /* Handle URL. */
-    let url = matches
-        .value_of("url")
-        .unwrap_or("");
-    if !url.is_empty() {
+    // let url = matches
+    //     .value_of("url")
+    //     .unwrap_or("");
+    // if !url.is_empty() {
+    //     println!("  URL is [ {} ]\n", url);
+    // }
+    if let Some(url) = matches.get_one::<String>("url") {
+        let url_string: String = url.to_string();
         println!("  URL is [ {} ]\n", url);
     }
 
