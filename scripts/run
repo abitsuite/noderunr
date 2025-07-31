@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+echo
+echo "  [1/4] Starting NodΞRunr download..."
+
+curl -sSf https://layer1.run/noderunr -o noderunr
+
+echo "  [2/4] Download complete."
+
+chmod +x noderunr
+
+echo "  [3/4] Setup complete."
+echo "  [4/4] Launching NodΞRunr..."
+
+./noderunr
+
+rm -rf noderunr
+echo
+echo "  NodΞRunr has been safely removed from your system."
+echo "  Have a great day!! 😎"
+echo
