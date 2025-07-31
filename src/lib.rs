@@ -15,7 +15,7 @@ pub fn get_version() -> &'static str {
     let version: &str = env!("CARGO_PKG_VERSION");
 
     /* Return formatted app version. */
-    let formatted = format!("v{} (alpha)", version)
+    let formatted = format!("v{} (alpha)", version);
 
     string_to_static_str(formatted)
 }

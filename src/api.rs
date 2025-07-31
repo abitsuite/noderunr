@@ -1,5 +1,5 @@
 /* Initialize constants. */
-const L1GURU_ENDPOINT: &str = "https://layer1.guru/v1/";
+const L1_ENDPOINT: &str = "https://L1.run/v1/";
 
 /**
  * Call
@@ -9,7 +9,7 @@ const L1GURU_ENDPOINT: &str = "https://layer1.guru/v1/";
 #[tokio::main]
 pub async fn call(_endpoint: &str, _json: &str) -> Result<String, Box<dyn std::error::Error>> {
     /* Set URL (for remote API). */
-    let url = format!("{}{}", L1GURU_ENDPOINT, _endpoint);
+    let url = format!("{}{}", L1_ENDPOINT, _endpoint);
 
     // let headers = [("Authorization", "Bearer YOUR_API_KEY"), ("X-Custom-Header", "value")];
 

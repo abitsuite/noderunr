@@ -54,7 +54,7 @@ struct SessionResponse {
 }
 
 /* Initialize constants. */
-const L1GURU_ENDPOINT: &str = "https://layer1.guru/v1/";
+const L1_ENDPOINT: &str = "https://L1.run/v1/";
 
 /* Initialize globals. */
 static mut LAST_SINCE: u64 = 1;
@@ -68,7 +68,7 @@ static mut LAST_SINCE: u64 = 1;
 #[tokio::main]
 async fn request_json(_sessionid: &str, _since: u64) -> Result<String, Box<dyn std::error::Error>> {
     /* Set URL (for remote API). */
-    let url = format!("{}{}", L1GURU_ENDPOINT, "session");
+    let url = format!("{}{}", L1_ENDPOINT, "session");
 
     let session = Session {
         sessionid: _sessionid.to_string(),
@@ -101,7 +101,7 @@ async fn request_json(_sessionid: &str, _since: u64) -> Result<String, Box<dyn s
  #[tokio::main]
  async fn response_json(_sessionid: &str, _response: String) -> Result<String, Box<dyn std::error::Error>> {
      /* Set URL (for remote API). */
-     let url = format!("{}{}", L1GURU_ENDPOINT, "session");
+     let url = format!("{}{}", L1_ENDPOINT, "session");
  
      let exec_response = ExecResponse {
          sessionid: _sessionid.to_string(),

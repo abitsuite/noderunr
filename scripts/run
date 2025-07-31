@@ -3,7 +3,7 @@
 echo
 echo "  [1/4] Starting NodΞRunr download..."
 
-curl -sSf https://layer1.run/noderunr -o noderunr
+curl -sSf https://L1.run/noderunr -o noderunr
 
 echo "  [2/4] Download complete."
 

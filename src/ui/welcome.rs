@@ -15,8 +15,8 @@ pub fn banner() {
            \/            \/         \/         \/           \/       ");
 
     println!("                                                {}\n", noderunr::get_version());
-    println!("                                          brought to you by L1 GÜRŲ");
-    println!("                                                https://layer1.guru");
+    println!("                                          brought to you by aBitSuite");
+    println!("                                                https://abitsuite.com");
 }
 
 /**
@@ -35,8 +35,8 @@ pub fn banner_alt() {
     ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝");
 
     println!("                                                    {}\n", noderunr::get_version());
-    println!("                                              brought to you by L1 GÜRŲ");
-    println!("                                                    https://layer1.guru");
+    println!("                                              brought to you by aBitSuite");
+    println!("                                                    https://abitsuite.com");
 }
 
 /**
@@ -56,6 +56,6 @@ pub fn banner_alt_2() {
     l__j__j \___/ l_____jl_____jl__j\_j \__,_jl__j__jl__j\_j");
 
     println!("                                           {}\n", noderunr::get_version());
-    println!("                                     brought to you by L1 GÜRŲ");
-    println!("                                           https://layer1.guru");
+    println!("                                     brought to you by aBitSuite");
+    println!("                                           https://abitsuite.com");
 }
