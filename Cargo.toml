@@ -1,8 +1,8 @@
 [package]
 name = "noderunr"
-version = "25.7.30"
+version = "25.8.6"
 authors = ["NodΞRunr by aBitSuite (https://x.com/L1Runr)"]
-description = "NodΞRunr is a lightweight, smart daemon delivering effortless SysOps to Avalanche Founders and Teams — It’s fast, beautiful, and completely FREE!"
+description = "NodΞRunr is a lightweight FOSS smart daemon that provides effortless SysOps for Avalanche L1 node operators."
 homepage = "https://L1.run"
 repository = "https://github.com/abitsuite/noderunr"
 categories = ["blockchain", "cryptocurrency"]

@@ -77,7 +77,7 @@ pub fn new() -> String {
 
     /* Encode to JSON. */
     let json_string = to_string(&pkg).unwrap();
-
+println!("REG PkG\n{}", json_string);
     /* Make (remote) request. */
     let response = api::call("session", &json_string);
 

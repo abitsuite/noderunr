@@ -1,5 +1,5 @@
 /* Initialize constants. */
-const L1_ENDPOINT: &str = "https://L1.run/v1/";
+const L1_ENDPOINT: &str = "https://l1.run/v1/";
 
 /**
  * Call
