@@ -68,21 +68,15 @@ static mut LAST_SINCE: u64 = 1;
 #[tokio::main]
 async fn request_json(_sessionid: &str, _since: u64) -> Result<String, Box<dyn std::error::Error>> {
     /* Set URL (for remote API). */
-    let url = format!("{}{}", L1_ENDPOINT, "session");
+    let url = format!("{}{}/{}", L1_ENDPOINT, "session", _since);
 
-    let session = Session {
-        sessionid: _sessionid.to_string(),
-        since: _since,
-    };
-
-    let json_string = to_string(&session).unwrap();
-    // let json_string = to_string(&session)?;
+    /* Set bearer authorization. */
+    let auth = format!("{} {}", "Bearer", _sessionid);
 
     let client = reqwest::Client::new();
-    let response = client.post(url)
+    let response = client.get(url)
+        .header("Authorization", auth)
         .header("Content-Type", "application/json")
-        .body(json_string.to_string())
-        // .body(&json_string)
         .send()
         .await?;
 
@@ -305,7 +299,7 @@ pub fn by_session(_sessionid: &str) {
         unsafe {
             /* Make (remote) JSON (data) request. */
             response = request_json(_sessionid, LAST_SINCE);
-// println!("\nRAW---\n{:?}\n", response);
+println!("\nRAW---\n{:?}\n", response);
         }
 
         // let session_resp: Result<_, Box<dyn std::error::Error>>;
@@ -318,7 +312,7 @@ pub fn by_session(_sessionid: &str) {
             },
             Err(_) => println!("\n  ERROR: Failed to receive a response from API server."),
         }
-// println!("\nSR---\n{:?}\n", session_resp);
+println!("\nSR---\n{:?}\n", session_resp);
 
         let mut remote_data: SessionResponse = SessionResponse::default();
         // let mut remote_data: Option<SessionResponse> = None;
@@ -337,14 +331,14 @@ pub fn by_session(_sessionid: &str) {
             // Err(_) => println!("ERROR: Failed to receive any remote data."),
             Err(_) => (),
         }
-// println!("\nRD---\n{:?}\n", remote_data); // Output: Person { name: "Jane Doe", age: 25 }
+println!("\nRD---\n{:?}\n", remote_data); // Output: Person { name: "Jane Doe", age: 25 }
 
-// println!("");
-// println!("  SESSION ID -> {}", remote_data.sessionid);
-// println!("      ACTION -> {:?}", remote_data.act);
-// println!("     REQUEST -> {:?}", remote_data.req);
-// println!("     CREATED -> {}", remote_data.created_at);
-// println!("  LAST SINCE -> {}", remote_data.last_since);
+println!("");
+println!("  SESSION ID -> {}", remote_data.sessionid);
+println!("      ACTION -> {:?}", remote_data.act);
+println!("     REQUEST -> {:?}", remote_data.req);
+println!("     CREATED -> {}", remote_data.created_at);
+println!("  LAST SINCE -> {}", remote_data.last_since);
 
         match remote_data.req {
             Some(_data) => _handle_exec(&remote_data.sessionid, _data),

@@ -20,9 +20,16 @@ struct Registration {
 
 #[derive(Debug, Default, Deserialize)]
 struct RegistrationResponse {
-    sessionid: String,
     success: bool,
-    created_at: u32, // seconds
+    result: Session,
+}
+
+#[derive(Debug, Default, Deserialize)]
+#[allow(non_snake_case)]
+struct Session {
+    sessionid: String,
+    hasAuth: bool,
+    createdAt: u32, // seconds
 }
 
 
@@ -77,7 +84,7 @@ pub fn new() -> String {
 
     /* Encode to JSON. */
     let json_string = to_string(&pkg).unwrap();
-println!("REG PkG\n{}", json_string);
+
     /* Make (remote) request. */
     let response = api::call("session", &json_string);
 
@@ -99,7 +106,7 @@ println!("REG PkG\n{}", json_string);
             registration = _data;
 
             /* Set session id. */
-            let sessionid = registration.sessionid;
+            let sessionid = registration.result.sessionid;
 
             println!("  NEW session created successfully!\n");
             println!("  [ {} ]\n", sessionid);
