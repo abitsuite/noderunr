@@ -35,14 +35,8 @@ struct Request {
     created_at: u64, // milliseconds
 }
 
-#[derive(Serialize)]
-struct Session {
-    sessionid: String,
-    since: u64, // milliseconds
-}
-
 #[derive(Debug, Default, Deserialize)]
-struct SessionResponse {
+struct Session {
     sessionid: String,
     act: Option<Vec<Action>>,
     log: Option<Vec<Action>>,
@@ -51,6 +45,18 @@ struct SessionResponse {
     rpt: Option<Vec<Action>>,
     created_at: u32, // seconds
     last_since: u64 // milliseconds
+}
+
+#[derive(Serialize)]
+struct SessionRequest {
+    sessionid: String,
+    since: u64, // milliseconds
+}
+
+#[derive(Debug, Default, Deserialize)]
+struct SessionResponse {
+    success: bool,
+    result: Session,
 }
 
 /* Initialize constants. */
@@ -321,27 +327,28 @@ println!("\nSR---\n{:?}\n", session_resp);
         match(session_resp) {
             Ok(_data) => {
                 // remote_data = session_resp.unwrap();
+                /* Set remote data (result). */
                 remote_data = _data;
 
                 unsafe {
                     /* Update last since. */
-                    LAST_SINCE = remote_data.last_since
+                    LAST_SINCE = remote_data.result.last_since
                 }
             },
             // Err(_) => println!("ERROR: Failed to receive any remote data."),
             Err(_) => (),
         }
-println!("\nRD---\n{:?}\n", remote_data); // Output: Person { name: "Jane Doe", age: 25 }
+println!("\nRD (result)---\n{:?}\n", remote_data.result); // Output: Person { name: "Jane Doe", age: 25 }
 
 println!("");
-println!("  SESSION ID -> {}", remote_data.sessionid);
-println!("      ACTION -> {:?}", remote_data.act);
-println!("     REQUEST -> {:?}", remote_data.req);
-println!("     CREATED -> {}", remote_data.created_at);
-println!("  LAST SINCE -> {}", remote_data.last_since);
+println!("  SESSION ID -> {}", remote_data.result.sessionid);
+println!("      ACTION -> {:?}", remote_data.result.act);
+println!("     REQUEST -> {:?}", remote_data.result.req);
+println!("     CREATED -> {}", remote_data.result.created_at);
+println!("  LAST SINCE -> {}", remote_data.result.last_since);
 
-        match remote_data.req {
-            Some(_data) => _handle_exec(&remote_data.sessionid, _data),
+        match remote_data.result.req {
+            Some(_data) => _handle_exec(&remote_data.result.sessionid, _data),
             None => (),
         }
     }

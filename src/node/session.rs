@@ -103,6 +103,7 @@ pub fn new() -> String {
     /* Parse (registration) response. */
     match(reg_response) {
         Ok(_data) => {
+            /* Set registation (result). */
             registration = _data;
 
             /* Set session id. */
