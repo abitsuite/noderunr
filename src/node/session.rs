@@ -113,7 +113,7 @@ pub fn new() -> String {
             println!("  [ {} ]\n", sessionid);
 
             println!("  Paste the ID 👆 into your Client -OR- click the link below 👇\n");
-            println!("  https://L1.run/sid/#/{}", sessionid);
+            println!("  https://L1.run/id/{}", sessionid);
 
             /* Start monitoring session. */
             comm::monitor::by_session(&sessionid);

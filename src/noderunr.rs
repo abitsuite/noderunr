@@ -62,7 +62,7 @@ fn main() {
         .version(version)
         .author(env!("CARGO_PKG_AUTHORS"))
         .about(env!("CARGO_PKG_DESCRIPTION"))
-        .arg(Arg::new("sid")
+        .arg(Arg::new("id")
             .required(false)
             // .takes_value(true)
             .index(1)
@@ -80,16 +80,16 @@ fn main() {
         .get_matches();
 
     /* Handle session id. */
-    // let sid = matches
-    //     .value_of("sid")
+    // let sessionid = matches
+    //     .value_of("id")
     //     .unwrap_or("");
-    // if !sid.is_empty() {
-    //     println!("  Session ID is [ {} ]\n", sid);
+    // if !sessionid.is_empty() {
+    //     println!("  Session ID is [ {} ]\n", sessionid);
     // }
-    if let Some(sid) = matches.get_one::<String>("sid") {
-        let sid_string: String = sid.to_string();
-        println!("  Session ID is [ {} ]\n", sid);
-    }
+    // if let Some(sessionid) = matches.get_one::<String>("id") {
+    //     let sessionid_string: String = sessionid.to_string();
+    //     println!("  Session ID is [ {} ]\n", sessionid_string);
+    // }
 
     /* Handle (master) seed. */
     // let seed = matches
@@ -98,10 +98,10 @@ fn main() {
     // if !seed.is_empty() {
     //     println!("  Master seed is [ {} ]\n", seed);
     // }
-    if let Some(seed) = matches.get_one::<String>("seed") {
-        let seed_string: String = seed.to_string();
-        println!("  Master seed is [ {} ]\n", seed);
-    }
+    // if let Some(seed) = matches.get_one::<String>("seed") {
+    //     let seed_string: String = seed.to_string();
+    //     println!("  Master seed is [ {} ]\n", seed_string);
+    // }
 
     /* Handle URL. */
     // let url = matches
@@ -110,10 +110,10 @@ fn main() {
     // if !url.is_empty() {
     //     println!("  URL is [ {} ]\n", url);
     // }
-    if let Some(url) = matches.get_one::<String>("url") {
-        let url_string: String = url.to_string();
-        println!("  URL is [ {} ]\n", url);
-    }
+    // if let Some(url) = matches.get_one::<String>("url") {
+    //     let url_string: String = url.to_string();
+    //     println!("  URL is [ {} ]\n", url_string);
+    // }
 
     // for _ in 0..args.count {
     //     println!("  Hi there {}!\n", args.name)
