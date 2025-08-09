@@ -1,10 +1,10 @@
-![NodΞRunr logo](https://i.ibb.co/q7nHTm5/favicon.png)
+![NodΞRunr logo](https://l1.run/icon.svg)
 
 # NodΞRunr
 
 ### https://L1.run
 
-NodΞRunr is a lightweight, smart daemon delivering effortless SysOps to Founders and Teams.
+NodΞRunr is a lightweight FOSS smart daemon that provides effortless SysOps for Avalanche L1 node operators.
 
 ### THIS PROJECT IS CURRENTLY STILL IN ALPHA-STAGE DEVELOPMENT. PLEASE DO NOT USE IN PRODUCTION.
 
