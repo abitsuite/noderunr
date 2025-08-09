@@ -1,3 +1,8 @@
+fn string_to_static_str(s: String) -> &'static str {
+// FIXME Find an alternative to handle static string.
+    s.leak()
+}
+
 /**
  * Get Version
  * 
@@ -5,12 +10,14 @@
  * 
  * NOTE: Package version is passed as an environment variable to the compiler.
  */
-pub fn get_version() -> String {
+pub fn get_version() -> &'static str {
     /* Retrieve app version from toml. */
     let version: &str = env!("CARGO_PKG_VERSION");
 
     /* Return formatted app version. */
-    format!("v{} (alpha)", version)
+    let formatted = format!("v{} (alpha)", version);
+
+    string_to_static_str(formatted)
 }
 
 /**

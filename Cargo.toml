@@ -1,12 +1,12 @@
 [package]
 name = "noderunr"
-version = "25.4.26"
-authors = ["L1 GÜRŲ -- https://x.com/0xShomari"]
+version = "25.7.30"
+authors = ["NodΞRunr by aBitSuite (https://x.com/L1Runr)"]
 description = "NodΞRunr is a lightweight, smart daemon delivering effortless SysOps to Avalanche Founders and Teams — It’s fast, beautiful, and completely FREE!"
-homepage = "https://layer1.run"
-repository = "https://github.com/layer1guru/layer1run"
+homepage = "https://L1.run"
+repository = "https://github.com/abitsuite/noderunr"
 categories = ["blockchain", "cryptocurrency"]
-keywords = ["avalanche", "avax", "crypto", "cryptocurrency", "layer1", "subnet"]
+keywords = ["avalanche", "avax", "crypto", "cryptocurrency", "layer1", "subnet", "mining"]
 readme = "README.md"
 license = "MIT"
 edition = "2018"
