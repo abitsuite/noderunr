@@ -1,6 +1,6 @@
 [package]
 name = "noderunr"
-version = "25.8.6"
+version = "25.8.8"
 authors = ["NodΞRunr by aBitSuite (https://x.com/L1Runr)"]
 description = "NodΞRunr is a lightweight FOSS smart daemon that provides effortless SysOps for Avalanche L1 node operators."
 homepage = "https://L1.run"

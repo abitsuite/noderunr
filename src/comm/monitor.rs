@@ -305,7 +305,7 @@ pub fn by_session(_sessionid: &str) {
         unsafe {
             /* Make (remote) JSON (data) request. */
             response = request_json(_sessionid, LAST_SINCE);
-println!("\nRAW---\n{:?}\n", response);
+// println!("\nRAW---\n{:?}\n", response);
         }
 
         // let session_resp: Result<_, Box<dyn std::error::Error>>;
@@ -318,7 +318,7 @@ println!("\nRAW---\n{:?}\n", response);
             },
             Err(_) => println!("\n  ERROR: Failed to receive a response from API server."),
         }
-println!("\nSR---\n{:?}\n", session_resp);
+// println!("\nSR---\n{:?}\n", session_resp);
 
         let mut remote_data: SessionResponse = SessionResponse::default();
         // let mut remote_data: Option<SessionResponse> = None;
@@ -338,14 +338,14 @@ println!("\nSR---\n{:?}\n", session_resp);
             // Err(_) => println!("ERROR: Failed to receive any remote data."),
             Err(_) => (),
         }
-println!("\nRD (result)---\n{:?}\n", remote_data.result); // Output: Person { name: "Jane Doe", age: 25 }
+// println!("\nRD (result)---\n{:?}\n", remote_data.result); // Output: Person { name: "Jane Doe", age: 25 }
 
-println!("");
-println!("  SESSION ID -> {}", remote_data.result.sessionid);
-println!("      ACTION -> {:?}", remote_data.result.act);
-println!("     REQUEST -> {:?}", remote_data.result.req);
-println!("     CREATED -> {}", remote_data.result.created_at);
-println!("  LAST SINCE -> {}", remote_data.result.last_since);
+// println!("");
+// println!("  SESSION ID -> {}", remote_data.result.sessionid);
+// println!("      ACTION -> {:?}", remote_data.result.act);
+// println!("     REQUEST -> {:?}", remote_data.result.req);
+// println!("     CREATED -> {}", remote_data.result.created_at);
+// println!("  LAST SINCE -> {}", remote_data.result.last_since);
 
         match remote_data.result.req {
             Some(_data) => _handle_exec(&remote_data.result.sessionid, _data),
