@@ -1,10 +1,13 @@
 # =============================================================================
-# NodΞRunr — Automated Build & Release Workflow
+# NodΞRunr — Release Pipeline
 # =============================================================================
 #
 # Triggers:
-#   1. Push to master  — builds all platforms, creates a draft release
-#   2. Tag push (v*)   — builds all platforms, creates a published release
+#   - Tag push (v*)
+#
+# Purpose:
+#   Build release binaries for all supported platforms and publish a GitHub
+#   Release with attached assets and SHA256 checksums.
 #
 # Targets:
 #   - Windows         (x86_64-pc-windows-msvc)
@@ -13,12 +16,10 @@
 #
 # =============================================================================
 
-name: Build & Release
+name: Release
 
 on:
   push:
-    branches:
-      - master
     tags:
       - "v*"
 
@@ -32,10 +33,47 @@ env:
 jobs:
 
   # ===========================================================================
+  # Test Suite — gate the release on passing tests
+  # ===========================================================================
+  test:
+    name: Test Suite
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            pkg-config \
+            libssl-dev
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry & build artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: linux-test-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            linux-test-cargo-
+
+      - name: Run tests
+        run: cargo test --verbose
+
+  # ===========================================================================
   # Build — Windows (x86_64)
   # ===========================================================================
   build-windows:
     name: Build — Windows (x86_64)
+    needs: [test]
     runs-on: windows-latest
 
     steps:
@@ -81,6 +119,7 @@ jobs:
   # ===========================================================================
   build-macos:
     name: Build — macOS (Universal)
+    needs: [test]
     runs-on: macos-latest
 
     steps:
@@ -140,6 +179,7 @@ jobs:
   # ===========================================================================
   build-linux:
     name: Build — Linux (x86_64, Ubuntu 24.04)
+    needs: [test]
     runs-on: ubuntu-24.04
 
     steps:
@@ -189,47 +229,11 @@ jobs:
           if-no-files-found: error
 
   # ===========================================================================
-  # Run tests (all platforms, parallel with builds)
-  # ===========================================================================
-  test:
-    name: Test Suite
-    runs-on: ubuntu-24.04
-
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            pkg-config \
-            libssl-dev
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache cargo registry & build artifacts
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: linux-test-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            linux-test-cargo-
-
-      - name: Run tests
-        run: cargo test --verbose
-
-  # ===========================================================================
   # Release — collect all artifacts and publish a GitHub Release
   # ===========================================================================
   release:
     name: Create GitHub Release
-    needs: [build-windows, build-macos, build-linux, test]
+    needs: [build-windows, build-macos, build-linux]
     runs-on: ubuntu-24.04
 
     steps:
@@ -259,66 +263,31 @@ jobs:
           sha256sum * > SHA256SUMS.txt
           cat SHA256SUMS.txt
 
-      - name: Determine release metadata
+      - name: Determine release tag
         id: meta
         shell: bash
         run: |
-          # -----------------------------------------------------------------
-          # If triggered by a tag push (v*), use the tag as the release name
-          # and mark the release as published.
-          #
-          # If triggered by a push to master (no tag), generate a snapshot
-          # release name from the short SHA and mark it as a draft.
-          # -----------------------------------------------------------------
-
-          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-            TAG_NAME="${GITHUB_REF#refs/tags/}"
-            echo "tag_name=${TAG_NAME}"           >> "$GITHUB_OUTPUT"
-            echo "release_name=${TAG_NAME}"       >> "$GITHUB_OUTPUT"
-            echo "is_draft=false"                 >> "$GITHUB_OUTPUT"
-            echo "is_prerelease=false"            >> "$GITHUB_OUTPUT"
-          else
-            SHORT_SHA="$(git rev-parse --short HEAD)"
-            SNAPSHOT_TAG="snapshot-${SHORT_SHA}"
-            echo "tag_name=${SNAPSHOT_TAG}"                       >> "$GITHUB_OUTPUT"
-            echo "release_name=Snapshot (${SHORT_SHA})"           >> "$GITHUB_OUTPUT"
-            echo "is_draft=true"                                  >> "$GITHUB_OUTPUT"
-            echo "is_prerelease=true"                             >> "$GITHUB_OUTPUT"
-          fi
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          echo "tag_name=${TAG_NAME}" >> "$GITHUB_OUTPUT"
 
       - name: Generate changelog body
         id: changelog
         shell: bash
         run: |
-          # -----------------------------------------------------------------
-          # For tagged releases:  show commits since the previous tag.
-          # For master snapshots: show the last 20 commits.
-          # -----------------------------------------------------------------
+          CURRENT_TAG="${GITHUB_REF#refs/tags/}"
+          PREVIOUS_TAG="$(git tag --sort=-v:refname | grep -E '^v' | sed -n '2p')"
 
           EOF_MARKER=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
 
           {
             echo "body<<${EOF_MARKER}"
 
-            if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-              CURRENT_TAG="${GITHUB_REF#refs/tags/}"
-              PREVIOUS_TAG="$(git tag --sort=-v:refname | grep -E '^v' | sed -n '2p')"
-
-              if [ -n "${PREVIOUS_TAG}" ]; then
-                echo "## Changes since ${PREVIOUS_TAG}"
-                echo ""
-                git log "${PREVIOUS_TAG}..${CURRENT_TAG}" --pretty=format:"- %s (%h)" --no-merges
-              else
-                echo "## Initial Release"
-                echo ""
-                git log --pretty=format:"- %s (%h)" --no-merges -20
-              fi
+            if [ -n "${PREVIOUS_TAG}" ]; then
+              echo "## Changes since ${PREVIOUS_TAG}"
+              echo ""
+              git log "${PREVIOUS_TAG}..${CURRENT_TAG}" --pretty=format:"- %s (%h)" --no-merges
             else
-              echo "## Snapshot build from \`master\`"
-              echo ""
-              echo "This is an automated snapshot build. Not a stable release."
-              echo ""
-              echo "### Recent commits"
+              echo "## Initial Release"
               echo ""
               git log --pretty=format:"- %s (%h)" --no-merges -20
             fi
@@ -344,10 +313,10 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.meta.outputs.tag_name }}
-          name: ${{ steps.meta.outputs.release_name }}
+          name: ${{ steps.meta.outputs.tag_name }}
           body: ${{ steps.changelog.outputs.body }}
-          draft: ${{ steps.meta.outputs.is_draft }}
-          prerelease: ${{ steps.meta.outputs.is_prerelease }}
+          draft: false
+          prerelease: false
           files: |
             release-assets/${{ env.BINARY_NAME }}-windows-x86_64.zip
             release-assets/${{ env.BINARY_NAME }}-macos-universal.tar.gz
