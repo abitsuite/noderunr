@@ -1,3 +1,5 @@
+// src/utils/remote.rs
+
 use indicatif::{ProgressBar, ProgressState, ProgressStyle};
 use std::{cmp::min, fmt::Write};
 // use std::collections::HashMap;
@@ -6,7 +8,7 @@ use std::time::Duration;
 
 /**
  * Start Download
- * 
+ *
  * Will manage a download and display progress to the user.
  */
 pub fn start_download() {
@@ -28,4 +30,3 @@ pub fn start_download() {
 
     pb.finish_with_message("downloaded");
 }
-

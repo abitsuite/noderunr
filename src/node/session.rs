@@ -1,3 +1,5 @@
+// src/node/session.rs
+
 use serde::{Deserialize, Serialize};
 use serde_json::{from_str, json, to_string};
 // use uuid::Uuid;
@@ -53,24 +55,24 @@ pub fn new() -> String {
         Err(err) => {
             ip = err.to_string();
         }
-    }    
+    }
 // println!("\nIP -> {:?}", ip);
 
     /* Request release. */
     let release = cmd::sys::get_release().unwrap();
-    
+
     /* Request uptime. */
     let uptime = cmd::sys::get_uptime().unwrap();
-    
+
     /* Request cpu. */
     let cpu = cmd::sys::lscpu().unwrap();
-    
+
     /* Request mem. */
     let mem = cmd::sys::mem().unwrap();
-    
+
     /* Request system profile. */
     let profile = cmd::sys::system_profiler().unwrap();
-    
+
     /* Build (registration) package. */
     let pkg = Registration {
         method: "reg".to_string(),

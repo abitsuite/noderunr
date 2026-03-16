@@ -1,3 +1,5 @@
+// src/api.rs
+
 /* Initialize constants. */
 const L1_ENDPOINT: &str = "https://l1.run/v1/";
 
@@ -21,9 +23,9 @@ pub async fn call(_endpoint: &str, _json: &str) -> Result<String, Box<dyn std::e
         .send()
         .await?;
 
-    // TODO Validate status (200 OK)        
+    // TODO Validate status (200 OK)
     // println!("Status: {}", response.status());
-    
+
     let response_body = response.text().await?;
     // println!("Response body:\n{}", response_body);
 

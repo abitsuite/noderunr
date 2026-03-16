@@ -1,3 +1,5 @@
+// src/cmd/sys.rs
+
 /* Import modules. */
 use std::io::{BufReader, BufRead};
 use std::io::{self, Write};
@@ -193,4 +195,3 @@ pub fn system_profiler() -> Result<String, Box<dyn std::error::Error>> {
 
     Ok(response)
 }
-

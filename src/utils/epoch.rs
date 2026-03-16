@@ -1,8 +1,10 @@
+// src/utils/epoch.rs
+
 use std::time::{SystemTime, UNIX_EPOCH};
 
 /**
  * Seconds
- * 
+ *
  * Returns the number of seconds since the epoch.
  */
 pub fn seconds() -> u64 {
@@ -16,7 +18,7 @@ pub fn seconds() -> u64 {
 
 /**
  * Milliseconds
- * 
+ *
  * Returns the number of milliseconds since the epoch.
  */
 pub fn milliseconds() -> u64 {

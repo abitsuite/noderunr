@@ -1,3 +1,5 @@
+// src/cmd/network.rs
+
 /* Import modules. */
 use std::io::{BufReader, BufRead};
 use std::io::{self, Write};
@@ -89,7 +91,7 @@ pub fn avax_install() -> Result<String, Box<dyn std::error::Error>> {
     let mut cmd = Command::new("/usr/bin/bash");
 
     let mut proc = InteractiveProcess::new_with_exit_callback(
-        &mut cmd, 
+        &mut cmd,
         |line| {
             println!("    ↳ {}", line.unwrap());
         },

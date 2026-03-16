@@ -1,3 +1,5 @@
+// src/utils/examples.rs
+
 pub fn by_ref(x: &i32) -> i32 {
     println!("\nRef of (x) is {} and {}", x, *x);
 

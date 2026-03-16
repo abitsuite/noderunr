@@ -1,3 +1,5 @@
+// src/ui/welcome.rs
+
 /**
  * Welcome Banner (Graffiti)
  *
