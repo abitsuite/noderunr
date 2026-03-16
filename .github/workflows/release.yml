@@ -107,11 +107,18 @@ jobs:
           cd dist
           7z a ../${BINARY_NAME}-windows-x86_64.zip ${BINARY_NAME}.exe
 
-      - name: Upload artifact
+      - name: Upload artifact (compressed)
         uses: actions/upload-artifact@v5
         with:
           name: ${{ env.BINARY_NAME }}-windows-x86_64
           path: ${{ env.BINARY_NAME }}-windows-x86_64.zip
+          if-no-files-found: error
+
+      - name: Upload artifact (raw binary)
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ env.BINARY_NAME }}-windows-raw
+          path: dist/${{ env.BINARY_NAME }}.exe
           if-no-files-found: error
 
   # ===========================================================================
@@ -167,11 +174,18 @@ jobs:
           cd dist
           tar czf ../${BINARY_NAME}-macos-universal.tar.gz ${BINARY_NAME}
 
-      - name: Upload artifact
+      - name: Upload artifact (compressed)
         uses: actions/upload-artifact@v5
         with:
           name: ${{ env.BINARY_NAME }}-macos-universal
           path: ${{ env.BINARY_NAME }}-macos-universal.tar.gz
+          if-no-files-found: error
+
+      - name: Upload artifact (raw binary)
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ env.BINARY_NAME }}-macos-raw
+          path: dist/${{ env.BINARY_NAME }}
           if-no-files-found: error
 
   # ===========================================================================
@@ -221,11 +235,18 @@ jobs:
           cd dist
           tar czf ../${BINARY_NAME}-linux-x86_64.tar.gz ${BINARY_NAME}
 
-      - name: Upload artifact
+      - name: Upload artifact (compressed)
         uses: actions/upload-artifact@v5
         with:
           name: ${{ env.BINARY_NAME }}-linux-x86_64
           path: ${{ env.BINARY_NAME }}-linux-x86_64.tar.gz
+          if-no-files-found: error
+
+      - name: Upload artifact (raw binary)
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ env.BINARY_NAME }}-linux-raw
+          path: dist/${{ env.BINARY_NAME }}
           if-no-files-found: error
 
   # ===========================================================================
@@ -256,6 +277,11 @@ jobs:
           cp artifacts/${{ env.BINARY_NAME }}-windows-x86_64/${{ env.BINARY_NAME }}-windows-x86_64.zip     release-assets/
           cp artifacts/${{ env.BINARY_NAME }}-macos-universal/${{ env.BINARY_NAME }}-macos-universal.tar.gz release-assets/
           cp artifacts/${{ env.BINARY_NAME }}-linux-x86_64/${{ env.BINARY_NAME }}-linux-x86_64.tar.gz       release-assets/
+
+          # Raw (uncompressed) binaries for direct download via Cloudflare Worker
+          cp artifacts/${{ env.BINARY_NAME }}-linux-raw/${{ env.BINARY_NAME }}      release-assets/${{ env.BINARY_NAME }}-linux
+          cp artifacts/${{ env.BINARY_NAME }}-macos-raw/${{ env.BINARY_NAME }}      release-assets/${{ env.BINARY_NAME }}-macos
+          cp artifacts/${{ env.BINARY_NAME }}-windows-raw/${{ env.BINARY_NAME }}.exe release-assets/${{ env.BINARY_NAME }}.exe
 
       - name: Generate SHA256 checksums
         working-directory: release-assets
@@ -304,6 +330,14 @@ jobs:
             echo "| macOS (Universal) | \`${BINARY_NAME}-macos-universal.tar.gz\` |"
             echo "| Linux (x86_64, Ubuntu 24.04) | \`${BINARY_NAME}-linux-x86_64.tar.gz\` |"
             echo ""
+            echo "#### Direct binaries (uncompressed)"
+            echo ""
+            echo "| Platform | File |"
+            echo "|----------|------|"
+            echo "| Linux (x86_64) | \`${BINARY_NAME}-linux\` |"
+            echo "| macOS (Universal) | \`${BINARY_NAME}-macos\` |"
+            echo "| Windows (x86_64) | \`${BINARY_NAME}.exe\` |"
+            echo ""
             echo "Verify downloads with \`SHA256SUMS.txt\`."
 
             echo "${EOF_MARKER}"
@@ -321,6 +355,9 @@ jobs:
             release-assets/${{ env.BINARY_NAME }}-windows-x86_64.zip
             release-assets/${{ env.BINARY_NAME }}-macos-universal.tar.gz
             release-assets/${{ env.BINARY_NAME }}-linux-x86_64.tar.gz
+            release-assets/${{ env.BINARY_NAME }}-linux
+            release-assets/${{ env.BINARY_NAME }}-macos
+            release-assets/${{ env.BINARY_NAME }}.exe
             release-assets/SHA256SUMS.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
