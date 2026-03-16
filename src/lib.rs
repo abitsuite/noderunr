@@ -1,3 +1,9 @@
+// src/lib.rs
+
+/* Import modules. */
+pub mod crypto;
+pub mod utils;
+
 fn string_to_static_str(s: String) -> &'static str {
 // FIXME Find an alternative to handle static string.
     s.leak()
@@ -5,9 +11,9 @@ fn string_to_static_str(s: String) -> &'static str {
 
 /**
  * Get Version
- * 
+ *
  * Retrieves the version from the `Cargo.toml` file.
- * 
+ *
  * NOTE: Package version is passed as an environment variable to the compiler.
  */
 pub fn get_version() -> &'static str {
