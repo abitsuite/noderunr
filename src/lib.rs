@@ -5,7 +5,7 @@ pub mod crypto;
 pub mod utils;
 
 fn string_to_static_str(s: String) -> &'static str {
-// FIXME Find an alternative to handle static string.
+    // FIXME Find an alternative to handle static string.
     s.leak()
 }
 

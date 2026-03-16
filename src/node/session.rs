@@ -5,8 +5,8 @@ use serde_json::{from_str, json, to_string};
 // use uuid::Uuid;
 
 use crate::api;
-use crate::comm;
 use crate::cmd;
+use crate::comm;
 use crate::utils;
 
 #[derive(Serialize)]
@@ -34,7 +34,6 @@ struct Session {
     createdAt: u32, // seconds
 }
 
-
 /**
  * New Session
  *
@@ -51,12 +50,12 @@ pub fn new() -> String {
     match response {
         Ok(_resp) => {
             ip = _resp["origin"].clone();
-        },
+        }
         Err(err) => {
             ip = err.to_string();
         }
     }
-// println!("\nIP -> {:?}", ip);
+    // println!("\nIP -> {:?}", ip);
 
     /* Request release. */
     let release = cmd::sys::get_release().unwrap();
@@ -90,20 +89,23 @@ pub fn new() -> String {
     /* Make (remote) request. */
     let response = api::call("session", &json_string);
 
-    let mut reg_response: Result<RegistrationResponse, serde_json::Error> = Ok(RegistrationResponse::default());
+    let mut reg_response: Result<RegistrationResponse, serde_json::Error> =
+        Ok(RegistrationResponse::default());
 
     /* Parse (registration) response. */
-    match(&response) {
+    match (&response) {
         Ok(_data) => {
             reg_response = from_str(_data);
-        },
-        Err(_) => println!("  Ugh! Your node registration failed!\n  Sorry about that, please try again...\n\n")
+        }
+        Err(_) => println!(
+            "  Ugh! Your node registration failed!\n  Sorry about that, please try again...\n\n"
+        ),
     }
 
     let mut registration: RegistrationResponse = RegistrationResponse::default();
 
     /* Parse (registration) response. */
-    match(reg_response) {
+    match (reg_response) {
         Ok(_data) => {
             /* Set registation (result). */
             registration = _data;
@@ -122,8 +124,7 @@ pub fn new() -> String {
 
             /* Return session ID. */
             sessionid.to_string()
-        },
-        Err(_) => ("".to_string())
+        }
+        Err(_) => ("".to_string()),
     }
-
 }

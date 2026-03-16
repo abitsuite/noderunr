@@ -1,7 +1,7 @@
 // src/utils/logger.rs
 
 use std::fs::File;
-use std::io::{BufReader, BufRead};
+use std::io::{BufRead, BufReader};
 
 pub fn test_log() -> Result<(), Box<dyn std::error::Error>> {
     let path = "/var/log/syslog";

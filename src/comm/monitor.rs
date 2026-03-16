@@ -46,7 +46,7 @@ struct Session {
     res: Option<Vec<Action>>,
     rpt: Option<Vec<Action>>,
     created_at: u32, // seconds
-    last_since: u64 // milliseconds
+    last_since: u64, // milliseconds
 }
 
 #[derive(Serialize)]
@@ -81,7 +81,8 @@ async fn request_json(_sessionid: &str, _since: u64) -> Result<String, Box<dyn s
     let auth = format!("{} {}", "Bearer", _sessionid);
 
     let client = reqwest::Client::new();
-    let response = client.get(url)
+    let response = client
+        .get(url)
         .header("Authorization", auth)
         .header("Content-Type", "application/json")
         .send()
@@ -99,40 +100,44 @@ async fn request_json(_sessionid: &str, _since: u64) -> Result<String, Box<dyn s
  *
  * Make a (remote) API response.
  */
- #[tokio::main]
- async fn response_json(_sessionid: &str, _response: String) -> Result<String, Box<dyn std::error::Error>> {
-     /* Set URL (for remote API). */
-     let url = format!("{}{}", L1_ENDPOINT, "session");
+#[tokio::main]
+async fn response_json(
+    _sessionid: &str,
+    _response: String,
+) -> Result<String, Box<dyn std::error::Error>> {
+    /* Set URL (for remote API). */
+    let url = format!("{}{}", L1_ENDPOINT, "session");
 
-     let exec_response = ExecResponse {
-         sessionid: _sessionid.to_string(),
-         method: "res".to_string(),
-         resp: _response,
-     };
+    let exec_response = ExecResponse {
+        sessionid: _sessionid.to_string(),
+        method: "res".to_string(),
+        resp: _response,
+    };
 
-     let json_string = to_string(&exec_response).unwrap();
+    let json_string = to_string(&exec_response).unwrap();
 
-     let client = reqwest::Client::new();
-     let response = client.post(url)
-         .header("Content-Type", "application/json")
-         .body(json_string.to_string())
-         .send()
-         .await?;
+    let client = reqwest::Client::new();
+    let response = client
+        .post(url)
+        .header("Content-Type", "application/json")
+        .body(json_string.to_string())
+        .send()
+        .await?;
 
-     let response_body = response.text().await?;
+    let response_body = response.text().await?;
 
-     /* Return response. */
-     Ok(response_body)
- }
+    /* Return response. */
+    Ok(response_body)
+}
 
 fn _handle_exec(_sessionid: &str, _resp: Vec<Request>) {
-// println!("\n***HANDLING (VEC) RESPONSE {:?}", _resp);
+    // println!("\n***HANDLING (VEC) RESPONSE {:?}", _resp);
 
     /* Validate response. */
     if !_resp.is_empty() {
         let exec = &_resp[0].exec;
 
-// println!("\n***HANDLING (VEC) EXEC {:?}", &exec);
+        // println!("\n***HANDLING (VEC) EXEC {:?}", &exec);
 
         if exec == "avax" || exec == "avalanche" {
             let response = cmd::network::avax().expect("Oops! Could NOT execute `avax`.");
@@ -141,25 +146,29 @@ fn _handle_exec(_sessionid: &str, _resp: Vec<Request>) {
         }
 
         if exec == "install avax" || exec == "install avalanche" {
-            let response = cmd::network::avax_install().expect("Oops! Could NOT execute `avax_install`.");
+            let response =
+                cmd::network::avax_install().expect("Oops! Could NOT execute `avax_install`.");
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "start avax" || exec == "start avalanche" {
-            let response = cmd::network::avax_start().expect("Oops! Could NOT execute `avax_start`.");
+            let response =
+                cmd::network::avax_start().expect("Oops! Could NOT execute `avax_start`.");
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "avax status" || exec == "avalanche status" {
-            let response = cmd::network::avax_status().expect("Oops! Could NOT execute `avax_status`.");
+            let response =
+                cmd::network::avax_status().expect("Oops! Could NOT execute `avax_status`.");
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "build avax" || exec == "build avalanche" {
-            let response = cmd::network::build_avalanche().expect("Oops! Could NOT execute `install avax`.");
+            let response =
+                cmd::network::build_avalanche().expect("Oops! Could NOT execute `install avax`.");
             response_json(_sessionid, response);
             return;
         }
@@ -177,7 +186,8 @@ fn _handle_exec(_sessionid: &str, _resp: Vec<Request>) {
         }
 
         if exec == "install go" || exec == "install golang" {
-            let response = cmd::sys::install_golang().expect("Oops! Could NOT execute `install go`.");
+            let response =
+                cmd::sys::install_golang().expect("Oops! Could NOT execute `install go`.");
             response_json(_sessionid, response);
             return;
         }
@@ -219,7 +229,8 @@ fn _handle_exec(_sessionid: &str, _resp: Vec<Request>) {
         }
 
         if exec == "profiler" {
-            let response = cmd::sys::system_profiler().expect("Oops! Could NOT execute `system_profiler`.");
+            let response =
+                cmd::sys::system_profiler().expect("Oops! Could NOT execute `system_profiler`.");
             response_json(_sessionid, response);
             return;
         }
@@ -241,7 +252,8 @@ fn _handle_exec(_sessionid: &str, _resp: Vec<Request>) {
         /*************************************/
 
         if exec == "help" {
-            let response = "Oops! Help is temporarily unavailable. Please try again later...".to_string();
+            let response =
+                "Oops! Help is temporarily unavailable. Please try again later...".to_string();
             response_json(_sessionid, response);
             return;
         }
@@ -280,7 +292,10 @@ fn _handle_exec(_sessionid: &str, _resp: Vec<Request>) {
             return;
         }
 
-        let response = format!("ERROR! [ {} ] is an UNKNOWN command. Try &lt;help&gt; for more options.", exec);
+        let response = format!(
+            "ERROR! [ {} ] is an UNKNOWN command. Try &lt;help&gt; for more options.",
+            exec
+        );
         response_json(_sessionid, response);
     }
 
@@ -305,20 +320,21 @@ pub fn by_session(_sessionid: &str) {
         unsafe {
             /* Make (remote) JSON (data) request. */
             response = request_json(_sessionid, LAST_SINCE);
-// println!("\nRAW---\n{:?}\n", response);
+            // println!("\nRAW---\n{:?}\n", response);
         }
 
         // let session_resp: Result<_, Box<dyn std::error::Error>>;
-        let mut session_resp: Result<SessionResponse, serde_json::Error> = Ok(SessionResponse::default());
+        let mut session_resp: Result<SessionResponse, serde_json::Error> =
+            Ok(SessionResponse::default());
         // let session_resp = SessionResponse::default();
 
-        match(&response) {
+        match (&response) {
             Ok(_data) => {
                 session_resp = from_str(_data);
-            },
+            }
             Err(_) => println!("\n  ERROR: Failed to receive a response from API server."),
         }
-// println!("\nSR---\n{:?}\n", session_resp);
+        // println!("\nSR---\n{:?}\n", session_resp);
 
         let mut remote_data: SessionResponse = SessionResponse::default();
         // let mut remote_data: Option<SessionResponse> = None;
@@ -334,14 +350,14 @@ pub fn by_session(_sessionid: &str) {
                 LAST_SINCE = remote_data.result.last_since
             }
         }
-// println!("\nRD (result)---\n{:?}\n", remote_data.result); // Output: Person { name: "Jane Doe", age: 25 }
+        // println!("\nRD (result)---\n{:?}\n", remote_data.result); // Output: Person { name: "Jane Doe", age: 25 }
 
-// println!("");
-// println!("  SESSION ID -> {}", remote_data.result.sessionid);
-// println!("      ACTION -> {:?}", remote_data.result.act);
-// println!("     REQUEST -> {:?}", remote_data.result.req);
-// println!("     CREATED -> {}", remote_data.result.created_at);
-// println!("  LAST SINCE -> {}", remote_data.result.last_since);
+        // println!("");
+        // println!("  SESSION ID -> {}", remote_data.result.sessionid);
+        // println!("      ACTION -> {:?}", remote_data.result.act);
+        // println!("     REQUEST -> {:?}", remote_data.result.req);
+        // println!("     CREATED -> {}", remote_data.result.created_at);
+        // println!("  LAST SINCE -> {}", remote_data.result.last_since);
 
         if let Some(_data) = remote_data.result.req {
             _handle_exec(&remote_data.result.sessionid, _data)

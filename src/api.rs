@@ -16,7 +16,8 @@ pub async fn call(_endpoint: &str, _json: &str) -> Result<String, Box<dyn std::e
     // let headers = [("Authorization", "Bearer YOUR_API_KEY"), ("X-Custom-Header", "value")];
 
     let client = reqwest::Client::new();
-    let response = client.post(url)
+    let response = client
+        .post(url)
         .header("Content-Type", "application/json")
         // .headers(headers.into_iter().collect())
         .body(_json.to_string())

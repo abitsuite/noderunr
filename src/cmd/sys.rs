@@ -1,12 +1,12 @@
 // src/cmd/sys.rs
 
 /* Import modules. */
-use std::io::{BufReader, BufRead};
+use interactive_process::InteractiveProcess;
 use std::io::{self, Write};
+use std::io::{BufRead, BufReader};
 use std::process::{Command, Stdio};
 use std::thread::sleep;
 use std::time::Duration;
-use interactive_process::InteractiveProcess;
 
 pub fn df() -> Result<String, Box<dyn std::error::Error>> {
     let output = Command::new("df")
@@ -52,14 +52,12 @@ pub fn lsblk() -> Result<String, Box<dyn std::error::Error>> {
 pub fn lscpu() -> Result<String, Box<dyn std::error::Error>> {
     let mut response;
 
-    let output = Command::new("lscpu")
-        .arg("-e")
-        .output();
-        // .expect("failed to execute lscpu");
+    let output = Command::new("lscpu").arg("-e").output();
+    // .expect("failed to execute lscpu");
 
     match output {
         Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),
-        Err(_err) => response = _err.to_string()
+        Err(_err) => response = _err.to_string(),
     }
 
     Ok(response)
@@ -76,13 +74,11 @@ pub fn lshw() -> Result<String, Box<dyn std::error::Error>> {
 pub fn mem() -> Result<String, Box<dyn std::error::Error>> {
     let mut response;
 
-    let output = Command::new("free")
-        .arg("-h")
-        .output();
+    let output = Command::new("free").arg("-h").output();
 
     match output {
         Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),
-        Err(_err) => response = _err.to_string()
+        Err(_err) => response = _err.to_string(),
     }
 
     Ok(response)
@@ -140,11 +136,13 @@ pub fn install_golang() -> Result<String, Box<dyn std::error::Error>> {
     let mut cmd = Command::new("bash");
 
     let mut proc = InteractiveProcess::new_with_exit_callback(
-        &mut cmd, |line| {
+        &mut cmd,
+        |line| {
             println!("    ↳ {}", line.unwrap());
         },
-        || println!("Child exited.")
-    ).unwrap();
+        || println!("Child exited."),
+    )
+    .unwrap();
 
     /* Change to (home) directory. */
     proc.send("cd").unwrap();
@@ -164,7 +162,8 @@ pub fn install_golang() -> Result<String, Box<dyn std::error::Error>> {
     // proc.send("wget https://go.dev/dl/go1.23.3.linux-amd64.tar.gz").unwrap();
     // sleep(Duration::from_millis(1));
 
-    proc.send("export PATH=$PATH:$HOME/.noderunr/go/bin").unwrap();
+    proc.send("export PATH=$PATH:$HOME/.noderunr/go/bin")
+        .unwrap();
     sleep(Duration::from_secs(1));
 
     // proc.send("rm -rf $HOME/.noderunr/go && tar -C $HOME/.noderunr -xzf go1.23.3.linux-amd64.tar.gz").unwrap();
@@ -190,7 +189,7 @@ pub fn system_profiler() -> Result<String, Box<dyn std::error::Error>> {
 
     match output {
         Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),
-        Err(_err) => response = _err.to_string()
+        Err(_err) => response = _err.to_string(),
     }
 
     Ok(response)

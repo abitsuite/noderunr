@@ -27,8 +27,7 @@ pub fn milliseconds() -> u64 {
         .duration_since(UNIX_EPOCH)
         .expect("Oops! Time went backwards!");
 
-    since_the_epoch.as_secs() * 1000 +
-        since_the_epoch.subsec_nanos() as u64 / 1_000_000
+    since_the_epoch.as_secs() * 1000 + since_the_epoch.subsec_nanos() as u64 / 1_000_000
 }
 
 /* Alias for seconds. */

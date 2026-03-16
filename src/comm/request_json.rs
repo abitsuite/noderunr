@@ -9,14 +9,18 @@ const L1_ENDPOINT: &str = "https://l1.run/v1/";
  * Make a (remote) API call for JSON-formatted data.
  */
 #[tokio::main]
-pub async fn request_json(_endpoint: &str, _json: &str) -> Result<String, Box<dyn std::error::Error>> {
+pub async fn request_json(
+    _endpoint: &str,
+    _json: &str,
+) -> Result<String, Box<dyn std::error::Error>> {
     /* Set URL (for remote API). */
     let url = format!("{}{}", L1_ENDPOINT, _endpoint);
 
     // let headers = [("Authorization", "Bearer YOUR_API_KEY"), ("X-Custom-Header", "value")];
 
     let client = reqwest::Client::new();
-    let response = client.post(url)
+    let response = client
+        .post(url)
         .header("Content-Type", "application/json")
         // .headers(headers.into_iter().collect())
         .body(_json.to_string())

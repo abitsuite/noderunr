@@ -3,8 +3,8 @@
 #![allow(unused)]
 
 /* Initailize (external) libraries. */
-use clap::{Arg, Command};
 use clap::Parser;
+use clap::{Arg, Command};
 use human_panic::setup_panic;
 use log::{info, warn};
 use serde_json::json;
@@ -29,13 +29,13 @@ mod utils;
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
-   /// Name of the person to greet
-   #[clap(short, long, value_parser, default_value = "Satoshi")]
-   name: String,
+    /// Name of the person to greet
+    #[clap(short, long, value_parser, default_value = "Satoshi")]
+    name: String,
 
-   /// Number of times to greet
-   #[clap(short, long, value_parser, default_value_t = 1)]
-   count: u8,
+    /// Number of times to greet
+    #[clap(short, long, value_parser, default_value_t = 1)]
+    count: u8,
 }
 
 /**
@@ -64,21 +64,27 @@ fn main() {
         .version(version)
         .author(env!("CARGO_PKG_AUTHORS"))
         .about(env!("CARGO_PKG_DESCRIPTION"))
-        .arg(Arg::new("id")
-            .required(false)
-            // .takes_value(true)
-            .index(1)
-            .help("connect to an existing session"))
-        .arg(Arg::new("seed")
-            .required(false)
-            // .takes_value(true)
-            .index(2)
-            .help("12 or 24 word seed phrase"))
-        .arg(Arg::new("url")
-            .required(false)
-            // .takes_value(true)
-            .index(3)
-            .help("url of node viewer"))
+        .arg(
+            Arg::new("id")
+                .required(false)
+                // .takes_value(true)
+                .index(1)
+                .help("connect to an existing session"),
+        )
+        .arg(
+            Arg::new("seed")
+                .required(false)
+                // .takes_value(true)
+                .index(2)
+                .help("12 or 24 word seed phrase"),
+        )
+        .arg(
+            Arg::new("url")
+                .required(false)
+                // .takes_value(true)
+                .index(3)
+                .help("url of node viewer"),
+        )
         .get_matches();
 
     /* Handle session id. */

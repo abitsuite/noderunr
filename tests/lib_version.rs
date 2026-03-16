@@ -33,10 +33,7 @@ fn lib_version_format() {
 fn lib_version_not_empty() {
     let version = noderunr::get_version();
 
-    assert!(
-        !version.is_empty(),
-        "Version string should not be empty"
-    );
+    assert!(!version.is_empty(), "Version string should not be empty");
 }
 
 /**

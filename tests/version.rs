@@ -1,7 +1,7 @@
 // tests/version.rs
 
-use predicates::prelude::*; // Used for writing assertions
-use assert_cmd::Command; // Run programs (with timeout support)
+use assert_cmd::Command;
+use predicates::prelude::*; // Used for writing assertions // Run programs (with timeout support)
 
 /**
  * Version Flag (Long)
@@ -31,8 +31,7 @@ fn version_flag_long() -> Result<(), Box<dyn std::error::Error>> {
 fn version_flag_short() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("noderunr")?;
 
-    cmd.arg("-V")
-        .timeout(std::time::Duration::from_secs(10));
+    cmd.arg("-V").timeout(std::time::Duration::from_secs(10));
 
     cmd.assert()
         .success()
