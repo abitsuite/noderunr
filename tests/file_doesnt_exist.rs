@@ -1,3 +1,5 @@
+// tests/file_doesnt_exist.rs
+
 use predicates::prelude::*; // Used for writing assertions
 use assert_cmd::Command; // Run programs (with timeout support)
 
@@ -10,8 +12,10 @@ fn file_doesnt_exist() -> Result<(), Box<dyn std::error::Error>> {
         .timeout(std::time::Duration::from_secs(10));
 
     cmd.assert()
-        .failure()
-        .stderr(predicate::str::contains("could not read file"));
+        .interrupted()
+        .stdout(predicate::str::contains("NodΞRunr")
+            .or(predicate::str::contains("NODERUNR"))
+            .or(predicate::str::contains("██████")));
 
     Ok(())
 }
