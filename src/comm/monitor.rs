@@ -282,7 +282,6 @@ fn _handle_exec(_sessionid: &str, _resp: Vec<Request>) {
 
         let response = format!("ERROR! [ {} ] is an UNKNOWN command. Try &lt;help&gt; for more options.", exec);
         response_json(_sessionid, response);
-        return;
     }
 
     // let response = "ERROR! A FATAL ERROR OCCURED :(".to_string();
