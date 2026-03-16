@@ -18,7 +18,7 @@ pub fn df() -> Result<String, Box<dyn std::error::Error>> {
 }
 
 pub fn du() -> Result<String, Box<dyn std::error::Error>> {
-    let command = format!("du -hd 2 $HOME");
+    let command = "du -hd 2 $HOME".to_string();
 
     let output = Command::new("sh")
         .arg("-c")
@@ -30,7 +30,7 @@ pub fn du() -> Result<String, Box<dyn std::error::Error>> {
 }
 
 pub fn ls() -> Result<String, Box<dyn std::error::Error>> {
-    let command = format!("ls $HOME -la");
+    let command = "ls $HOME -la".to_string();
 
     let output = Command::new("sh")
         .arg("-c")
@@ -150,7 +150,7 @@ pub fn install_golang() -> Result<String, Box<dyn std::error::Error>> {
     proc.send("cd").unwrap();
     sleep(Duration::from_secs(1));
 
-    // proc.send("echo \"export PATH=\$PATH:$HOME/.noderunr/go/bin\" >> .profile").unwrap();
+    // proc.send("echo \"export PATH=$PATH:$HOME/.noderunr/go/bin\" >> .profile").unwrap();
     // sleep(Duration::from_secs(1));
 
     /* Make (hidden) .noderunr directory (if required). */

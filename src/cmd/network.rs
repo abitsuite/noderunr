@@ -54,14 +54,17 @@ pub fn ping2() {
         .spawn()
         .expect("failed to spawn process");
 
-    let mut stdout = child.stdout.as_mut().unwrap();
-    let mut stderr = child.stderr.as_mut().unwrap();
+    let stdout = child.stdout.as_mut().unwrap();
+    let stderr = child.stderr.as_mut().unwrap();
 
     // let stdout = String::from_utf8(stdout).unwrap();
     println!("{:?}", stdout);
 
     // io::stdout().write_all(&mut stdout).unwrap();
     // io::stderr().write_all(&mut stderr).unwrap();
+
+    /* Wait for child to prevent zombie process. */
+    let _ = child.wait();
 }
 
 pub fn avax() -> Result<String, Box<dyn std::error::Error>> {
