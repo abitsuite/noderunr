@@ -1,5 +1,5 @@
 # =============================================================================
-# NodΞRunr — Release Pipeline
+# NodΞRunr — Release and Deployment Pipeline
 # =============================================================================
 #
 # Triggers:
@@ -16,7 +16,7 @@
 #
 # =============================================================================
 
-name: Release
+name: Release and Deployment
 
 on:
   push:
@@ -33,10 +33,10 @@ env:
 jobs:
 
   # ===========================================================================
-  # Test Suite — gate the release on passing tests
+  # Guardian and Test Suite — gate the release on passing tests
   # ===========================================================================
-  test:
-    name: Test Suite
+  guardian:
+    name: Guardian and Test Suite
     runs-on: ubuntu-24.04
 
     steps:
@@ -73,7 +73,7 @@ jobs:
   # ===========================================================================
   build-windows:
     name: Build — Windows (x86_64)
-    needs: [test]
+    needs: [guardian]
     runs-on: windows-latest
 
     steps:
@@ -119,7 +119,7 @@ jobs:
   # ===========================================================================
   build-macos:
     name: Build — macOS (Universal)
-    needs: [test]
+    needs: [guardian]
     runs-on: macos-latest
 
     steps:
@@ -179,7 +179,7 @@ jobs:
   # ===========================================================================
   build-linux:
     name: Build — Linux (x86_64, Ubuntu 24.04)
-    needs: [test]
+    needs: [guardian]
     runs-on: ubuntu-24.04
 
     steps:
