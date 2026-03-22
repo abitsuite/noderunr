@@ -5,5 +5,5 @@ pub mod hashes;
 pub mod math;
 
 #[cfg(test)]
-#[path = "math.test.rs"]
+#[path = "crypto/math.test.rs"]
 mod math_test;

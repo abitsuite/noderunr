@@ -5,5 +5,5 @@ pub mod notif;
 pub mod welcome;
 
 #[cfg(test)]
-#[path = "welcome.test.rs"]
+#[path = "ui/welcome.test.rs"]
 mod welcome_test;

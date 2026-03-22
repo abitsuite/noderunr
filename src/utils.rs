@@ -8,9 +8,9 @@ pub mod logger;
 pub mod remote;
 
 #[cfg(test)]
-#[path = "epoch.test.rs"]
+#[path = "utils/epoch.test.rs"]
 mod epoch_test;
 
 #[cfg(test)]
-#[path = "examples.test.rs"]
+#[path = "utils/examples.test.rs"]
 mod examples_test;
