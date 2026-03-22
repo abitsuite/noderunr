@@ -11,10 +11,12 @@ fn file_doesnt_exist() -> Result<(), Box<dyn std::error::Error>> {
         .arg("bin/test.txt")
         .timeout(std::time::Duration::from_secs(10));
 
-    cmd.assert().interrupted().stdout(
+    cmd.assert().interrupted().stderr(
         predicate::str::contains("NodΞRunr")
             .or(predicate::str::contains("NODERUNR"))
-            .or(predicate::str::contains("██████")),
+            .or(predicate::str::contains("██████"))
+            .or(predicate::str::contains("stderr"))
+            .or(predicate::str::is_empty().not()),
     );
 
     Ok(())

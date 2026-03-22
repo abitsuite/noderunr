@@ -2,7 +2,6 @@
 
 /* Import modules. */
 use interactive_process::InteractiveProcess;
-use std::io::{self, Write};
 use std::io::{BufRead, BufReader};
 use std::process::{Command, Stdio};
 use std::thread::sleep;
@@ -258,9 +257,9 @@ pub fn install_golang() -> Result<String, Box<dyn std::error::Error>> {
     proc.send("go version").unwrap();
     sleep(Duration::from_secs(1));
 
-    /// We're done with the process, but it is not self-terminating,
-    /// so we can't use `proc.wait()`. Instead, we'll take the `Child` from
-    /// the `InteractiveProcess` and kill it ourselves.
+    // We're done with the process, but it is not self-terminating,
+    // so we can't use `proc.wait()`. Instead, we'll take the `Child` from
+    // the `InteractiveProcess` and kill it ourselves.
     proc.close().kill().unwrap();
 
     Ok(response)
@@ -286,9 +285,7 @@ pub fn system_profiler() -> Result<String, Box<dyn std::error::Error>> {
             Err(_err) => response = _err.to_string(),
         }
     } else {
-        let output = Command::new("system_profiler")
-            .arg("SPHardwareDataType")
-            .output();
+        let output = Command::new("lshw").output();
 
         match output {
             Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),

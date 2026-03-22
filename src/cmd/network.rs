@@ -2,7 +2,6 @@
 
 /* Import modules. */
 use interactive_process::InteractiveProcess;
-use std::io::{self, Write};
 use std::io::{BufRead, BufReader};
 use std::process::{Command, Stdio};
 use std::thread::sleep;
@@ -125,7 +124,7 @@ pub fn avax_install() -> Result<String, Box<dyn std::error::Error>> {
         },
         || {
             println!("\n    ✨ Avalanche has been successfully installed! ✨\n");
-            avax_test();
+            let _ = avax_test();
         },
     )
     .unwrap();
@@ -313,9 +312,9 @@ pub fn build_avalanche() -> Result<String, Box<dyn std::error::Error>> {
     proc.send("./build/avalanchego").unwrap();
     sleep(Duration::from_millis(1));
 
-    /// We're done with the process, but it is not self-terminating,
-    /// so we can't use `proc.wait()`. Instead, we'll take the `Child` from
-    /// the `InteractiveProcess` and kill it ourselves.
+    // We're done with the process, but it is not self-terminating,
+    // so we can't use `proc.wait()`. Instead, we'll take the `Child` from
+    // the `InteractiveProcess` and kill it ourselves.
     proc.close().kill().unwrap();
 
     // let cmd1 = Command::new("cd")
