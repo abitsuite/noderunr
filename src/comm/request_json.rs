@@ -17,7 +17,6 @@ pub(crate) fn build_url(endpoint: &str) -> String {
  *
  * Make a (remote) API call for JSON-formatted data.
  */
-#[tokio::main]
 pub async fn request_json(
     _endpoint: &str,
     _json: &str,

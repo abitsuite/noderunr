@@ -9,7 +9,6 @@ use std::collections::HashMap;
  *
  * Retrieves IP address from a remote (web) data source.
  */
-#[tokio::main]
 pub async fn get() -> Result<HashMap<String, String>, Box<dyn std::error::Error>> {
     let resp = reqwest::get("https://httpbin.org/ip")
         .await?

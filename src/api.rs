@@ -17,7 +17,6 @@ pub(crate) fn build_url(endpoint: &str) -> String {
  *
  * Make a (remote) API call.
  */
-#[tokio::main]
 pub async fn call(_endpoint: &str, _json: &str) -> Result<String, Box<dyn std::error::Error>> {
     /* Set URL (for remote API). */
     let url = build_url(_endpoint);

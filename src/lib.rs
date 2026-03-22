@@ -8,10 +8,7 @@ pub mod crypto;
 pub mod ui;
 pub mod utils;
 
-fn string_to_static_str(s: String) -> &'static str {
-    // FIXME Find an alternative to handle static string.
-    s.leak()
-}
+use std::sync::OnceLock;
 
 /**
  * Get Version
@@ -21,13 +18,15 @@ fn string_to_static_str(s: String) -> &'static str {
  * NOTE: Package version is passed as an environment variable to the compiler.
  */
 pub fn get_version() -> &'static str {
-    /* Retrieve app version from toml. */
-    let version: &str = env!("CARGO_PKG_VERSION");
+    static VERSION: OnceLock<String> = OnceLock::new();
 
-    /* Return formatted app version. */
-    let formatted = format!("v{} (alpha)", version);
+    VERSION.get_or_init(|| {
+        /* Retrieve app version from toml. */
+        let version: &str = env!("CARGO_PKG_VERSION");
 
-    string_to_static_str(formatted)
+        /* Return formatted app version. */
+        format!("v{} (alpha)", version)
+    })
 }
 
 /**

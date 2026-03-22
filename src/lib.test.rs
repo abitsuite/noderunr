@@ -141,17 +141,6 @@ fn federation_node_unicode_fields() {
 }
 
 /**
- * string_to_static_str converts an owned String to a &'static str.
- */
-#[test]
-fn string_to_static_str_works() {
-    let s = String::from("hello noderunr");
-    let result: &'static str = string_to_static_str(s);
-
-    assert_eq!(result, "hello noderunr");
-}
-
-/**
  * Subnet trait get_id() returns the expected format.
  */
 #[test]

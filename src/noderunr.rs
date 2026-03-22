@@ -6,8 +6,6 @@
 use clap::Parser;
 use clap::{Arg, Command};
 use human_panic::setup_panic;
-use log::{info, warn};
-use serde_json::json;
 
 /* Import modules. */
 mod node;
@@ -170,7 +168,11 @@ fn main() {
     // }
     // println!("  Node ID is: {}\n", node.get_id);
 
-    node::session::new();
+    /* Build the single tokio runtime for the entire application. */
+    let rt = tokio::runtime::Runtime::new()
+        .expect("Failed to create tokio runtime");
+
+    node::session::new(&rt);
 
     // panic!("Oops! What happened??");
 

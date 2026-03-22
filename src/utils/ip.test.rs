@@ -8,9 +8,9 @@ use crate::utils::ip;
  * NOTE: This requires network access. On CI without network,
  * an Err is acceptable.
  */
-#[test]
-fn get_ip_does_not_panic() {
-    let result = ip::get();
+#[tokio::test]
+async fn get_ip_does_not_panic() {
+    let result = ip::get().await;
 
     match result {
         Ok(map) => {
