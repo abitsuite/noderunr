@@ -194,3 +194,31 @@ fn install_golang_windows_guard() {
         );
     }
 }
+
+/**
+ * sys::install_golang — Returns Ok on non-Windows (spawns bash briefly).
+ */
+#[test]
+#[cfg(not(target_os = "windows"))]
+fn install_golang_returns_ok_on_unix() {
+    let result = sys::install_golang();
+    assert!(
+        result.is_ok(),
+        "sys::install_golang() should return Ok on Unix, got: {:?}",
+        result.unwrap_err()
+    );
+}
+
+/**
+ * sys::install_golang — Result is an empty string on Unix.
+ */
+#[test]
+#[cfg(not(target_os = "windows"))]
+fn install_golang_returns_empty_response() {
+    let result = sys::install_golang().unwrap();
+    assert_eq!(
+        result, "",
+        "sys::install_golang() should return empty string, got: {}",
+        result
+    );
+}

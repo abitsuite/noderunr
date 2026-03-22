@@ -29,6 +29,73 @@ fn shell_prefix() -> &'static [&'static str] {
     }
 }
 
+/// Returns the default Avalanche CLI binary path.
+pub(crate) fn avax_cli_bin() -> String {
+    "$HOME/.noderunr/bin/avalanche".to_string()
+}
+
+/// Returns the default noderunr home directory path.
+pub(crate) fn noderunr_home() -> String {
+    "$HOME/.noderunr".to_string()
+}
+
+/// Returns the default noderunr bin directory path.
+pub(crate) fn noderunr_bin_dir() -> String {
+    format!("{}/bin", noderunr_home())
+}
+
+/// Builds the sequence of shell commands for avax_install.
+/// Returns a Vec of (command, sleep_millis) pairs.
+pub(crate) fn build_avax_install_steps() -> Vec<(String, u64)> {
+    let bin_dir = noderunr_bin_dir();
+
+    vec![
+        (format!("mkdir -p {}", bin_dir), 1000),
+        (format!("cd {}", bin_dir), 1000),
+        ("curl -sSfL https://raw.githubusercontent.com/ava-labs/avalanche-cli/main/scripts/install.sh | sh -s -- -b ./".to_string(), 10),
+    ]
+}
+
+/// Builds the sequence of shell commands for avax_test.
+/// Returns a Vec of (command, sleep_millis) pairs.
+pub(crate) fn build_avax_test_steps() -> Vec<(String, u64)> {
+    let cli_bin = avax_cli_bin();
+
+    vec![
+        (format!("{} --help", cli_bin), 1000),
+        (format!("{} --version", cli_bin), 10),
+    ]
+}
+
+/// Builds the shell command for avax_start.
+pub(crate) fn build_avax_start_cmd() -> String {
+    format!("{} network start", avax_cli_bin())
+}
+
+/// Builds the shell command for avax_status.
+pub(crate) fn build_avax_status_cmd() -> String {
+    format!("{} network status", avax_cli_bin())
+}
+
+/// Builds the shell command for avax_stop.
+pub(crate) fn build_avax_stop_cmd() -> String {
+    format!("{} network stop", avax_cli_bin())
+}
+
+/// Builds the sequence of shell commands for build_avalanche.
+/// Returns a Vec of (command, sleep_millis) pairs.
+pub(crate) fn build_avalanche_steps() -> Vec<(String, u64)> {
+    vec![
+        ("cd".to_string(), 1000),
+        ("mkdir -p .noderunr".to_string(), 1000),
+        ("cd .noderunr".to_string(), 1000),
+        ("cd avalanchego".to_string(), 1000),
+        ("export PATH=$PATH:$HOME/.noderunr/go/bin".to_string(), 1000),
+        ("./scripts/build.sh".to_string(), 1),
+        ("./build/avalanchego".to_string(), 1),
+    ]
+}
+
 /**
  * Ping
  *
@@ -127,22 +194,16 @@ pub fn avax_install() -> Result<String, Box<dyn std::error::Error>> {
     )
     .unwrap();
 
+    /* Execute install steps from pure builder. */
+    let steps = build_avax_install_steps();
+
     /* Quick pause */
     sleep(Duration::from_millis(10));
 
-    /* Make (hidden) .noderunr directory (if required). */
-    proc.send("mkdir -p $HOME/.noderunr/bin").unwrap();
-
-    /* Short pause */
-    sleep(Duration::from_secs(1));
-
-    /* Change to noderunr directory. */
-    proc.send("cd $HOME/.noderunr/bin").unwrap();
-
-    /* Short pause */
-    sleep(Duration::from_secs(1));
-
-    proc.send("curl -sSfL https://raw.githubusercontent.com/ava-labs/avalanche-cli/main/scripts/install.sh | sh -s -- -b ./").unwrap();
+    for (command, sleep_ms) in &steps {
+        proc.send(command).unwrap();
+        sleep(Duration::from_millis(*sleep_ms));
+    }
 
     /* Quick pause */
     sleep(Duration::from_millis(10));
@@ -174,17 +235,16 @@ fn avax_test() -> Result<String, Box<dyn std::error::Error>> {
     )
     .unwrap();
 
+    /* Execute test steps from pure builder. */
+    let steps = build_avax_test_steps();
+
     /* Quick pause */
     sleep(Duration::from_millis(10));
 
-    proc.send("$HOME/.noderunr/bin/avalanche --help").unwrap();
-
-    /* Short pause */
-    sleep(Duration::from_secs(1));
-    // sleep(Duration::from_millis(10));
-
-    proc.send("$HOME/.noderunr/bin/avalanche --version")
-        .unwrap();
+    for (command, sleep_ms) in &steps {
+        proc.send(command).unwrap();
+        sleep(Duration::from_millis(*sleep_ms));
+    }
 
     /* Quick pause */
     sleep(Duration::from_millis(10));
@@ -210,8 +270,7 @@ pub fn avax_start() -> Result<String, Box<dyn std::error::Error>> {
     })
     .unwrap();
 
-    proc.send("$HOME/.noderunr/bin/avalanche network start")
-        .unwrap();
+    proc.send(&build_avax_start_cmd()).unwrap();
     sleep(Duration::from_millis(10));
 
     proc.close().kill().unwrap();
@@ -234,8 +293,7 @@ pub fn avax_status() -> Result<String, Box<dyn std::error::Error>> {
     })
     .unwrap();
 
-    proc.send("$HOME/.noderunr/bin/avalanche network status")
-        .unwrap();
+    proc.send(&build_avax_status_cmd()).unwrap();
     sleep(Duration::from_millis(10));
 
     proc.close().kill().unwrap();
@@ -258,8 +316,7 @@ pub fn avax_stop() -> Result<String, Box<dyn std::error::Error>> {
     })
     .unwrap();
 
-    proc.send("$HOME/.noderunr/bin/avalanche network stop")
-        .unwrap();
+    proc.send(&build_avax_stop_cmd()).unwrap();
     sleep(Duration::from_millis(10));
 
     proc.close().kill().unwrap();
@@ -282,33 +339,13 @@ pub fn build_avalanche() -> Result<String, Box<dyn std::error::Error>> {
     })
     .unwrap();
 
-    /* Change to (home) directory. */
-    proc.send("cd").unwrap();
-    sleep(Duration::from_secs(1));
+    /* Execute build steps from pure builder. */
+    let steps = build_avalanche_steps();
 
-    /* Make (hidden) .noderunr directory (if required). */
-    proc.send("mkdir -p .noderunr").unwrap();
-    sleep(Duration::from_secs(1));
-
-    /* Change to noderunr directory. */
-    proc.send("cd .noderunr").unwrap();
-    sleep(Duration::from_secs(1));
-
-    // proc.send("git clone https://github.com/ava-labs/avalanchego.git").unwrap();
-    // sleep(Duration::from_millis(1));
-
-    proc.send("cd avalanchego").unwrap();
-    sleep(Duration::from_secs(1));
-
-    proc.send("export PATH=$PATH:$HOME/.noderunr/go/bin")
-        .unwrap();
-    sleep(Duration::from_secs(1));
-
-    proc.send("./scripts/build.sh").unwrap();
-    sleep(Duration::from_millis(1));
-
-    proc.send("./build/avalanchego").unwrap();
-    sleep(Duration::from_millis(1));
+    for (command, sleep_ms) in &steps {
+        proc.send(command).unwrap();
+        sleep(Duration::from_millis(*sleep_ms));
+    }
 
     // We're done with the process, but it is not self-terminating,
     // so we can't use `proc.wait()`. Instead, we'll take the `Child` from
