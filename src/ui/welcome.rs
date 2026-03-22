@@ -20,7 +20,7 @@ pub fn banner() {
 
     println!(
         "                                                {}\n",
-        noderunr::get_version()
+        crate::get_version()
     );
     println!("                                          brought to you by aBitSuite");
     println!("                                                https://abitsuite.com");
@@ -45,7 +45,7 @@ pub fn banner_alt() {
 
     println!(
         "                                                    {}\n",
-        noderunr::get_version()
+        crate::get_version()
     );
     println!("                                              brought to you by aBitSuite");
     println!("                                                    https://abitsuite.com");
@@ -71,7 +71,7 @@ pub fn banner_alt_2() {
 
     println!(
         "                                           {}\n",
-        noderunr::get_version()
+        crate::get_version()
     );
     println!("                                     brought to you by aBitSuite");
     println!("                                           https://abitsuite.com");

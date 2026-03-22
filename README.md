@@ -26,3 +26,10 @@ Paste the following command into your macOS, Linux or WSL terminal:
 ```sh
 curl -sSL https://L1.run/linux | bash
 ```
+
+
+## Testing & Code Coverage
+
+```sh
+cargo tarpaulin --out stdout --skip-clean 2>&1 | tail -30
+```
