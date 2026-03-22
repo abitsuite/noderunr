@@ -5,5 +5,5 @@ pub mod network;
 pub mod sys;
 
 #[cfg(test)]
-#[path = "sys.test.rs"]
+#[path = "cmd/sys.test.rs"]
 mod sys_test;
