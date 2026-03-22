@@ -1,6 +1,9 @@
-![NodΞRunr logo](https://l1.run/icon.svg)
+<img src="https://l1.run/icon.svg" alt="NodΞRunr logo" width="300" />
 
 # NodΞRunr
+
+[![Guardian](https://github.com/abitsuite/noderunr/actions/workflows/guardian.yml/badge.svg)](https://github.com/abitsuite/noderunr/actions/workflows/guardian.yml)
+[![codecov](https://codecov.io/gh/abitsuite/noderunr/graph/badge.svg)](https://codecov.io/gh/abitsuite/noderunr)
 
 ### https://L1.run
 
@@ -14,8 +17,7 @@ NodΞRunr is a lightweight FOSS smart daemon that provides effortless SysOps for
 
 NodΞRunr offers Founders and Teams a SAFU space for maintaining a network of mission-critical nodes from anywhere, at any time.
 
-#### It’s fast, beautiful, and completely FREE!
-
+#### It's fast, beautiful, and completely FREE!
 
 ## Getting Started
 

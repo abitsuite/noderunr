@@ -1,6 +1,7 @@
 // src/lib.rs
 
 /* Import modules. */
+pub mod cmd;
 pub mod crypto;
 pub mod utils;
 
