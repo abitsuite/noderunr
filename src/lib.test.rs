@@ -150,3 +150,20 @@ fn string_to_static_str_works() {
 
     assert_eq!(result, "hello noderunr");
 }
+
+/**
+ * Subnet trait get_id() returns the expected format.
+ */
+#[test]
+fn federation_node_subnet_get_id() {
+    let node = FederationNode {
+        id: String::from("subnet-test-42"),
+        owner: String::from("TestOwner"),
+        title: String::from("TestNode"),
+        created_at: String::from("2025-01-01"),
+    };
+
+    let result = <FederationNode as Subnet>::get_id(&node);
+
+    assert_eq!(result, "subnet-subnet-test-42");
+}

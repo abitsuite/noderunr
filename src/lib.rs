@@ -56,6 +56,12 @@ impl Validator for FederationNode {
     }
 }
 
+impl Subnet for FederationNode {
+    fn get_id(&self) -> String {
+        format!("subnet-{}", self.id)
+    }
+}
+
 #[cfg(test)]
 #[path = "lib.test.rs"]
 mod lib_test;

@@ -10,59 +10,59 @@ use tokio_stream::StreamExt;
 
 use crate::cmd;
 
-#[derive(Debug, Deserialize)]
-struct Action {
-    actionid: Option<String>,
-    body: Option<String>,
-    target: Option<String>,
-    created_at: u64, // milliseconds
+#[derive(Debug, Deserialize, Serialize)]
+pub(crate) struct Action {
+    pub(crate) actionid: Option<String>,
+    pub(crate) body: Option<String>,
+    pub(crate) target: Option<String>,
+    pub(crate) created_at: u64, // milliseconds
 }
 
-#[derive(Debug, Serialize)]
-struct ExecResponse {
-    sessionid: String,
-    method: String,
-    resp: String,
+#[derive(Debug, Serialize, Deserialize)]
+pub(crate) struct ExecResponse {
+    pub(crate) sessionid: String,
+    pub(crate) method: String,
+    pub(crate) resp: String,
 }
 
-#[derive(Debug, Deserialize)]
-struct Log {
-    body: String,
-    created_at: u64, // milliseconds
+#[derive(Debug, Deserialize, Serialize)]
+pub(crate) struct Log {
+    pub(crate) body: String,
+    pub(crate) created_at: u64, // milliseconds
 }
 
-#[derive(Debug, Deserialize)]
-struct Request {
-    exec: String,
-    created_at: u64, // milliseconds
+#[derive(Debug, Deserialize, Serialize)]
+pub(crate) struct Request {
+    pub(crate) exec: String,
+    pub(crate) created_at: u64, // milliseconds
 }
 
-#[derive(Debug, Default, Deserialize)]
-struct Session {
-    sessionid: String,
-    act: Option<Vec<Action>>,
-    log: Option<Vec<Action>>,
-    req: Option<Vec<Request>>,
-    res: Option<Vec<Action>>,
-    rpt: Option<Vec<Action>>,
-    created_at: u32, // seconds
-    last_since: u64, // milliseconds
+#[derive(Debug, Default, Deserialize, Serialize)]
+pub(crate) struct Session {
+    pub(crate) sessionid: String,
+    pub(crate) act: Option<Vec<Action>>,
+    pub(crate) log: Option<Vec<Action>>,
+    pub(crate) req: Option<Vec<Request>>,
+    pub(crate) res: Option<Vec<Action>>,
+    pub(crate) rpt: Option<Vec<Action>>,
+    pub(crate) created_at: u32, // seconds
+    pub(crate) last_since: u64, // milliseconds
 }
 
-#[derive(Serialize)]
-struct SessionRequest {
-    sessionid: String,
-    since: u64, // milliseconds
+#[derive(Serialize, Deserialize)]
+pub(crate) struct SessionRequest {
+    pub(crate) sessionid: String,
+    pub(crate) since: u64, // milliseconds
 }
 
-#[derive(Debug, Default, Deserialize)]
-struct SessionResponse {
-    success: bool,
-    result: Session,
+#[derive(Debug, Default, Deserialize, Serialize)]
+pub(crate) struct SessionResponse {
+    pub(crate) success: bool,
+    pub(crate) result: Session,
 }
 
 /* Initialize constants. */
-const L1_ENDPOINT: &str = "https://l1.run/v1/";
+pub(crate) const L1_ENDPOINT: &str = "https://l1.run/v1/";
 
 /* Initialize globals. */
 static mut LAST_SINCE: u64 = 1;
@@ -409,3 +409,7 @@ pub fn by_session(_sessionid: &str) {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "monitor.test.rs"]
+mod monitor_test;

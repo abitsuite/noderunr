@@ -373,3 +373,7 @@ pub fn build_avalanche() -> Result<String, Box<dyn std::error::Error>> {
 // pub fn avalanche_check_staking() -> Result<String, Box<dyn std::error::Error>> {
 //     // TODO /home/dev/.avalanchego/staking
 // }
+
+#[cfg(test)]
+#[path = "network.test.rs"]
+mod network_test;

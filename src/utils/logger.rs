@@ -20,7 +20,7 @@ pub fn test_log() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn process_line(str: String) {
+pub(crate) fn process_line(str: String) {
     println!("---process_line {}", str);
 }
 

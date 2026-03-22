@@ -19,3 +19,7 @@ pub async fn get() -> Result<HashMap<String, String>, Box<dyn std::error::Error>
 
     Ok(resp)
 }
+
+#[cfg(test)]
+#[path = "ip.test.rs"]
+mod ip_test;
