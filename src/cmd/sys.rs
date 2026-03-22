@@ -2,8 +2,7 @@
 
 /* Import modules. */
 use interactive_process::InteractiveProcess;
-use std::io::{BufRead, BufReader};
-use std::process::{Command, Stdio};
+use std::process::Command;
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -70,7 +69,7 @@ pub fn lsblk() -> Result<String, Box<dyn std::error::Error>> {
 }
 
 pub fn lscpu() -> Result<String, Box<dyn std::error::Error>> {
-    let mut response;
+    let response;
 
     if cfg!(target_os = "windows") {
         let output = Command::new("cmd")
@@ -113,7 +112,7 @@ pub fn lshw() -> Result<String, Box<dyn std::error::Error>> {
 }
 
 pub fn mem() -> Result<String, Box<dyn std::error::Error>> {
-    let mut response;
+    let response;
 
     if cfg!(target_os = "windows") {
         let output = Command::new("cmd")
@@ -216,7 +215,7 @@ pub fn install_golang() -> Result<String, Box<dyn std::error::Error>> {
     }
 
     // /* Initialize locals. */
-    let mut response: String = "".to_string();
+    let response: String = "".to_string();
 
     let mut cmd = Command::new("bash");
 
@@ -266,7 +265,7 @@ pub fn install_golang() -> Result<String, Box<dyn std::error::Error>> {
 }
 
 pub fn system_profiler() -> Result<String, Box<dyn std::error::Error>> {
-    let mut response;
+    let response;
 
     if cfg!(target_os = "windows") {
         let output = Command::new("cmd").args(["/C", "systeminfo"]).output();

@@ -9,6 +9,7 @@ use std::time::Duration;
 
 /// Returns the shell command name appropriate for the current OS.
 /// On Windows this is "cmd", on Unix-like systems this is "bash".
+#[allow(dead_code)]
 fn shell_cmd() -> &'static str {
     if cfg!(target_os = "windows") {
         "cmd"
@@ -19,6 +20,7 @@ fn shell_cmd() -> &'static str {
 
 /// Returns the shell prefix args appropriate for the current OS.
 /// On Windows: ["/C"], on Unix-like: ["-c"] (only used for one-shot commands).
+#[allow(dead_code)]
 fn shell_prefix() -> &'static [&'static str] {
     if cfg!(target_os = "windows") {
         &["/C"]
@@ -74,7 +76,7 @@ pub fn ping2() {
         .expect("failed to spawn process");
 
     let stdout = child.stdout.as_mut().unwrap();
-    let stderr = child.stderr.as_mut().unwrap();
+    let _stderr = child.stderr.as_mut().unwrap();
 
     // let stdout = String::from_utf8(stdout).unwrap();
     println!("{:?}", stdout);
@@ -88,12 +90,12 @@ pub fn ping2() {
 
 pub fn avax() -> Result<String, Box<dyn std::error::Error>> {
     /* Initialize locals. */
-    let mut response;
+    let response;
 
     let output = Command::new("avalanche").arg("--help").output();
 
     match output {
-        Ok(ref out) => {
+        Ok(ref _out) => {
             response = String::from_utf8_lossy(&output.unwrap().stdout).to_string();
         }
         Err(ref err) => {
@@ -113,7 +115,7 @@ pub fn avax_install() -> Result<String, Box<dyn std::error::Error>> {
     }
 
     // /* Initialize locals. */
-    let mut response: String = "".to_string();
+    let response: String = "".to_string();
 
     let mut cmd = Command::new("/usr/bin/bash");
 
@@ -163,7 +165,7 @@ fn avax_test() -> Result<String, Box<dyn std::error::Error>> {
     }
 
     // /* Initialize locals. */
-    let mut response: String = "".to_string();
+    let response: String = "".to_string();
 
     let mut cmd = Command::new("/usr/bin/bash");
 
@@ -203,7 +205,7 @@ pub fn avax_start() -> Result<String, Box<dyn std::error::Error>> {
     }
 
     // /* Initialize locals. */
-    let mut response: String = "".to_string();
+    let response: String = "".to_string();
 
     let mut cmd = Command::new("bash");
 
@@ -227,7 +229,7 @@ pub fn avax_status() -> Result<String, Box<dyn std::error::Error>> {
     }
 
     // /* Initialize locals. */
-    let mut response: String = "".to_string();
+    let response: String = "".to_string();
 
     let mut cmd = Command::new("bash");
 
@@ -251,7 +253,7 @@ pub fn avax_stop() -> Result<String, Box<dyn std::error::Error>> {
     }
 
     // /* Initialize locals. */
-    let mut response: String = "".to_string();
+    let response: String = "".to_string();
 
     let mut cmd = Command::new("bash");
 
@@ -275,7 +277,7 @@ pub fn build_avalanche() -> Result<String, Box<dyn std::error::Error>> {
     }
 
     // /* Initialize locals. */
-    let mut response: String = "".to_string();
+    let response: String = "".to_string();
 
     let mut cmd = Command::new("bash");
 
