@@ -11,13 +11,21 @@ use std::time::Duration;
 /// Returns the shell command name appropriate for the current OS.
 /// On Windows this is "cmd", on Unix-like systems this is "bash".
 fn shell_cmd() -> &'static str {
-    if cfg!(target_os = "windows") { "cmd" } else { "bash" }
+    if cfg!(target_os = "windows") {
+        "cmd"
+    } else {
+        "bash"
+    }
 }
 
 /// Returns the shell prefix args appropriate for the current OS.
 /// On Windows: ["/C"], on Unix-like: ["-c"] (only used for one-shot commands).
 fn shell_prefix() -> &'static [&'static str] {
-    if cfg!(target_os = "windows") { &["/C"] } else { &["-c"] }
+    if cfg!(target_os = "windows") {
+        &["/C"]
+    } else {
+        &["-c"]
+    }
 }
 
 /**
@@ -99,7 +107,10 @@ pub fn avax() -> Result<String, Box<dyn std::error::Error>> {
 
 pub fn avax_install() -> Result<String, Box<dyn std::error::Error>> {
     if cfg!(target_os = "windows") {
-        return Err("avax_install is not supported on Windows. Please install Avalanche CLI manually.".into());
+        return Err(
+            "avax_install is not supported on Windows. Please install Avalanche CLI manually."
+                .into(),
+        );
     }
 
     // /* Initialize locals. */

@@ -16,9 +16,7 @@ pub fn df() -> Result<String, Box<dyn std::error::Error>> {
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     } else {
-        let output = Command::new("df")
-            .arg("-h")
-            .output()?;
+        let output = Command::new("df").arg("-h").output()?;
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
@@ -35,10 +33,7 @@ pub fn du() -> Result<String, Box<dyn std::error::Error>> {
     } else {
         let command = "du -hd 2 $HOME".to_string();
 
-        let output = Command::new("sh")
-            .arg("-c")
-            .arg(command)
-            .output()?;
+        let output = Command::new("sh").arg("-c").arg(command).output()?;
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
@@ -55,10 +50,7 @@ pub fn ls() -> Result<String, Box<dyn std::error::Error>> {
     } else {
         let command = "ls $HOME -la".to_string();
 
-        let output = Command::new("sh")
-            .arg("-c")
-            .arg(command)
-            .output()?;
+        let output = Command::new("sh").arg("-c").arg(command).output()?;
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
@@ -72,8 +64,7 @@ pub fn lsblk() -> Result<String, Box<dyn std::error::Error>> {
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     } else {
-        let output = Command::new("lsblk")
-            .output()?;
+        let output = Command::new("lsblk").output()?;
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
@@ -84,7 +75,13 @@ pub fn lscpu() -> Result<String, Box<dyn std::error::Error>> {
 
     if cfg!(target_os = "windows") {
         let output = Command::new("cmd")
-            .args(["/C", "wmic", "cpu", "get", "Name,NumberOfCores,NumberOfLogicalProcessors"])
+            .args([
+                "/C",
+                "wmic",
+                "cpu",
+                "get",
+                "Name,NumberOfCores,NumberOfLogicalProcessors",
+            ])
             .output();
 
         match output {
@@ -106,14 +103,11 @@ pub fn lscpu() -> Result<String, Box<dyn std::error::Error>> {
 
 pub fn lshw() -> Result<String, Box<dyn std::error::Error>> {
     if cfg!(target_os = "windows") {
-        let output = Command::new("cmd")
-            .args(["/C", "systeminfo"])
-            .output()?;
+        let output = Command::new("cmd").args(["/C", "systeminfo"]).output()?;
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     } else {
-        let output = Command::new("lshw")
-            .output()?;
+        let output = Command::new("lshw").output()?;
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
@@ -124,7 +118,13 @@ pub fn mem() -> Result<String, Box<dyn std::error::Error>> {
 
     if cfg!(target_os = "windows") {
         let output = Command::new("cmd")
-            .args(["/C", "wmic", "OS", "get", "FreePhysicalMemory,TotalVisibleMemorySize"])
+            .args([
+                "/C",
+                "wmic",
+                "OS",
+                "get",
+                "FreePhysicalMemory,TotalVisibleMemorySize",
+            ])
             .output();
 
         match output {
@@ -145,15 +145,11 @@ pub fn mem() -> Result<String, Box<dyn std::error::Error>> {
 
 pub fn ps() -> Result<String, Box<dyn std::error::Error>> {
     if cfg!(target_os = "windows") {
-        let output = Command::new("cmd")
-            .args(["/C", "tasklist"])
-            .output()?;
+        let output = Command::new("cmd").args(["/C", "tasklist"]).output()?;
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     } else {
-        let output = Command::new("ps")
-            .arg("aux")
-            .output()?;
+        let output = Command::new("ps").arg("aux").output()?;
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
@@ -161,9 +157,7 @@ pub fn ps() -> Result<String, Box<dyn std::error::Error>> {
 
 pub fn get_uname() -> Result<String, Box<dyn std::error::Error>> {
     if cfg!(target_os = "windows") {
-        let output = Command::new("cmd")
-            .args(["/C", "ver"])
-            .output()?;
+        let output = Command::new("cmd").args(["/C", "ver"]).output()?;
 
         let ver = String::from_utf8_lossy(&output.stdout).to_string();
 
@@ -175,9 +169,7 @@ pub fn get_uname() -> Result<String, Box<dyn std::error::Error>> {
 
         Ok(format!("{} {}", ver.trim(), arch.trim()))
     } else {
-        let output = Command::new("uname")
-            .arg("-a")
-            .output()?;
+        let output = Command::new("uname").arg("-a").output()?;
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
@@ -191,8 +183,7 @@ pub fn get_uptime() -> Result<String, Box<dyn std::error::Error>> {
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     } else {
-        let output = Command::new("uptime")
-            .output()?;
+        let output = Command::new("uptime").output()?;
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
@@ -205,15 +196,11 @@ pub fn get_uptime() -> Result<String, Box<dyn std::error::Error>> {
  */
 pub fn get_release() -> Result<String, Box<dyn std::error::Error>> {
     if cfg!(target_os = "windows") {
-        let output = Command::new("cmd")
-            .args(["/C", "ver"])
-            .output()?;
+        let output = Command::new("cmd").args(["/C", "ver"]).output()?;
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     } else {
-        let output = Command::new("uname")
-            .arg("-a")
-            .output()?;
+        let output = Command::new("uname").arg("-a").output()?;
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
@@ -283,9 +270,7 @@ pub fn system_profiler() -> Result<String, Box<dyn std::error::Error>> {
     let mut response;
 
     if cfg!(target_os = "windows") {
-        let output = Command::new("cmd")
-            .args(["/C", "systeminfo"])
-            .output();
+        let output = Command::new("cmd").args(["/C", "systeminfo"]).output();
 
         match output {
             Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),
