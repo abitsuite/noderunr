@@ -619,3 +619,87 @@ fn resolve_exec_unknown_command() {
     assert!(result.contains("UNKNOWN command"));
     assert!(result.contains("foobar_unknown"));
 }
+
+// ---------------------------------------------------------------
+// resolve_exec — network command branches (exercise lines 194-223)
+// ---------------------------------------------------------------
+
+/**
+ * resolve_exec handles "install avax" command.
+ */
+#[test]
+fn resolve_exec_install_avax() {
+    let reqs = vec![Request { exec: "install avax".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some(), "resolve_exec('install avax') should return Some");
+}
+
+/**
+ * resolve_exec handles "install avalanche" alias.
+ */
+#[test]
+fn resolve_exec_install_avalanche() {
+    let reqs = vec![Request { exec: "install avalanche".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some(), "resolve_exec('install avalanche') should return Some");
+}
+
+/**
+ * resolve_exec handles "start avax" command.
+ */
+#[test]
+fn resolve_exec_start_avax() {
+    let reqs = vec![Request { exec: "start avax".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some(), "resolve_exec('start avax') should return Some");
+}
+
+/**
+ * resolve_exec handles "start avalanche" alias.
+ */
+#[test]
+fn resolve_exec_start_avalanche() {
+    let reqs = vec![Request { exec: "start avalanche".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some(), "resolve_exec('start avalanche') should return Some");
+}
+
+/**
+ * resolve_exec handles "avax status" command.
+ */
+#[test]
+fn resolve_exec_avax_status() {
+    let reqs = vec![Request { exec: "avax status".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some(), "resolve_exec('avax status') should return Some");
+}
+
+/**
+ * resolve_exec handles "avalanche status" alias.
+ */
+#[test]
+fn resolve_exec_avalanche_status() {
+    let reqs = vec![Request { exec: "avalanche status".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some(), "resolve_exec('avalanche status') should return Some");
+}
+
+/**
+ * resolve_exec handles "build avax" command.
+ */
+#[test]
+fn resolve_exec_build_avax() {
+    let reqs = vec![Request { exec: "build avax".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some(), "resolve_exec('build avax') should return Some");
+}
+
+/**
+ * resolve_exec handles "build avalanche" alias.
+ */
+#[test]
+fn resolve_exec_build_avalanche() {
+    let reqs = vec![Request { exec: "build avalanche".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some(), "resolve_exec('build avalanche') should return Some");
+}

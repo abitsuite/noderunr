@@ -167,3 +167,35 @@ fn federation_node_subnet_get_id() {
 
     assert_eq!(result, "subnet-subnet-test-42");
 }
+
+/**
+ * Validator trait is object-safe (can be used as trait object).
+ */
+#[test]
+fn validator_trait_object_safe() {
+    let node = FederationNode {
+        id: String::from("trait-obj-1"),
+        owner: String::from("Owner"),
+        title: String::from("Node"),
+        created_at: String::from("2025-01-01"),
+    };
+
+    let validator: &dyn Validator = &node;
+    assert_eq!(validator.get_id(), "id is trait-obj-1");
+}
+
+/**
+ * Subnet trait is object-safe (can be used as trait object).
+ */
+#[test]
+fn subnet_trait_object_safe() {
+    let node = FederationNode {
+        id: String::from("trait-obj-2"),
+        owner: String::from("Owner"),
+        title: String::from("Node"),
+        created_at: String::from("2025-01-01"),
+    };
+
+    let subnet: &dyn Subnet = &node;
+    assert_eq!(subnet.get_id(), "subnet-trait-obj-2");
+}

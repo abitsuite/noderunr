@@ -477,3 +477,158 @@ fn build_avax_test_steps_count() {
         steps.len()
     );
 }
+
+// ---------------------------------------------------------------
+// Live function tests — actually call the functions on Unix
+// These spawn bash briefly and return Ok("").
+// ---------------------------------------------------------------
+
+/**
+ * avax_start — Returns Ok on non-Windows (spawns bash briefly).
+ */
+#[test]
+#[cfg(not(target_os = "windows"))]
+fn avax_start_returns_ok_on_unix() {
+    let result = avax_start();
+
+    assert!(
+        result.is_ok(),
+        "avax_start() should return Ok on Unix, got: {:?}",
+        result.unwrap_err()
+    );
+}
+
+/**
+ * avax_status — Returns Ok on non-Windows (spawns bash briefly).
+ */
+#[test]
+#[cfg(not(target_os = "windows"))]
+fn avax_status_returns_ok_on_unix() {
+    let result = avax_status();
+
+    assert!(
+        result.is_ok(),
+        "avax_status() should return Ok on Unix, got: {:?}",
+        result.unwrap_err()
+    );
+}
+
+/**
+ * avax_stop — Returns Ok on non-Windows (spawns bash briefly).
+ */
+#[test]
+#[cfg(not(target_os = "windows"))]
+fn avax_stop_returns_ok_on_unix() {
+    let result = avax_stop();
+
+    assert!(
+        result.is_ok(),
+        "avax_stop() should return Ok on Unix, got: {:?}",
+        result.unwrap_err()
+    );
+}
+
+/**
+ * avax_start — Result is an empty string (no command output captured).
+ */
+#[test]
+#[cfg(not(target_os = "windows"))]
+fn avax_start_returns_empty_response() {
+    let result = avax_start().unwrap();
+
+    assert_eq!(
+        result, "",
+        "avax_start() should return empty string, got: {}",
+        result
+    );
+}
+
+/**
+ * avax_status — Result is an empty string (no command output captured).
+ */
+#[test]
+#[cfg(not(target_os = "windows"))]
+fn avax_status_returns_empty_response() {
+    let result = avax_status().unwrap();
+
+    assert_eq!(
+        result, "",
+        "avax_status() should return empty string, got: {}",
+        result
+    );
+}
+
+/**
+ * avax_stop — Result is an empty string (no command output captured).
+ */
+#[test]
+#[cfg(not(target_os = "windows"))]
+fn avax_stop_returns_empty_response() {
+    let result = avax_stop().unwrap();
+
+    assert_eq!(
+        result, "",
+        "avax_stop() should return empty string, got: {}",
+        result
+    );
+}
+
+/**
+ * build_avalanche — Returns Ok on non-Windows (spawns bash briefly).
+ */
+#[test]
+#[cfg(not(target_os = "windows"))]
+fn build_avalanche_returns_ok_on_unix() {
+    let result = build_avalanche();
+
+    assert!(
+        result.is_ok(),
+        "build_avalanche() should return Ok on Unix, got: {:?}",
+        result.unwrap_err()
+    );
+}
+
+/**
+ * build_avalanche — Result is an empty string (no command output captured).
+ */
+#[test]
+#[cfg(not(target_os = "windows"))]
+fn build_avalanche_returns_empty_response() {
+    let result = build_avalanche().unwrap();
+
+    assert_eq!(
+        result, "",
+        "build_avalanche() should return empty string, got: {}",
+        result
+    );
+}
+
+/**
+ * avax_install — Returns Ok on non-Windows (spawns bash briefly).
+ */
+#[test]
+#[cfg(not(target_os = "windows"))]
+fn avax_install_returns_ok_on_unix() {
+    let result = avax_install();
+
+    assert!(
+        result.is_ok(),
+        "avax_install() should return Ok on Unix, got: {:?}",
+        result.unwrap_err()
+    );
+}
+
+/**
+ * avax_install — Result is an empty string (no command output captured).
+ */
+#[test]
+#[cfg(not(target_os = "windows"))]
+fn avax_install_returns_empty_response() {
+    let result = avax_install().unwrap();
+
+    assert_eq!(
+        result, "",
+        "avax_install() should return empty string, got: {}",
+        result
+    );
+}
