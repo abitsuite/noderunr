@@ -9,105 +9,193 @@ use std::thread::sleep;
 use std::time::Duration;
 
 pub fn df() -> Result<String, Box<dyn std::error::Error>> {
-    let output = Command::new("df")
-        .arg("-h")
-        .output()
-        .expect("failed to execute df");
+    if cfg!(target_os = "windows") {
+        let output = Command::new("cmd")
+            .args(["/C", "wmic", "logicaldisk", "get", "size,freespace,caption"])
+            .output()?;
 
-    Ok(String::from_utf8_lossy(&output.stdout).to_string())
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    } else {
+        let output = Command::new("df")
+            .arg("-h")
+            .output()?;
+
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    }
 }
 
 pub fn du() -> Result<String, Box<dyn std::error::Error>> {
-    let command = "du -hd 2 $HOME".to_string();
+    if cfg!(target_os = "windows") {
+        let userprofile = std::env::var("USERPROFILE").unwrap_or_else(|_| "C:\\Users".to_string());
+        let output = Command::new("cmd")
+            .args(["/C", "dir", &userprofile, "/s", "/a"])
+            .output()?;
 
-    let output = Command::new("sh")
-        .arg("-c")
-        .arg(command)
-        .output()
-        .expect("failed to execute du");
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    } else {
+        let command = "du -hd 2 $HOME".to_string();
 
-    Ok(String::from_utf8_lossy(&output.stdout).to_string())
+        let output = Command::new("sh")
+            .arg("-c")
+            .arg(command)
+            .output()?;
+
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    }
 }
 
 pub fn ls() -> Result<String, Box<dyn std::error::Error>> {
-    let command = "ls $HOME -la".to_string();
+    if cfg!(target_os = "windows") {
+        let userprofile = std::env::var("USERPROFILE").unwrap_or_else(|_| "C:\\Users".to_string());
+        let output = Command::new("cmd")
+            .args(["/C", "dir", &userprofile, "/a"])
+            .output()?;
 
-    let output = Command::new("sh")
-        .arg("-c")
-        .arg(command)
-        .output()
-        .expect("failed to execute ls");
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    } else {
+        let command = "ls $HOME -la".to_string();
 
-    Ok(String::from_utf8_lossy(&output.stdout).to_string())
+        let output = Command::new("sh")
+            .arg("-c")
+            .arg(command)
+            .output()?;
+
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    }
 }
 
 pub fn lsblk() -> Result<String, Box<dyn std::error::Error>> {
-    let output = Command::new("lsblk")
-        .output()
-        .expect("failed to execute lsblk");
+    if cfg!(target_os = "windows") {
+        let output = Command::new("cmd")
+            .args(["/C", "wmic", "diskdrive", "list", "brief"])
+            .output()?;
 
-    Ok(String::from_utf8_lossy(&output.stdout).to_string())
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    } else {
+        let output = Command::new("lsblk")
+            .output()?;
+
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    }
 }
 
 pub fn lscpu() -> Result<String, Box<dyn std::error::Error>> {
     let mut response;
 
-    let output = Command::new("lscpu").arg("-e").output();
-    // .expect("failed to execute lscpu");
+    if cfg!(target_os = "windows") {
+        let output = Command::new("cmd")
+            .args(["/C", "wmic", "cpu", "get", "Name,NumberOfCores,NumberOfLogicalProcessors"])
+            .output();
 
-    match output {
-        Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),
-        Err(_err) => response = _err.to_string(),
+        match output {
+            Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),
+            Err(_err) => response = _err.to_string(),
+        }
+    } else {
+        let output = Command::new("lscpu").arg("-e").output();
+        // .expect("failed to execute lscpu");
+
+        match output {
+            Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),
+            Err(_err) => response = _err.to_string(),
+        }
     }
 
     Ok(response)
 }
 
 pub fn lshw() -> Result<String, Box<dyn std::error::Error>> {
-    let output = Command::new("lshw")
-        .output()
-        .expect("failed to execute lshw");
+    if cfg!(target_os = "windows") {
+        let output = Command::new("cmd")
+            .args(["/C", "systeminfo"])
+            .output()?;
 
-    Ok(String::from_utf8_lossy(&output.stdout).to_string())
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    } else {
+        let output = Command::new("lshw")
+            .output()?;
+
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    }
 }
 
 pub fn mem() -> Result<String, Box<dyn std::error::Error>> {
     let mut response;
 
-    let output = Command::new("free").arg("-h").output();
+    if cfg!(target_os = "windows") {
+        let output = Command::new("cmd")
+            .args(["/C", "wmic", "OS", "get", "FreePhysicalMemory,TotalVisibleMemorySize"])
+            .output();
 
-    match output {
-        Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),
-        Err(_err) => response = _err.to_string(),
+        match output {
+            Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),
+            Err(_err) => response = _err.to_string(),
+        }
+    } else {
+        let output = Command::new("free").arg("-h").output();
+
+        match output {
+            Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),
+            Err(_err) => response = _err.to_string(),
+        }
     }
 
     Ok(response)
 }
 
 pub fn ps() -> Result<String, Box<dyn std::error::Error>> {
-    let output = Command::new("ps")
-        .arg("aux")
-        .output()
-        .expect("failed to execute ps");
+    if cfg!(target_os = "windows") {
+        let output = Command::new("cmd")
+            .args(["/C", "tasklist"])
+            .output()?;
 
-    Ok(String::from_utf8_lossy(&output.stdout).to_string())
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    } else {
+        let output = Command::new("ps")
+            .arg("aux")
+            .output()?;
+
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    }
 }
 
 pub fn get_uname() -> Result<String, Box<dyn std::error::Error>> {
-    let output = Command::new("uname")
-        .arg("-a")
-        .output()
-        .expect("failed to execute uname");
+    if cfg!(target_os = "windows") {
+        let output = Command::new("cmd")
+            .args(["/C", "ver"])
+            .output()?;
 
-    Ok(String::from_utf8_lossy(&output.stdout).to_string())
+        let ver = String::from_utf8_lossy(&output.stdout).to_string();
+
+        let arch_output = Command::new("cmd")
+            .args(["/C", "echo", "%PROCESSOR_ARCHITECTURE%"])
+            .output()?;
+
+        let arch = String::from_utf8_lossy(&arch_output.stdout).to_string();
+
+        Ok(format!("{} {}", ver.trim(), arch.trim()))
+    } else {
+        let output = Command::new("uname")
+            .arg("-a")
+            .output()?;
+
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    }
 }
 
 pub fn get_uptime() -> Result<String, Box<dyn std::error::Error>> {
-    let output = Command::new("uptime")
-        .output()
-        .expect("failed to execute uptime");
+    if cfg!(target_os = "windows") {
+        let output = Command::new("cmd")
+            .args(["/C", "net", "stats", "workstation"])
+            .output()?;
 
-    Ok(String::from_utf8_lossy(&output.stdout).to_string())
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    } else {
+        let output = Command::new("uptime")
+            .output()?;
+
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    }
 }
 
 /**
@@ -116,12 +204,19 @@ pub fn get_uptime() -> Result<String, Box<dyn std::error::Error>> {
  * Request the system release details.
  */
 pub fn get_release() -> Result<String, Box<dyn std::error::Error>> {
-    let output = Command::new("uname")
-        .arg("-a")
-        .output()
-        .expect("failed to execute uname");
+    if cfg!(target_os = "windows") {
+        let output = Command::new("cmd")
+            .args(["/C", "ver"])
+            .output()?;
 
-    Ok(String::from_utf8_lossy(&output.stdout).to_string())
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    } else {
+        let output = Command::new("uname")
+            .arg("-a")
+            .output()?;
+
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    }
 }
 
 /**
@@ -130,6 +225,10 @@ pub fn get_release() -> Result<String, Box<dyn std::error::Error>> {
  * Insall the latest stable release of Golang.
  */
 pub fn install_golang() -> Result<String, Box<dyn std::error::Error>> {
+    if cfg!(target_os = "windows") {
+        return Err("install_golang is not supported on Windows. Please install Go manually from https://go.dev/dl/".into());
+    }
+
     // /* Initialize locals. */
     let mut response: String = "".to_string();
 
@@ -183,13 +282,33 @@ pub fn install_golang() -> Result<String, Box<dyn std::error::Error>> {
 pub fn system_profiler() -> Result<String, Box<dyn std::error::Error>> {
     let mut response;
 
-    let output = Command::new("system_profiler")
-        .arg("SPHardwareDataType")
-        .output();
+    if cfg!(target_os = "windows") {
+        let output = Command::new("cmd")
+            .args(["/C", "systeminfo"])
+            .output();
 
-    match output {
-        Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),
-        Err(_err) => response = _err.to_string(),
+        match output {
+            Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),
+            Err(_err) => response = _err.to_string(),
+        }
+    } else if cfg!(target_os = "macos") {
+        let output = Command::new("system_profiler")
+            .arg("SPHardwareDataType")
+            .output();
+
+        match output {
+            Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),
+            Err(_err) => response = _err.to_string(),
+        }
+    } else {
+        let output = Command::new("system_profiler")
+            .arg("SPHardwareDataType")
+            .output();
+
+        match output {
+            Ok(_output) => response = String::from_utf8_lossy(&_output.stdout).to_string(),
+            Err(_err) => response = _err.to_string(),
+        }
     }
 
     Ok(response)

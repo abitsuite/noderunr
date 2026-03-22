@@ -8,6 +8,18 @@ use std::process::{Command, Stdio};
 use std::thread::sleep;
 use std::time::Duration;
 
+/// Returns the shell command name appropriate for the current OS.
+/// On Windows this is "cmd", on Unix-like systems this is "bash".
+fn shell_cmd() -> &'static str {
+    if cfg!(target_os = "windows") { "cmd" } else { "bash" }
+}
+
+/// Returns the shell prefix args appropriate for the current OS.
+/// On Windows: ["/C"], on Unix-like: ["-c"] (only used for one-shot commands).
+fn shell_prefix() -> &'static [&'static str] {
+    if cfg!(target_os = "windows") { &["/C"] } else { &["-c"] }
+}
+
 /**
  * Ping
  *
@@ -86,6 +98,10 @@ pub fn avax() -> Result<String, Box<dyn std::error::Error>> {
 }
 
 pub fn avax_install() -> Result<String, Box<dyn std::error::Error>> {
+    if cfg!(target_os = "windows") {
+        return Err("avax_install is not supported on Windows. Please install Avalanche CLI manually.".into());
+    }
+
     // /* Initialize locals. */
     let mut response: String = "".to_string();
 
@@ -131,6 +147,11 @@ pub fn avax_install() -> Result<String, Box<dyn std::error::Error>> {
 
 fn avax_test() -> Result<String, Box<dyn std::error::Error>> {
     println!("Starting AVAX test...");
+
+    if cfg!(target_os = "windows") {
+        return Err("avax_test is not supported on Windows.".into());
+    }
+
     // /* Initialize locals. */
     let mut response: String = "".to_string();
 
@@ -167,6 +188,10 @@ fn avax_test() -> Result<String, Box<dyn std::error::Error>> {
 }
 
 pub fn avax_start() -> Result<String, Box<dyn std::error::Error>> {
+    if cfg!(target_os = "windows") {
+        return Err("avax_start is not supported on Windows.".into());
+    }
+
     // /* Initialize locals. */
     let mut response: String = "".to_string();
 
@@ -187,6 +212,10 @@ pub fn avax_start() -> Result<String, Box<dyn std::error::Error>> {
 }
 
 pub fn avax_status() -> Result<String, Box<dyn std::error::Error>> {
+    if cfg!(target_os = "windows") {
+        return Err("avax_status is not supported on Windows.".into());
+    }
+
     // /* Initialize locals. */
     let mut response: String = "".to_string();
 
@@ -207,6 +236,10 @@ pub fn avax_status() -> Result<String, Box<dyn std::error::Error>> {
 }
 
 pub fn avax_stop() -> Result<String, Box<dyn std::error::Error>> {
+    if cfg!(target_os = "windows") {
+        return Err("avax_stop is not supported on Windows.".into());
+    }
+
     // /* Initialize locals. */
     let mut response: String = "".to_string();
 
@@ -227,6 +260,10 @@ pub fn avax_stop() -> Result<String, Box<dyn std::error::Error>> {
 }
 
 pub fn build_avalanche() -> Result<String, Box<dyn std::error::Error>> {
+    if cfg!(target_os = "windows") {
+        return Err("build_avalanche is not supported on Windows.".into());
+    }
+
     // /* Initialize locals. */
     let mut response: String = "".to_string();
 

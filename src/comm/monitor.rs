@@ -140,109 +140,154 @@ fn _handle_exec(_sessionid: &str, _resp: Vec<Request>) {
         // println!("\n***HANDLING (VEC) EXEC {:?}", &exec);
 
         if exec == "avax" || exec == "avalanche" {
-            let response = cmd::network::avax().expect("Oops! Could NOT execute `avax`.");
+            let response = match cmd::network::avax() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `avax`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "install avax" || exec == "install avalanche" {
-            let response =
-                cmd::network::avax_install().expect("Oops! Could NOT execute `avax_install`.");
+            let response = match cmd::network::avax_install() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `avax_install`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "start avax" || exec == "start avalanche" {
-            let response =
-                cmd::network::avax_start().expect("Oops! Could NOT execute `avax_start`.");
+            let response = match cmd::network::avax_start() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `avax_start`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "avax status" || exec == "avalanche status" {
-            let response =
-                cmd::network::avax_status().expect("Oops! Could NOT execute `avax_status`.");
+            let response = match cmd::network::avax_status() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `avax_status`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "build avax" || exec == "build avalanche" {
-            let response =
-                cmd::network::build_avalanche().expect("Oops! Could NOT execute `install avax`.");
+            let response = match cmd::network::build_avalanche() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `install avax`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "df" {
-            let response = cmd::sys::df().expect("Oops! Could NOT execute `df`.");
+            let response = match cmd::sys::df() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `df`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "du" {
-            let response = cmd::sys::du().expect("Oops! Could NOT execute `du`.");
+            let response = match cmd::sys::du() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `du`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "install go" || exec == "install golang" {
-            let response =
-                cmd::sys::install_golang().expect("Oops! Could NOT execute `install go`.");
+            let response = match cmd::sys::install_golang() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `install go`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "ls" {
-            let response = cmd::sys::ls().expect("Oops! Could NOT execute `ls`.");
+            let response = match cmd::sys::ls() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `ls`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "lsblk" {
-            let response = cmd::sys::lsblk().expect("Oops! Could NOT execute `lsblk`.");
+            let response = match cmd::sys::lsblk() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `lsblk`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "lscpu" {
-            let response = cmd::sys::lscpu().expect("Oops! Could NOT execute `lscpu`.");
+            let response = match cmd::sys::lscpu() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `lscpu`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "lshw" {
-            let response = cmd::sys::lshw().expect("Oops! Could NOT execute `lshw`.");
+            let response = match cmd::sys::lshw() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `lshw`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "mem" {
-            let response = cmd::sys::mem().expect("Oops! Could NOT execute `mem`.");
+            let response = match cmd::sys::mem() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `mem`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "ps" {
-            let response = cmd::sys::ps().expect("Oops! Could NOT execute `ps`.");
+            let response = match cmd::sys::ps() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `ps`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "profiler" {
-            let response =
-                cmd::sys::system_profiler().expect("Oops! Could NOT execute `system_profiler`.");
+            let response = match cmd::sys::system_profiler() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `system_profiler`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "uname" {
-            let response = cmd::sys::get_uname().expect("Oops! Could NOT execute `uname`.");
+            let response = match cmd::sys::get_uname() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `uname`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
 
         if exec == "uptime" {
-            let response = cmd::sys::get_uptime().expect("Oops! Could NOT execute `uptime`.");
+            let response = match cmd::sys::get_uptime() {
+                Ok(val) => val,
+                Err(err) => format!("ERROR: Could NOT execute `uptime`: {}", err),
+            };
             response_json(_sessionid, response);
             return;
         }
