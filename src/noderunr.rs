@@ -10,14 +10,9 @@ use log::{info, warn};
 use serde_json::json;
 
 /* Import modules. */
-mod api;
-mod cmd;
-mod comm;
-mod crypto;
 mod node;
 mod privacy;
 mod ui;
-mod utils;
 
 // #[derive(Parser)]
 // struct Cli {

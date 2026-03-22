@@ -4,10 +4,10 @@ use serde::{Deserialize, Serialize};
 use serde_json::{from_str, json, to_string};
 // use uuid::Uuid;
 
-use crate::api;
-use crate::cmd;
-use crate::comm;
-use crate::utils;
+use noderunr::api;
+use noderunr::cmd;
+use noderunr::comm;
+use noderunr::utils;
 
 #[derive(Serialize)]
 struct Registration {

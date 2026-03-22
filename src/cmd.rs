@@ -3,3 +3,7 @@
 /* Import modules. */
 pub mod network;
 pub mod sys;
+
+#[cfg(test)]
+#[path = "sys.test.rs"]
+mod sys_test;

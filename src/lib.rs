@@ -1,7 +1,9 @@
 // src/lib.rs
 
 /* Import modules. */
+pub mod api;
 pub mod cmd;
+pub mod comm;
 pub mod crypto;
 pub mod utils;
 
@@ -53,3 +55,7 @@ impl Validator for FederationNode {
         format!("id is {}", self.id)
     }
 }
+
+#[cfg(test)]
+#[path = "lib.test.rs"]
+mod lib_test;

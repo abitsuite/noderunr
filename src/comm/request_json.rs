@@ -36,3 +36,7 @@ pub async fn request_json(
     /* Return response. */
     Ok(response_body)
 }
+
+#[cfg(test)]
+#[path = "request_json.test.rs"]
+mod request_json_test;

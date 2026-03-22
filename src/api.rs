@@ -33,3 +33,7 @@ pub async fn call(_endpoint: &str, _json: &str) -> Result<String, Box<dyn std::e
     /* Return response. */
     Ok(response_body)
 }
+
+#[cfg(test)]
+#[path = "api.test.rs"]
+mod api_test;
