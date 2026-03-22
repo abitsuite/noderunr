@@ -4,6 +4,15 @@
 const L1_ENDPOINT: &str = "https://l1.run/v1/";
 
 /**
+ * Build URL
+ *
+ * Constructs the full API URL for the given endpoint.
+ */
+pub(crate) fn build_url(endpoint: &str) -> String {
+    format!("{}{}", L1_ENDPOINT, endpoint)
+}
+
+/**
  * Request JSON
  *
  * Make a (remote) API call for JSON-formatted data.
@@ -14,7 +23,7 @@ pub async fn request_json(
     _json: &str,
 ) -> Result<String, Box<dyn std::error::Error>> {
     /* Set URL (for remote API). */
-    let url = format!("{}{}", L1_ENDPOINT, _endpoint);
+    let url = build_url(_endpoint);
 
     // let headers = [("Authorization", "Bearer YOUR_API_KEY"), ("X-Custom-Header", "value")];
 

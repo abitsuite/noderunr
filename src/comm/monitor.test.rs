@@ -28,35 +28,82 @@ fn l1_endpoint_has_trailing_slash() {
 }
 
 /**
- * URL construction for session request matches expected format.
+ * build_request_url constructs the expected URL.
  */
 #[test]
-fn url_construction_session_since() {
-    let since: u64 = 1234567890;
-    let url = format!("{}{}/{}", L1_ENDPOINT, "session", since);
-
+fn build_request_url_format() {
+    let url = build_request_url(1234567890);
     assert_eq!(url, "https://l1.run/v1/session/1234567890");
 }
 
 /**
- * URL construction for session post matches expected format.
+ * build_request_url handles zero.
  */
 #[test]
-fn url_construction_session_post() {
-    let url = format!("{}{}", L1_ENDPOINT, "session");
+fn build_request_url_zero() {
+    let url = build_request_url(0);
+    assert_eq!(url, "https://l1.run/v1/session/0");
+}
 
+/**
+ * build_request_url handles max u64.
+ */
+#[test]
+fn build_request_url_max() {
+    let url = build_request_url(u64::MAX);
+    assert!(url.contains("18446744073709551615"));
+}
+
+/**
+ * build_auth_header constructs the expected format.
+ */
+#[test]
+fn build_auth_header_format() {
+    let auth = build_auth_header("test-session-abc");
+    assert_eq!(auth, "Bearer test-session-abc");
+}
+
+/**
+ * build_auth_header handles empty session id.
+ */
+#[test]
+fn build_auth_header_empty() {
+    let auth = build_auth_header("");
+    assert_eq!(auth, "Bearer ");
+}
+
+/**
+ * build_response_url constructs the expected URL.
+ */
+#[test]
+fn build_response_url_format() {
+    let url = build_response_url();
     assert_eq!(url, "https://l1.run/v1/session");
 }
 
 /**
- * Bearer authorization string is correctly formatted.
+ * build_exec_response_json produces valid JSON.
  */
 #[test]
-fn auth_header_format() {
-    let sessionid = "test-session-abc";
-    let auth = format!("{} {}", "Bearer", sessionid);
+fn build_exec_response_json_valid() {
+    let json_str = build_exec_response_json("sess-123", "output data");
+    let parsed: ExecResponse = from_str(&json_str).unwrap();
 
-    assert_eq!(auth, "Bearer test-session-abc");
+    assert_eq!(parsed.sessionid, "sess-123");
+    assert_eq!(parsed.method, "res");
+    assert_eq!(parsed.resp, "output data");
+}
+
+/**
+ * build_exec_response_json handles empty strings.
+ */
+#[test]
+fn build_exec_response_json_empty() {
+    let json_str = build_exec_response_json("", "");
+    let parsed: ExecResponse = from_str(&json_str).unwrap();
+
+    assert_eq!(parsed.sessionid, "");
+    assert_eq!(parsed.resp, "");
 }
 
 /**
@@ -308,4 +355,267 @@ fn exec_response_json_string_format() {
     assert!(json_string.contains("\"sessionid\":\"test-sid\""));
     assert!(json_string.contains("\"method\":\"res\""));
     assert!(json_string.contains("\"resp\":\"command output here\""));
+}
+
+/**
+ * resolve_exec returns None for empty request list.
+ */
+#[test]
+fn resolve_exec_empty_returns_none() {
+    let result = resolve_exec(&[]);
+    assert!(result.is_none());
+}
+
+/**
+ * resolve_exec handles "df" command.
+ */
+#[test]
+fn resolve_exec_df() {
+    let reqs = vec![Request { exec: "df".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles "du" command.
+ */
+#[test]
+fn resolve_exec_du() {
+    let reqs = vec![Request { exec: "du".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles "ls" command.
+ */
+#[test]
+fn resolve_exec_ls() {
+    let reqs = vec![Request { exec: "ls".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles "lsblk" command.
+ */
+#[test]
+fn resolve_exec_lsblk() {
+    let reqs = vec![Request { exec: "lsblk".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles "lscpu" command.
+ */
+#[test]
+fn resolve_exec_lscpu() {
+    let reqs = vec![Request { exec: "lscpu".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles "lshw" command.
+ */
+#[test]
+fn resolve_exec_lshw() {
+    let reqs = vec![Request { exec: "lshw".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles "mem" command.
+ */
+#[test]
+fn resolve_exec_mem() {
+    let reqs = vec![Request { exec: "mem".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles "ps" command.
+ */
+#[test]
+fn resolve_exec_ps() {
+    let reqs = vec![Request { exec: "ps".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles "profiler" command.
+ */
+#[test]
+fn resolve_exec_profiler() {
+    let reqs = vec![Request { exec: "profiler".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles "uname" command.
+ */
+#[test]
+fn resolve_exec_uname() {
+    let reqs = vec![Request { exec: "uname".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles "uptime" command.
+ */
+#[test]
+fn resolve_exec_uptime() {
+    let reqs = vec![Request { exec: "uptime".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles "avax" command.
+ */
+#[test]
+fn resolve_exec_avax() {
+    let reqs = vec![Request { exec: "avax".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles "avalanche" alias.
+ */
+#[test]
+fn resolve_exec_avalanche_alias() {
+    let reqs = vec![Request { exec: "avalanche".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles "help" command.
+ */
+#[test]
+fn resolve_exec_help() {
+    let reqs = vec![Request { exec: "help".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+
+    let response = result.unwrap();
+    assert!(response.contains("Help is temporarily unavailable"));
+}
+
+/**
+ * resolve_exec handles "install go" command.
+ */
+#[test]
+fn resolve_exec_install_go() {
+    let reqs = vec![Request { exec: "install go".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles "install golang" alias.
+ */
+#[test]
+fn resolve_exec_install_golang() {
+    let reqs = vec![Request { exec: "install golang".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs);
+    assert!(result.is_some());
+}
+
+/**
+ * resolve_exec handles unimplemented "arb" command.
+ */
+#[test]
+fn resolve_exec_arb_unimplemented() {
+    let reqs = vec![Request { exec: "arb".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs).unwrap();
+    assert!(result.contains("Arbitrum is NOT implemented"));
+}
+
+/**
+ * resolve_exec handles unimplemented "arbitrum" alias.
+ */
+#[test]
+fn resolve_exec_arbitrum_alias() {
+    let reqs = vec![Request { exec: "arbitrum".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs).unwrap();
+    assert!(result.contains("Arbitrum is NOT implemented"));
+}
+
+/**
+ * resolve_exec handles unimplemented "base" command.
+ */
+#[test]
+fn resolve_exec_base_unimplemented() {
+    let reqs = vec![Request { exec: "base".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs).unwrap();
+    assert!(result.contains("Base is NOT implemented"));
+}
+
+/**
+ * resolve_exec handles unimplemented "nexa" command.
+ */
+#[test]
+fn resolve_exec_nexa_unimplemented() {
+    let reqs = vec![Request { exec: "nexa".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs).unwrap();
+    assert!(result.contains("Nexa is NOT implemented"));
+}
+
+/**
+ * resolve_exec handles unimplemented "op" command.
+ */
+#[test]
+fn resolve_exec_op_unimplemented() {
+    let reqs = vec![Request { exec: "op".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs).unwrap();
+    assert!(result.contains("Optimism is NOT implemented"));
+}
+
+/**
+ * resolve_exec handles unimplemented "optimism" alias.
+ */
+#[test]
+fn resolve_exec_optimism_alias() {
+    let reqs = vec![Request { exec: "optimism".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs).unwrap();
+    assert!(result.contains("Optimism is NOT implemented"));
+}
+
+/**
+ * resolve_exec handles unimplemented "sol" command.
+ */
+#[test]
+fn resolve_exec_sol_unimplemented() {
+    let reqs = vec![Request { exec: "sol".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs).unwrap();
+    assert!(result.contains("Solana is NOT implemented"));
+}
+
+/**
+ * resolve_exec handles unimplemented "solana" alias.
+ */
+#[test]
+fn resolve_exec_solana_alias() {
+    let reqs = vec![Request { exec: "solana".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs).unwrap();
+    assert!(result.contains("Solana is NOT implemented"));
+}
+
+/**
+ * resolve_exec handles unknown command.
+ */
+#[test]
+fn resolve_exec_unknown_command() {
+    let reqs = vec![Request { exec: "foobar_unknown".to_string(), created_at: 100 }];
+    let result = resolve_exec(&reqs).unwrap();
+    assert!(result.contains("UNKNOWN command"));
+    assert!(result.contains("foobar_unknown"));
 }

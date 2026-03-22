@@ -1,6 +1,7 @@
 // src/utils/logger.test.rs
 
 use super::logger;
+use std::io::Cursor;
 
 /**
  * test_log returns an error when the syslog file does not exist.
@@ -26,6 +27,58 @@ fn test_log_returns_error_on_missing_file() {
             );
         }
     }
+}
+
+/**
+ * read_log processes lines from an in-memory buffer.
+ */
+#[test]
+fn read_log_from_memory() {
+    let data = "line one\nline two\nline three\n";
+    let cursor = Cursor::new(data.as_bytes());
+    let reader = std::io::BufReader::new(cursor);
+
+    let result = logger::read_log(reader);
+    assert!(result.is_ok());
+}
+
+/**
+ * read_log handles empty input.
+ */
+#[test]
+fn read_log_empty_input() {
+    let data = "";
+    let cursor = Cursor::new(data.as_bytes());
+    let reader = std::io::BufReader::new(cursor);
+
+    let result = logger::read_log(reader);
+    assert!(result.is_ok());
+}
+
+/**
+ * read_log handles single line without newline.
+ */
+#[test]
+fn read_log_single_line() {
+    let data = "single line no newline";
+    let cursor = Cursor::new(data.as_bytes());
+    let reader = std::io::BufReader::new(cursor);
+
+    let result = logger::read_log(reader);
+    assert!(result.is_ok());
+}
+
+/**
+ * read_log handles unicode content.
+ */
+#[test]
+fn read_log_unicode() {
+    let data = "日本語ログ\n🚀 rocket launch\n";
+    let cursor = Cursor::new(data.as_bytes());
+    let reader = std::io::BufReader::new(cursor);
+
+    let result = logger::read_log(reader);
+    assert!(result.is_ok());
 }
 
 /**

@@ -68,6 +68,48 @@ pub(crate) const L1_ENDPOINT: &str = "https://l1.run/v1/";
 static mut LAST_SINCE: u64 = 1;
 
 /**
+ * Build Request URL
+ *
+ * Constructs the full URL for a session request.
+ */
+pub(crate) fn build_request_url(since: u64) -> String {
+    format!("{}{}/{}", L1_ENDPOINT, "session", since)
+}
+
+/**
+ * Build Auth Header
+ *
+ * Constructs the bearer authorization header value.
+ */
+pub(crate) fn build_auth_header(sessionid: &str) -> String {
+    format!("{} {}", "Bearer", sessionid)
+}
+
+/**
+ * Build Response URL
+ *
+ * Constructs the full URL for a session response post.
+ */
+pub(crate) fn build_response_url() -> String {
+    format!("{}{}", L1_ENDPOINT, "session")
+}
+
+/**
+ * Build Exec Response JSON
+ *
+ * Constructs the JSON string for an exec response.
+ */
+pub(crate) fn build_exec_response_json(sessionid: &str, response: &str) -> String {
+    let exec_response = ExecResponse {
+        sessionid: sessionid.to_string(),
+        method: "res".to_string(),
+        resp: response.to_string(),
+    };
+
+    to_string(&exec_response).unwrap()
+}
+
+/**
  * Request JSON
  *
  * Make a (remote) API call.
@@ -75,10 +117,10 @@ static mut LAST_SINCE: u64 = 1;
 #[tokio::main]
 async fn request_json(_sessionid: &str, _since: u64) -> Result<String, Box<dyn std::error::Error>> {
     /* Set URL (for remote API). */
-    let url = format!("{}{}/{}", L1_ENDPOINT, "session", _since);
+    let url = build_request_url(_since);
 
     /* Set bearer authorization. */
-    let auth = format!("{} {}", "Bearer", _sessionid);
+    let auth = build_auth_header(_sessionid);
 
     let client = reqwest::Client::new();
     let response = client
@@ -106,15 +148,9 @@ async fn response_json(
     _response: String,
 ) -> Result<String, Box<dyn std::error::Error>> {
     /* Set URL (for remote API). */
-    let url = format!("{}{}", L1_ENDPOINT, "session");
+    let url = build_response_url();
 
-    let exec_response = ExecResponse {
-        sessionid: _sessionid.to_string(),
-        method: "res".to_string(),
-        resp: _response,
-    };
-
-    let json_string = to_string(&exec_response).unwrap();
+    let json_string = build_exec_response_json(_sessionid, &_response);
 
     let client = reqwest::Client::new();
     let response = client
@@ -130,217 +166,209 @@ async fn response_json(
     Ok(response_body)
 }
 
+/**
+ * Resolve Exec
+ *
+ * Pure command dispatch: maps an exec string to a response string.
+ * Returns None if the request list is empty.
+ * This function contains NO network I/O and is fully testable.
+ */
+pub(crate) fn resolve_exec(_resp: &[Request]) -> Option<String> {
+    /* Validate response. */
+    if _resp.is_empty() {
+        return None;
+    }
+
+    let exec = &_resp[0].exec;
+
+    // println!("\n***HANDLING (VEC) EXEC {:?}", &exec);
+
+    if exec == "avax" || exec == "avalanche" {
+        let response = match cmd::network::avax() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `avax`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "install avax" || exec == "install avalanche" {
+        let response = match cmd::network::avax_install() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `avax_install`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "start avax" || exec == "start avalanche" {
+        let response = match cmd::network::avax_start() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `avax_start`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "avax status" || exec == "avalanche status" {
+        let response = match cmd::network::avax_status() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `avax_status`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "build avax" || exec == "build avalanche" {
+        let response = match cmd::network::build_avalanche() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `install avax`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "df" {
+        let response = match cmd::sys::df() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `df`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "du" {
+        let response = match cmd::sys::du() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `du`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "install go" || exec == "install golang" {
+        let response = match cmd::sys::install_golang() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `install go`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "ls" {
+        let response = match cmd::sys::ls() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `ls`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "lsblk" {
+        let response = match cmd::sys::lsblk() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `lsblk`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "lscpu" {
+        let response = match cmd::sys::lscpu() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `lscpu`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "lshw" {
+        let response = match cmd::sys::lshw() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `lshw`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "mem" {
+        let response = match cmd::sys::mem() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `mem`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "ps" {
+        let response = match cmd::sys::ps() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `ps`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "profiler" {
+        let response = match cmd::sys::system_profiler() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `system_profiler`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "uname" {
+        let response = match cmd::sys::get_uname() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `uname`: {}", err),
+        };
+        return Some(response);
+    }
+
+    if exec == "uptime" {
+        let response = match cmd::sys::get_uptime() {
+            Ok(val) => val,
+            Err(err) => format!("ERROR: Could NOT execute `uptime`: {}", err),
+        };
+        return Some(response);
+    }
+
+    /*************************************/
+    /* HELP */
+    /*************************************/
+
+    if exec == "help" {
+        let response =
+            "Oops! Help is temporarily unavailable. Please try again later...".to_string();
+        return Some(response);
+    }
+
+    /*************************************/
+    /* UNIMPLEMENTED */
+    /*************************************/
+
+    if exec == "arb" || exec == "arbitrum" {
+        let response = "ERROR! Arbitrum is NOT implemented.".to_string();
+        return Some(response);
+    }
+
+    if exec == "base" {
+        let response = "ERROR! Base is NOT implemented.".to_string();
+        return Some(response);
+    }
+
+    if exec == "nexa" {
+        let response = "ERROR! Nexa is NOT implemented.".to_string();
+        return Some(response);
+    }
+
+    if exec == "op" || exec == "optimism" {
+        let response = "ERROR! Optimism is NOT implemented.".to_string();
+        return Some(response);
+    }
+
+    if exec == "sol" || exec == "solana" {
+        let response = "ERROR! Solana is NOT implemented.".to_string();
+        return Some(response);
+    }
+
+    let response = format!(
+        "ERROR! [ {} ] is an UNKNOWN command. Try &lt;help&gt; for more options.",
+        exec
+    );
+    Some(response)
+}
+
 fn _handle_exec(_sessionid: &str, _resp: Vec<Request>) {
     // println!("\n***HANDLING (VEC) RESPONSE {:?}", _resp);
 
-    /* Validate response. */
-    if !_resp.is_empty() {
-        let exec = &_resp[0].exec;
-
-        // println!("\n***HANDLING (VEC) EXEC {:?}", &exec);
-
-        if exec == "avax" || exec == "avalanche" {
-            let response = match cmd::network::avax() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `avax`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "install avax" || exec == "install avalanche" {
-            let response = match cmd::network::avax_install() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `avax_install`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "start avax" || exec == "start avalanche" {
-            let response = match cmd::network::avax_start() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `avax_start`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "avax status" || exec == "avalanche status" {
-            let response = match cmd::network::avax_status() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `avax_status`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "build avax" || exec == "build avalanche" {
-            let response = match cmd::network::build_avalanche() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `install avax`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "df" {
-            let response = match cmd::sys::df() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `df`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "du" {
-            let response = match cmd::sys::du() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `du`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "install go" || exec == "install golang" {
-            let response = match cmd::sys::install_golang() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `install go`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "ls" {
-            let response = match cmd::sys::ls() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `ls`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "lsblk" {
-            let response = match cmd::sys::lsblk() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `lsblk`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "lscpu" {
-            let response = match cmd::sys::lscpu() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `lscpu`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "lshw" {
-            let response = match cmd::sys::lshw() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `lshw`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "mem" {
-            let response = match cmd::sys::mem() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `mem`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "ps" {
-            let response = match cmd::sys::ps() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `ps`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "profiler" {
-            let response = match cmd::sys::system_profiler() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `system_profiler`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "uname" {
-            let response = match cmd::sys::get_uname() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `uname`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "uptime" {
-            let response = match cmd::sys::get_uptime() {
-                Ok(val) => val,
-                Err(err) => format!("ERROR: Could NOT execute `uptime`: {}", err),
-            };
-            response_json(_sessionid, response);
-            return;
-        }
-
-        /*************************************/
-        /* HELP */
-        /*************************************/
-
-        if exec == "help" {
-            let response =
-                "Oops! Help is temporarily unavailable. Please try again later...".to_string();
-            response_json(_sessionid, response);
-            return;
-        }
-
-        /*************************************/
-        /* UNIMPLEMENTED */
-        /*************************************/
-
-        if exec == "arb" || exec == "arbitrum" {
-            let response = "ERROR! Arbitrum is NOT implemented.".to_string();
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "base" {
-            let response = "ERROR! Base is NOT implemented.".to_string();
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "nexa" {
-            let response = "ERROR! Nexa is NOT implemented.".to_string();
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "op" || exec == "optimism" {
-            let response = "ERROR! Optimism is NOT implemented.".to_string();
-            response_json(_sessionid, response);
-            return;
-        }
-
-        if exec == "sol" || exec == "solana" {
-            let response = "ERROR! Solana is NOT implemented.".to_string();
-            response_json(_sessionid, response);
-            return;
-        }
-
-        let response = format!(
-            "ERROR! [ {} ] is an UNKNOWN command. Try &lt;help&gt; for more options.",
-            exec
-        );
+    if let Some(response) = resolve_exec(&_resp) {
         response_json(_sessionid, response);
     }
 

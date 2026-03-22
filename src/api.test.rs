@@ -38,3 +38,30 @@ fn url_construction_format() {
 
     assert_eq!(url, "https://l1.run/v1/session");
 }
+
+/**
+ * build_url constructs the expected URL for "session".
+ */
+#[test]
+fn build_url_session() {
+    let url = super::build_url("session");
+    assert_eq!(url, "https://l1.run/v1/session");
+}
+
+/**
+ * build_url constructs the expected URL for a nested path.
+ */
+#[test]
+fn build_url_nested_path() {
+    let url = super::build_url("node/status");
+    assert_eq!(url, "https://l1.run/v1/node/status");
+}
+
+/**
+ * build_url handles empty endpoint.
+ */
+#[test]
+fn build_url_empty() {
+    let url = super::build_url("");
+    assert_eq!(url, "https://l1.run/v1/");
+}

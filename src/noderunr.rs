@@ -12,7 +12,6 @@ use serde_json::json;
 /* Import modules. */
 mod node;
 mod privacy;
-mod ui;
 
 // #[derive(Parser)]
 // struct Cli {
@@ -43,7 +42,7 @@ fn main() {
     setup_panic!();
 
     /* Display welcome banner. */
-    ui::welcome::banner_alt();
+    noderunr::ui::welcome::banner_alt();
 
     // let args = Cli::parse();
     // println!("  (Private) seed phrase is : {}", args.seed_phrase);

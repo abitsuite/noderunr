@@ -5,6 +5,7 @@ pub mod api;
 pub mod cmd;
 pub mod comm;
 pub mod crypto;
+pub mod ui;
 pub mod utils;
 
 fn string_to_static_str(s: String) -> &'static str {

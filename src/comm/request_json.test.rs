@@ -33,13 +33,26 @@ fn l1_endpoint_has_trailing_slash() {
  */
 #[test]
 fn url_construction_format() {
-    let endpoint = "nodes";
-    let json_body = r#"{"id": "test"}"#;
+    let endpoint = "session";
     let url = format!("{}{}", super::L1_ENDPOINT, endpoint);
 
-    assert_eq!(url, "https://l1.run/v1/nodes");
+    assert_eq!(url, "https://l1.run/v1/session");
+}
 
-    /* Verify the json body can be converted to a String for the request. */
-    let body = json_body.to_string();
-    assert!(body.contains("test"));
+/**
+ * build_url constructs the expected URL for "session".
+ */
+#[test]
+fn build_url_session() {
+    let url = super::build_url("session");
+    assert_eq!(url, "https://l1.run/v1/session");
+}
+
+/**
+ * build_url handles empty endpoint.
+ */
+#[test]
+fn build_url_empty() {
+    let url = super::build_url("");
+    assert_eq!(url, "https://l1.run/v1/");
 }

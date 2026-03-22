@@ -14,3 +14,11 @@ mod epoch_test;
 #[cfg(test)]
 #[path = "utils/examples.test.rs"]
 mod examples_test;
+
+#[cfg(test)]
+#[path = "utils/logger.test.rs"]
+mod logger_test;
+
+#[cfg(test)]
+#[path = "utils/remote.test.rs"]
+mod remote_test;
