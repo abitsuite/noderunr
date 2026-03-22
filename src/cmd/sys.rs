@@ -1,10 +1,8 @@
 // src/cmd/sys.rs
 
 /* Import modules. */
-use interactive_process::InteractiveProcess;
+use super::pty_runner::run_interactive;
 use std::process::Command;
-use std::thread::sleep;
-use std::time::Duration;
 
 pub fn df() -> Result<String, Box<dyn std::error::Error>> {
     if cfg!(target_os = "windows") {
@@ -214,52 +212,26 @@ pub fn install_golang() -> Result<String, Box<dyn std::error::Error>> {
         return Err("install_golang is not supported on Windows. Please install Go manually from https://go.dev/dl/".into());
     }
 
-    // /* Initialize locals. */
-    let response: String = "".to_string();
+    let commands = vec![
+        /* Change to (home) directory. */
+        "cd".to_string(),
+        // "echo \"export PATH=$PATH:$HOME/.noderunr/go/bin\" >> .profile".to_string(),
+        /* Make (hidden) .noderunr directory (if required). */
+        "mkdir -p .noderunr".to_string(),
+        /* Change to noderunr directory. */
+        "cd .noderunr".to_string(),
+        // "wget https://go.dev/dl/go1.23.3.linux-amd64.tar.gz".to_string(),
+        "export PATH=$PATH:$HOME/.noderunr/go/bin".to_string(),
+        // "rm -rf $HOME/.noderunr/go && tar -C $HOME/.noderunr -xzf go1.23.3.linux-amd64.tar.gz".to_string(),
+        "go version".to_string(),
+    ];
 
-    let mut cmd = Command::new("bash");
-
-    let mut proc = InteractiveProcess::new_with_exit_callback(
-        &mut cmd,
+    let response = run_interactive(
+        &commands,
         |line| {
-            println!("    ↳ {}", line.unwrap());
+            println!("    ↳ {}", line);
         },
-        || println!("Child exited."),
-    )
-    .unwrap();
-
-    /* Change to (home) directory. */
-    proc.send("cd").unwrap();
-    sleep(Duration::from_secs(1));
-
-    // proc.send("echo \"export PATH=$PATH:$HOME/.noderunr/go/bin\" >> .profile").unwrap();
-    // sleep(Duration::from_secs(1));
-
-    /* Make (hidden) .noderunr directory (if required). */
-    proc.send("mkdir -p .noderunr").unwrap();
-    sleep(Duration::from_secs(1));
-
-    /* Change to noderunr directory. */
-    proc.send("cd .noderunr").unwrap();
-    sleep(Duration::from_secs(1));
-
-    // proc.send("wget https://go.dev/dl/go1.23.3.linux-amd64.tar.gz").unwrap();
-    // sleep(Duration::from_millis(1));
-
-    proc.send("export PATH=$PATH:$HOME/.noderunr/go/bin")
-        .unwrap();
-    sleep(Duration::from_secs(1));
-
-    // proc.send("rm -rf $HOME/.noderunr/go && tar -C $HOME/.noderunr -xzf go1.23.3.linux-amd64.tar.gz").unwrap();
-    // sleep(Duration::from_secs(1));
-
-    proc.send("go version").unwrap();
-    sleep(Duration::from_secs(1));
-
-    // We're done with the process, but it is not self-terminating,
-    // so we can't use `proc.wait()`. Instead, we'll take the `Child` from
-    // the `InteractiveProcess` and kill it ourselves.
-    proc.close().kill().unwrap();
+    )?;
 
     Ok(response)
 }

@@ -1,12 +1,10 @@
 // src/comm/monitor.rs
 
 use serde::{Deserialize, Serialize};
-use serde_json::{from_str, json, to_string};
+use serde_json::{from_str, to_string};
 
-use std::process::exit;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::{thread, time};
-use tokio::io::AsyncWriteExt;
-use tokio_stream::StreamExt;
 
 use crate::cmd;
 
@@ -25,6 +23,7 @@ pub(crate) struct ExecResponse {
     pub(crate) resp: String,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Deserialize, Serialize)]
 pub(crate) struct Log {
     pub(crate) body: String,
@@ -49,6 +48,7 @@ pub(crate) struct Session {
     pub(crate) last_since: u64, // milliseconds
 }
 
+#[allow(dead_code)]
 #[derive(Serialize, Deserialize)]
 pub(crate) struct SessionRequest {
     pub(crate) sessionid: String,
@@ -65,7 +65,7 @@ pub(crate) struct SessionResponse {
 pub(crate) const L1_ENDPOINT: &str = "https://l1.run/v1/";
 
 /* Initialize globals. */
-static mut LAST_SINCE: u64 = 1;
+static LAST_SINCE: AtomicU64 = AtomicU64::new(1);
 
 /**
  * Build Request URL
@@ -369,7 +369,7 @@ fn _handle_exec(_sessionid: &str, _resp: Vec<Request>) {
     // println!("\n***HANDLING (VEC) RESPONSE {:?}", _resp);
 
     if let Some(response) = resolve_exec(&_resp) {
-        response_json(_sessionid, response);
+        let _ = response_json(_sessionid, response);
     }
 
     // let response = "ERROR! A FATAL ERROR OCCURED :(".to_string();
@@ -390,18 +390,16 @@ pub fn by_session(_sessionid: &str) {
 
         assert!(now.elapsed() >= ten_seconds);
 
-        unsafe {
-            /* Make (remote) JSON (data) request. */
-            response = request_json(_sessionid, LAST_SINCE);
-            // println!("\nRAW---\n{:?}\n", response);
-        }
+        /* Make (remote) JSON (data) request. */
+        response = request_json(_sessionid, LAST_SINCE.load(Ordering::Relaxed));
+        // println!("\nRAW---\n{:?}\n", response);
 
         // let session_resp: Result<_, Box<dyn std::error::Error>>;
         let mut session_resp: Result<SessionResponse, serde_json::Error> =
             Ok(SessionResponse::default());
         // let session_resp = SessionResponse::default();
 
-        match (&response) {
+        match &response {
             Ok(_data) => {
                 session_resp = from_str(_data);
             }
@@ -418,10 +416,8 @@ pub fn by_session(_sessionid: &str) {
             /* Set remote data (result). */
             remote_data = _data;
 
-            unsafe {
-                /* Update last since. */
-                LAST_SINCE = remote_data.result.last_since
-            }
+            /* Update last since. */
+            LAST_SINCE.store(remote_data.result.last_since, Ordering::Relaxed);
         }
         // println!("\nRD (result)---\n{:?}\n", remote_data.result); // Output: Person { name: "Jane Doe", age: 25 }
 

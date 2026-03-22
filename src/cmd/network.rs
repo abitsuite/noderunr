@@ -1,11 +1,9 @@
 // src/cmd/network.rs
 
 /* Import modules. */
-use interactive_process::InteractiveProcess;
+use super::pty_runner::{run_interactive, run_interactive_with_exit_callback};
 use std::io::{BufRead, BufReader};
 use std::process::{Command, Stdio};
-use std::thread::sleep;
-use std::time::Duration;
 
 /// Returns the shell command name appropriate for the current OS.
 /// On Windows this is "cmd", on Unix-like systems this is "bash".
@@ -45,7 +43,7 @@ pub(crate) fn noderunr_bin_dir() -> String {
 }
 
 /// Builds the sequence of shell commands for avax_install.
-/// Returns a Vec of (command, sleep_millis) pairs.
+/// Returns a Vec of commands to be joined and run.
 pub(crate) fn build_avax_install_steps() -> Vec<(String, u64)> {
     let bin_dir = noderunr_bin_dir();
 
@@ -57,7 +55,7 @@ pub(crate) fn build_avax_install_steps() -> Vec<(String, u64)> {
 }
 
 /// Builds the sequence of shell commands for avax_test.
-/// Returns a Vec of (command, sleep_millis) pairs.
+/// Returns a Vec of commands to be joined and run.
 pub(crate) fn build_avax_test_steps() -> Vec<(String, u64)> {
     let cli_bin = avax_cli_bin();
 
@@ -83,7 +81,7 @@ pub(crate) fn build_avax_stop_cmd() -> String {
 }
 
 /// Builds the sequence of shell commands for build_avalanche.
-/// Returns a Vec of (command, sleep_millis) pairs.
+/// Returns a Vec of commands to be joined and run.
 pub(crate) fn build_avalanche_steps() -> Vec<(String, u64)> {
     vec![
         ("cd".to_string(), 1000),
@@ -94,6 +92,11 @@ pub(crate) fn build_avalanche_steps() -> Vec<(String, u64)> {
         ("./scripts/build.sh".to_string(), 1),
         ("./build/avalanchego".to_string(), 1),
     ]
+}
+
+/// Helper: extracts just the command strings from a steps Vec.
+fn steps_to_commands(steps: &[(String, u64)]) -> Vec<String> {
+    steps.iter().map(|(cmd, _)| cmd.clone()).collect()
 }
 
 /**
@@ -177,39 +180,19 @@ pub fn avax_install() -> Result<String, Box<dyn std::error::Error>> {
         );
     }
 
-    // /* Initialize locals. */
-    let response: String = "".to_string();
+    let steps = build_avax_install_steps();
+    let commands = steps_to_commands(&steps);
 
-    let mut cmd = Command::new("/usr/bin/bash");
-
-    let mut proc = InteractiveProcess::new_with_exit_callback(
-        &mut cmd,
+    let response = run_interactive_with_exit_callback(
+        &commands,
         |line| {
-            println!("    ↳ {}", line.unwrap());
+            println!("    ↳ {}", line);
         },
         || {
             println!("\n    ✨ Avalanche has been successfully installed! ✨\n");
             let _ = avax_test();
         },
-    )
-    .unwrap();
-
-    /* Execute install steps from pure builder. */
-    let steps = build_avax_install_steps();
-
-    /* Quick pause */
-    sleep(Duration::from_millis(10));
-
-    for (command, sleep_ms) in &steps {
-        proc.send(command).unwrap();
-        sleep(Duration::from_millis(*sleep_ms));
-    }
-
-    /* Quick pause */
-    sleep(Duration::from_millis(10));
-
-    // We're done with the process
-    proc.close().kill().unwrap();
+    )?;
 
     Ok(response)
 }
@@ -221,36 +204,15 @@ fn avax_test() -> Result<String, Box<dyn std::error::Error>> {
         return Err("avax_test is not supported on Windows.".into());
     }
 
-    // /* Initialize locals. */
-    let response: String = "".to_string();
-
-    let mut cmd = Command::new("/usr/bin/bash");
-
-    let mut proc = InteractiveProcess::new_with_exit_callback(
-        &mut cmd,
-        |line| {
-            println!("    ↳ {}", line.unwrap());
-        },
-        || println!("Child exited."),
-    )
-    .unwrap();
-
-    /* Execute test steps from pure builder. */
     let steps = build_avax_test_steps();
+    let commands = steps_to_commands(&steps);
 
-    /* Quick pause */
-    sleep(Duration::from_millis(10));
-
-    for (command, sleep_ms) in &steps {
-        proc.send(command).unwrap();
-        sleep(Duration::from_millis(*sleep_ms));
-    }
-
-    /* Quick pause */
-    sleep(Duration::from_millis(10));
-
-    // We're done with the process
-    proc.close().kill().unwrap();
+    let response = run_interactive(
+        &commands,
+        |line| {
+            println!("    ↳ {}", line);
+        },
+    )?;
 
     Ok(response)
 }
@@ -260,20 +222,14 @@ pub fn avax_start() -> Result<String, Box<dyn std::error::Error>> {
         return Err("avax_start is not supported on Windows.".into());
     }
 
-    // /* Initialize locals. */
-    let response: String = "".to_string();
+    let commands = vec![build_avax_start_cmd()];
 
-    let mut cmd = Command::new("bash");
-
-    let mut proc = InteractiveProcess::new(&mut cmd, |line| {
-        println!("    ↳ {}", line.unwrap());
-    })
-    .unwrap();
-
-    proc.send(&build_avax_start_cmd()).unwrap();
-    sleep(Duration::from_millis(10));
-
-    proc.close().kill().unwrap();
+    let response = run_interactive(
+        &commands,
+        |line| {
+            println!("    ↳ {}", line);
+        },
+    )?;
 
     Ok(response)
 }
@@ -283,20 +239,14 @@ pub fn avax_status() -> Result<String, Box<dyn std::error::Error>> {
         return Err("avax_status is not supported on Windows.".into());
     }
 
-    // /* Initialize locals. */
-    let response: String = "".to_string();
+    let commands = vec![build_avax_status_cmd()];
 
-    let mut cmd = Command::new("bash");
-
-    let mut proc = InteractiveProcess::new(&mut cmd, |line| {
-        println!("    ↳ {}", line.unwrap());
-    })
-    .unwrap();
-
-    proc.send(&build_avax_status_cmd()).unwrap();
-    sleep(Duration::from_millis(10));
-
-    proc.close().kill().unwrap();
+    let response = run_interactive(
+        &commands,
+        |line| {
+            println!("    ↳ {}", line);
+        },
+    )?;
 
     Ok(response)
 }
@@ -306,20 +256,14 @@ pub fn avax_stop() -> Result<String, Box<dyn std::error::Error>> {
         return Err("avax_stop is not supported on Windows.".into());
     }
 
-    // /* Initialize locals. */
-    let response: String = "".to_string();
+    let commands = vec![build_avax_stop_cmd()];
 
-    let mut cmd = Command::new("bash");
-
-    let mut proc = InteractiveProcess::new(&mut cmd, |line| {
-        println!("    ↳ {}", line.unwrap());
-    })
-    .unwrap();
-
-    proc.send(&build_avax_stop_cmd()).unwrap();
-    sleep(Duration::from_millis(10));
-
-    proc.close().kill().unwrap();
+    let response = run_interactive(
+        &commands,
+        |line| {
+            println!("    ↳ {}", line);
+        },
+    )?;
 
     Ok(response)
 }
@@ -329,28 +273,15 @@ pub fn build_avalanche() -> Result<String, Box<dyn std::error::Error>> {
         return Err("build_avalanche is not supported on Windows.".into());
     }
 
-    // /* Initialize locals. */
-    let response: String = "".to_string();
-
-    let mut cmd = Command::new("bash");
-
-    let mut proc = InteractiveProcess::new(&mut cmd, |line| {
-        println!("    ↳ {}", line.unwrap());
-    })
-    .unwrap();
-
-    /* Execute build steps from pure builder. */
     let steps = build_avalanche_steps();
+    let commands = steps_to_commands(&steps);
 
-    for (command, sleep_ms) in &steps {
-        proc.send(command).unwrap();
-        sleep(Duration::from_millis(*sleep_ms));
-    }
-
-    // We're done with the process, but it is not self-terminating,
-    // so we can't use `proc.wait()`. Instead, we'll take the `Child` from
-    // the `InteractiveProcess` and kill it ourselves.
-    proc.close().kill().unwrap();
+    let response = run_interactive(
+        &commands,
+        |line| {
+            println!("    ↳ {}", line);
+        },
+    )?;
 
     // let cmd1 = Command::new("cd")
     //     .arg("/tmp");

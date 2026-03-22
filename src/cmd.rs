@@ -2,6 +2,7 @@
 
 /* Import modules. */
 pub mod network;
+pub mod pty_runner;
 pub mod sys;
 
 #[cfg(test)]
