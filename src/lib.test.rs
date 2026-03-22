@@ -102,7 +102,7 @@ fn federation_node_get_id() {
         created_at: String::from("2025-01-01"),
     };
 
-    let result = node.get_id();
+    let result = Validator::get_id(&node);
 
     assert_eq!(result, "id is abc-123");
 }
@@ -119,7 +119,7 @@ fn federation_node_empty_fields() {
         created_at: String::new(),
     };
 
-    assert_eq!(node.get_id(), "id is ");
+    assert_eq!(Validator::get_id(&node), "id is ");
     assert!(node.id.is_empty());
     assert!(node.owner.is_empty());
 }
@@ -137,7 +137,7 @@ fn federation_node_unicode_fields() {
     };
 
     assert_eq!(node.id, "nödë-ïd-🚀");
-    assert_eq!(node.get_id(), "id is nödë-ïd-🚀");
+    assert_eq!(Validator::get_id(&node), "id is nödë-ïd-🚀");
 }
 
 /**
@@ -163,7 +163,7 @@ fn federation_node_subnet_get_id() {
         created_at: String::from("2025-01-01"),
     };
 
-    let result = <FederationNode as Subnet>::get_id(&node);
+    let result = Subnet::get_id(&node);
 
     assert_eq!(result, "subnet-subnet-test-42");
 }

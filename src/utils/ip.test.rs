@@ -1,6 +1,6 @@
 // src/utils/ip.test.rs
 
-use super::ip;
+use crate::utils::ip;
 
 /**
  * ip::get() returns a result (Ok or Err) without panicking.
