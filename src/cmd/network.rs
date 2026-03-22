@@ -90,16 +90,14 @@ pub fn ping2() {
 
 pub fn avax() -> Result<String, Box<dyn std::error::Error>> {
     /* Initialize locals. */
-    let response;
-
     let output = Command::new("avalanche").arg("--help").output();
 
-    match output {
+    let response = match output {
         Ok(ref _out) => {
-            response = String::from_utf8_lossy(&output.unwrap().stdout).to_string();
+            String::from_utf8_lossy(&output.unwrap().stdout).to_string()
         }
         Err(ref err) => {
-            response = format!("ERROR: {:?}", err.to_string());
+            format!("ERROR: {:?}", err.to_string())
         }
     };
 
