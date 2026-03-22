@@ -93,9 +93,7 @@ pub fn avax() -> Result<String, Box<dyn std::error::Error>> {
     let output = Command::new("avalanche").arg("--help").output();
 
     let response = match output {
-        Ok(ref _out) => {
-            String::from_utf8_lossy(&output.unwrap().stdout).to_string()
-        }
+        Ok(ref _out) => String::from_utf8_lossy(&output.unwrap().stdout).to_string(),
         Err(ref err) => {
             format!("ERROR: {:?}", err.to_string())
         }

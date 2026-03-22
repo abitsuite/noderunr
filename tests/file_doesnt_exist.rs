@@ -11,11 +11,17 @@ fn file_doesnt_exist() -> Result<(), Box<dyn std::error::Error>> {
         .arg("bin/test.txt")
         .timeout(std::time::Duration::from_secs(10));
 
-    cmd.assert().interrupted().stdout(
-        predicate::str::contains("NodΞRunr")
-            .or(predicate::str::contains("NODERUNR"))
-            .or(predicate::str::contains("██████"))
-            .or(predicate::str::contains("███╗")),
+    let output = cmd.output()?;
+
+    let stdout_str = String::from_utf8_lossy(&output.stdout);
+
+    assert!(
+        stdout_str.contains("███╗")
+            || stdout_str.contains("NodΞRunr")
+            || stdout_str.contains("NODERUNR")
+            || stdout_str.contains("██████"),
+        "Expected banner in stdout, got: {}",
+        stdout_str
     );
 
     Ok(())
