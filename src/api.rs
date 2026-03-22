@@ -13,13 +13,24 @@ pub(crate) fn build_url(endpoint: &str) -> String {
 }
 
 /**
- * Call
+ * Build URL (with base)
  *
- * Make a (remote) API call.
+ * Constructs the full API URL using a custom base URL.
+ * Used by tests to inject mockito server URLs.
  */
-pub async fn call(_endpoint: &str, _json: &str) -> Result<String, Box<dyn std::error::Error>> {
+pub(crate) fn build_url_with_base(base_url: &str, endpoint: &str) -> String {
+    format!("{}{}", base_url, endpoint)
+}
+
+/**
+ * Call (with base URL)
+ *
+ * Make a (remote) API call against a specified base URL.
+ * This is the testable core; `call` delegates to it.
+ */
+pub async fn call_with_base_url(base_url: &str, _endpoint: &str, _json: &str) -> Result<String, Box<dyn std::error::Error>> {
     /* Set URL (for remote API). */
-    let url = build_url(_endpoint);
+    let url = build_url_with_base(base_url, _endpoint);
 
     // let headers = [("Authorization", "Bearer YOUR_API_KEY"), ("X-Custom-Header", "value")];
 
@@ -40,6 +51,15 @@ pub async fn call(_endpoint: &str, _json: &str) -> Result<String, Box<dyn std::e
 
     /* Return response. */
     Ok(response_body)
+}
+
+/**
+ * Call
+ *
+ * Make a (remote) API call.
+ */
+pub async fn call(_endpoint: &str, _json: &str) -> Result<String, Box<dyn std::error::Error>> {
+    call_with_base_url(L1_ENDPOINT, _endpoint, _json).await
 }
 
 #[cfg(test)]

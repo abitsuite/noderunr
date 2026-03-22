@@ -55,6 +55,24 @@ fn build_request_url_max() {
 }
 
 /**
+ * build_request_url_with_base uses custom base URL.
+ */
+#[test]
+fn build_request_url_with_base_custom() {
+    let url = build_request_url_with_base("http://localhost:1234/", 42);
+    assert_eq!(url, "http://localhost:1234/session/42");
+}
+
+/**
+ * build_response_url_with_base uses custom base URL.
+ */
+#[test]
+fn build_response_url_with_base_custom() {
+    let url = build_response_url_with_base("http://localhost:5678/");
+    assert_eq!(url, "http://localhost:5678/session");
+}
+
+/**
  * build_auth_header constructs the expected format.
  */
 #[test]
@@ -702,4 +720,183 @@ fn resolve_exec_build_avalanche() {
     let reqs = vec![Request { exec: "build avalanche".to_string(), created_at: 100 }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some(), "resolve_exec('build avalanche') should return Some");
+}
+
+// ---------------------------------------------------------------
+// mockito — network I/O tests for request_json_async / response_json_async
+// ---------------------------------------------------------------
+
+/**
+ * request_json_async_with_base sends GET with auth header and returns body.
+ */
+#[tokio::test]
+async fn request_json_async_with_base_success() {
+    let mut server = mockito::Server::new_async().await;
+
+    let mock = server.mock("GET", "/session/12345")
+        .match_header("Authorization", "Bearer test-sess-id")
+        .match_header("Content-Type", "application/json")
+        .with_status(200)
+        .with_body(r#"{"success":true,"result":{"sessionid":"test-sess-id","act":null,"log":null,"req":null,"res":null,"rpt":null,"created_at":0,"last_since":99999}}"#)
+        .create_async()
+        .await;
+
+    let base_url = format!("{}/", server.url());
+    let result = request_json_async_with_base(&base_url, "test-sess-id", 12345).await;
+
+    mock.assert_async().await;
+    assert!(result.is_ok());
+
+    let body = result.unwrap();
+    assert!(body.contains("\"success\":true"));
+    assert!(body.contains("\"last_since\":99999"));
+}
+
+/**
+ * request_json_async_with_base returns Err on connection refused.
+ */
+#[tokio::test]
+async fn request_json_async_with_base_connection_refused() {
+    let result = request_json_async_with_base(
+        "http://127.0.0.1:1/",
+        "sess-id",
+        1,
+    ).await;
+
+    assert!(result.is_err());
+}
+
+/**
+ * request_json_async_with_base handles 500 response.
+ */
+#[tokio::test]
+async fn request_json_async_with_base_server_error() {
+    let mut server = mockito::Server::new_async().await;
+
+    let mock = server.mock("GET", "/session/1")
+        .with_status(500)
+        .with_body("server error")
+        .create_async()
+        .await;
+
+    let base_url = format!("{}/", server.url());
+    let result = request_json_async_with_base(&base_url, "sess", 1).await;
+
+    mock.assert_async().await;
+    /* reqwest does not error on 500 — it returns the body. */
+    assert!(result.is_ok());
+    assert_eq!(result.unwrap(), "server error");
+}
+
+/**
+ * request_json_async_with_base handles empty response body.
+ */
+#[tokio::test]
+async fn request_json_async_with_base_empty_body() {
+    let mut server = mockito::Server::new_async().await;
+
+    let mock = server.mock("GET", "/session/0")
+        .with_status(200)
+        .with_body("")
+        .create_async()
+        .await;
+
+    let base_url = format!("{}/", server.url());
+    let result = request_json_async_with_base(&base_url, "sess", 0).await;
+
+    mock.assert_async().await;
+    assert!(result.is_ok());
+    assert_eq!(result.unwrap(), "");
+}
+
+/**
+ * response_json_async_with_base posts exec response JSON and returns body.
+ */
+#[tokio::test]
+async fn response_json_async_with_base_success() {
+    let mut server = mockito::Server::new_async().await;
+
+    let mock = server.mock("POST", "/session")
+        .match_header("Content-Type", "application/json")
+        .with_status(200)
+        .with_body(r#"{"ok":true}"#)
+        .create_async()
+        .await;
+
+    let base_url = format!("{}/", server.url());
+    let result = response_json_async_with_base(
+        &base_url,
+        "sess-abc",
+        "command output here".to_string(),
+    ).await;
+
+    mock.assert_async().await;
+    assert!(result.is_ok());
+    assert_eq!(result.unwrap(), r#"{"ok":true}"#);
+}
+
+/**
+ * response_json_async_with_base returns Err on connection refused.
+ */
+#[tokio::test]
+async fn response_json_async_with_base_connection_refused() {
+    let result = response_json_async_with_base(
+        "http://127.0.0.1:1/",
+        "sess",
+        "data".to_string(),
+    ).await;
+
+    assert!(result.is_err());
+}
+
+/**
+ * response_json_async_with_base handles 500 response.
+ */
+#[tokio::test]
+async fn response_json_async_with_base_server_error() {
+    let mut server = mockito::Server::new_async().await;
+
+    let mock = server.mock("POST", "/session")
+        .with_status(500)
+        .with_body("internal error")
+        .create_async()
+        .await;
+
+    let base_url = format!("{}/", server.url());
+    let result = response_json_async_with_base(
+        &base_url,
+        "sess",
+        "output".to_string(),
+    ).await;
+
+    mock.assert_async().await;
+    assert!(result.is_ok());
+    assert_eq!(result.unwrap(), "internal error");
+}
+
+/**
+ * response_json_async_with_base sends correctly structured JSON body.
+ */
+#[tokio::test]
+async fn response_json_async_with_base_body_structure() {
+    let mut server = mockito::Server::new_async().await;
+
+    let expected_body = build_exec_response_json("my-sess", "my output");
+
+    let mock = server.mock("POST", "/session")
+        .match_body(expected_body.as_str())
+        .with_status(200)
+        .with_body("ok")
+        .create_async()
+        .await;
+
+    let base_url = format!("{}/", server.url());
+    let result = response_json_async_with_base(
+        &base_url,
+        "my-sess",
+        "my output".to_string(),
+    ).await;
+
+    mock.assert_async().await;
+    assert!(result.is_ok());
 }

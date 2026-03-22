@@ -73,7 +73,16 @@ static LAST_SINCE: AtomicU64 = AtomicU64::new(1);
  * Constructs the full URL for a session request.
  */
 pub(crate) fn build_request_url(since: u64) -> String {
-    format!("{}{}/{}", L1_ENDPOINT, "session", since)
+    build_request_url_with_base(L1_ENDPOINT, since)
+}
+
+/**
+ * Build Request URL (with base)
+ *
+ * Constructs the full URL for a session request using a custom base URL.
+ */
+pub(crate) fn build_request_url_with_base(base_url: &str, since: u64) -> String {
+    format!("{}{}/{}", base_url, "session", since)
 }
 
 /**
@@ -91,7 +100,16 @@ pub(crate) fn build_auth_header(sessionid: &str) -> String {
  * Constructs the full URL for a session response post.
  */
 pub(crate) fn build_response_url() -> String {
-    format!("{}{}", L1_ENDPOINT, "session")
+    build_response_url_with_base(L1_ENDPOINT)
+}
+
+/**
+ * Build Response URL (with base)
+ *
+ * Constructs the full URL for a session response post using a custom base URL.
+ */
+pub(crate) fn build_response_url_with_base(base_url: &str) -> String {
+    format!("{}{}", base_url, "session")
 }
 
 /**
@@ -110,13 +128,18 @@ pub(crate) fn build_exec_response_json(sessionid: &str, response: &str) -> Strin
 }
 
 /**
- * Request JSON
+ * Request JSON (async, with base URL)
  *
- * Make a (remote) API call.
+ * Make a (remote) API call using a custom base URL.
+ * This is the testable core; request_json_async delegates to it.
  */
-async fn request_json_async(_sessionid: &str, _since: u64) -> Result<String, Box<dyn std::error::Error>> {
+pub(crate) async fn request_json_async_with_base(
+    base_url: &str,
+    _sessionid: &str,
+    _since: u64,
+) -> Result<String, Box<dyn std::error::Error>> {
     /* Set URL (for remote API). */
-    let url = build_request_url(_since);
+    let url = build_request_url_with_base(base_url, _since);
 
     /* Set bearer authorization. */
     let auth = build_auth_header(_sessionid);
@@ -137,16 +160,27 @@ async fn request_json_async(_sessionid: &str, _since: u64) -> Result<String, Box
 }
 
 /**
- * Respond JSON
+ * Request JSON
  *
- * Make a (remote) API response.
+ * Make a (remote) API call.
  */
-async fn response_json_async(
+async fn request_json_async(_sessionid: &str, _since: u64) -> Result<String, Box<dyn std::error::Error>> {
+    request_json_async_with_base(L1_ENDPOINT, _sessionid, _since).await
+}
+
+/**
+ * Respond JSON (async, with base URL)
+ *
+ * Make a (remote) API response using a custom base URL.
+ * This is the testable core; response_json_async delegates to it.
+ */
+pub(crate) async fn response_json_async_with_base(
+    base_url: &str,
     _sessionid: &str,
     _response: String,
 ) -> Result<String, Box<dyn std::error::Error>> {
     /* Set URL (for remote API). */
-    let url = build_response_url();
+    let url = build_response_url_with_base(base_url);
 
     let json_string = build_exec_response_json(_sessionid, &_response);
 
@@ -162,6 +196,18 @@ async fn response_json_async(
 
     /* Return response. */
     Ok(response_body)
+}
+
+/**
+ * Respond JSON
+ *
+ * Make a (remote) API response.
+ */
+async fn response_json_async(
+    _sessionid: &str,
+    _response: String,
+) -> Result<String, Box<dyn std::error::Error>> {
+    response_json_async_with_base(L1_ENDPOINT, _sessionid, _response).await
 }
 
 /**
