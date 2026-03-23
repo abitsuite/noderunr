@@ -8,6 +8,7 @@ const L1_ENDPOINT: &str = "https://l1.run/v1/";
  *
  * Constructs the full API URL for the given endpoint.
  */
+#[cfg(test)]
 pub(crate) fn build_url(endpoint: &str) -> String {
     format!("{}{}", L1_ENDPOINT, endpoint)
 }

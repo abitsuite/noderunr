@@ -72,6 +72,7 @@ static LAST_SINCE: AtomicU64 = AtomicU64::new(1);
  *
  * Constructs the full URL for a session request.
  */
+#[cfg(test)]
 pub(crate) fn build_request_url(since: u64) -> String {
     build_request_url_with_base(L1_ENDPOINT, since)
 }
@@ -99,6 +100,7 @@ pub(crate) fn build_auth_header(sessionid: &str) -> String {
  *
  * Constructs the full URL for a session response post.
  */
+#[cfg(test)]
 pub(crate) fn build_response_url() -> String {
     build_response_url_with_base(L1_ENDPOINT)
 }
