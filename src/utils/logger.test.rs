@@ -19,7 +19,10 @@ fn test_log_returns_error_on_missing_file() {
         Err(e) => {
             let msg = format!("{}", e);
             assert!(
-                msg.contains("No such file") || msg.contains("Permission denied"),
+                msg.contains("No such file")
+                    || msg.contains("Permission denied")
+                    || msg.contains("cannot find the path")
+                    || msg.contains("cannot find the file"),
                 "Expected file-not-found or permission error, got: {}",
                 msg
             );
