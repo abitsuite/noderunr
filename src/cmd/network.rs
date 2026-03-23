@@ -207,12 +207,9 @@ fn avax_test() -> Result<String, Box<dyn std::error::Error>> {
     let steps = build_avax_test_steps();
     let commands = steps_to_commands(&steps);
 
-    let response = run_interactive(
-        &commands,
-        |line| {
-            println!("    ↳ {}", line);
-        },
-    )?;
+    let response = run_interactive(&commands, |line| {
+        println!("    ↳ {}", line);
+    })?;
 
     Ok(response)
 }
@@ -224,12 +221,9 @@ pub fn avax_start() -> Result<String, Box<dyn std::error::Error>> {
 
     let commands = vec![build_avax_start_cmd()];
 
-    let response = run_interactive(
-        &commands,
-        |line| {
-            println!("    ↳ {}", line);
-        },
-    )?;
+    let response = run_interactive(&commands, |line| {
+        println!("    ↳ {}", line);
+    })?;
 
     Ok(response)
 }
@@ -241,12 +235,9 @@ pub fn avax_status() -> Result<String, Box<dyn std::error::Error>> {
 
     let commands = vec![build_avax_status_cmd()];
 
-    let response = run_interactive(
-        &commands,
-        |line| {
-            println!("    ↳ {}", line);
-        },
-    )?;
+    let response = run_interactive(&commands, |line| {
+        println!("    ↳ {}", line);
+    })?;
 
     Ok(response)
 }
@@ -258,12 +249,9 @@ pub fn avax_stop() -> Result<String, Box<dyn std::error::Error>> {
 
     let commands = vec![build_avax_stop_cmd()];
 
-    let response = run_interactive(
-        &commands,
-        |line| {
-            println!("    ↳ {}", line);
-        },
-    )?;
+    let response = run_interactive(&commands, |line| {
+        println!("    ↳ {}", line);
+    })?;
 
     Ok(response)
 }
@@ -276,12 +264,9 @@ pub fn build_avalanche() -> Result<String, Box<dyn std::error::Error>> {
     let steps = build_avalanche_steps();
     let commands = steps_to_commands(&steps);
 
-    let response = run_interactive(
-        &commands,
-        |line| {
-            println!("    ↳ {}", line);
-        },
-    )?;
+    let response = run_interactive(&commands, |line| {
+        println!("    ↳ {}", line);
+    })?;
 
     // let cmd1 = Command::new("cd")
     //     .arg("/tmp");

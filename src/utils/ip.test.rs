@@ -22,18 +22,12 @@ async fn get_ip_does_not_panic() {
             );
 
             let origin = &map["origin"];
-            assert!(
-                !origin.is_empty(),
-                "Origin IP should not be empty"
-            );
+            assert!(!origin.is_empty(), "Origin IP should not be empty");
         }
         Err(e) => {
             /* Network may not be available — just verify it's a real error. */
             let msg = format!("{}", e);
-            assert!(
-                !msg.is_empty(),
-                "Error message should not be empty"
-            );
+            assert!(!msg.is_empty(), "Error message should not be empty");
         }
     }
 }
@@ -45,7 +39,8 @@ async fn get_ip_does_not_panic() {
 async fn get_with_url_mock_success() {
     let mut server = mockito::Server::new_async().await;
 
-    let mock = server.mock("GET", "/")
+    let mock = server
+        .mock("GET", "/")
         .with_status(200)
         .with_header("Content-Type", "application/json")
         .with_body(r#"{"origin":"9.8.7.6"}"#)
@@ -78,7 +73,8 @@ async fn get_with_url_connection_refused() {
 async fn get_with_url_invalid_json() {
     let mut server = mockito::Server::new_async().await;
 
-    let mock = server.mock("GET", "/")
+    let mock = server
+        .mock("GET", "/")
         .with_status(200)
         .with_header("Content-Type", "application/json")
         .with_body("not json")
@@ -99,7 +95,8 @@ async fn get_with_url_invalid_json() {
 async fn get_with_url_multiple_keys() {
     let mut server = mockito::Server::new_async().await;
 
-    let mock = server.mock("GET", "/")
+    let mock = server
+        .mock("GET", "/")
         .with_status(200)
         .with_header("Content-Type", "application/json")
         .with_body(r#"{"origin":"1.2.3.4","extra":"data"}"#)
@@ -124,7 +121,8 @@ async fn get_with_url_multiple_keys() {
 async fn get_with_url_empty_object() {
     let mut server = mockito::Server::new_async().await;
 
-    let mock = server.mock("GET", "/")
+    let mock = server
+        .mock("GET", "/")
         .with_status(200)
         .with_header("Content-Type", "application/json")
         .with_body(r#"{}"#)

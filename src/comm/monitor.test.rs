@@ -389,7 +389,10 @@ fn resolve_exec_empty_returns_none() {
  */
 #[test]
 fn resolve_exec_df() {
-    let reqs = vec![Request { exec: "df".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "df".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -399,7 +402,10 @@ fn resolve_exec_df() {
  */
 #[test]
 fn resolve_exec_du() {
-    let reqs = vec![Request { exec: "du".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "du".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -409,7 +415,10 @@ fn resolve_exec_du() {
  */
 #[test]
 fn resolve_exec_ls() {
-    let reqs = vec![Request { exec: "ls".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "ls".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -419,7 +428,10 @@ fn resolve_exec_ls() {
  */
 #[test]
 fn resolve_exec_lsblk() {
-    let reqs = vec![Request { exec: "lsblk".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "lsblk".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -429,7 +441,10 @@ fn resolve_exec_lsblk() {
  */
 #[test]
 fn resolve_exec_lscpu() {
-    let reqs = vec![Request { exec: "lscpu".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "lscpu".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -439,7 +454,10 @@ fn resolve_exec_lscpu() {
  */
 #[test]
 fn resolve_exec_lshw() {
-    let reqs = vec![Request { exec: "lshw".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "lshw".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -449,7 +467,10 @@ fn resolve_exec_lshw() {
  */
 #[test]
 fn resolve_exec_mem() {
-    let reqs = vec![Request { exec: "mem".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "mem".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -459,7 +480,10 @@ fn resolve_exec_mem() {
  */
 #[test]
 fn resolve_exec_ps() {
-    let reqs = vec![Request { exec: "ps".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "ps".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -469,7 +493,10 @@ fn resolve_exec_ps() {
  */
 #[test]
 fn resolve_exec_profiler() {
-    let reqs = vec![Request { exec: "profiler".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "profiler".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -479,7 +506,10 @@ fn resolve_exec_profiler() {
  */
 #[test]
 fn resolve_exec_uname() {
-    let reqs = vec![Request { exec: "uname".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "uname".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -489,7 +519,10 @@ fn resolve_exec_uname() {
  */
 #[test]
 fn resolve_exec_uptime() {
-    let reqs = vec![Request { exec: "uptime".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "uptime".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -499,7 +532,10 @@ fn resolve_exec_uptime() {
  */
 #[test]
 fn resolve_exec_avax() {
-    let reqs = vec![Request { exec: "avax".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "avax".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -509,7 +545,10 @@ fn resolve_exec_avax() {
  */
 #[test]
 fn resolve_exec_avalanche_alias() {
-    let reqs = vec![Request { exec: "avalanche".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "avalanche".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -519,7 +558,10 @@ fn resolve_exec_avalanche_alias() {
  */
 #[test]
 fn resolve_exec_help() {
-    let reqs = vec![Request { exec: "help".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "help".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 
@@ -532,7 +574,10 @@ fn resolve_exec_help() {
  */
 #[test]
 fn resolve_exec_install_go() {
-    let reqs = vec![Request { exec: "install go".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "install go".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -542,7 +587,10 @@ fn resolve_exec_install_go() {
  */
 #[test]
 fn resolve_exec_install_golang() {
-    let reqs = vec![Request { exec: "install golang".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "install golang".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
     assert!(result.is_some());
 }
@@ -552,7 +600,10 @@ fn resolve_exec_install_golang() {
  */
 #[test]
 fn resolve_exec_arb_unimplemented() {
-    let reqs = vec![Request { exec: "arb".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "arb".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs).unwrap();
     assert!(result.contains("Arbitrum is NOT implemented"));
 }
@@ -562,7 +613,10 @@ fn resolve_exec_arb_unimplemented() {
  */
 #[test]
 fn resolve_exec_arbitrum_alias() {
-    let reqs = vec![Request { exec: "arbitrum".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "arbitrum".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs).unwrap();
     assert!(result.contains("Arbitrum is NOT implemented"));
 }
@@ -572,7 +626,10 @@ fn resolve_exec_arbitrum_alias() {
  */
 #[test]
 fn resolve_exec_base_unimplemented() {
-    let reqs = vec![Request { exec: "base".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "base".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs).unwrap();
     assert!(result.contains("Base is NOT implemented"));
 }
@@ -582,7 +639,10 @@ fn resolve_exec_base_unimplemented() {
  */
 #[test]
 fn resolve_exec_nexa_unimplemented() {
-    let reqs = vec![Request { exec: "nexa".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "nexa".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs).unwrap();
     assert!(result.contains("Nexa is NOT implemented"));
 }
@@ -592,7 +652,10 @@ fn resolve_exec_nexa_unimplemented() {
  */
 #[test]
 fn resolve_exec_op_unimplemented() {
-    let reqs = vec![Request { exec: "op".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "op".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs).unwrap();
     assert!(result.contains("Optimism is NOT implemented"));
 }
@@ -602,7 +665,10 @@ fn resolve_exec_op_unimplemented() {
  */
 #[test]
 fn resolve_exec_optimism_alias() {
-    let reqs = vec![Request { exec: "optimism".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "optimism".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs).unwrap();
     assert!(result.contains("Optimism is NOT implemented"));
 }
@@ -612,7 +678,10 @@ fn resolve_exec_optimism_alias() {
  */
 #[test]
 fn resolve_exec_sol_unimplemented() {
-    let reqs = vec![Request { exec: "sol".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "sol".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs).unwrap();
     assert!(result.contains("Solana is NOT implemented"));
 }
@@ -622,7 +691,10 @@ fn resolve_exec_sol_unimplemented() {
  */
 #[test]
 fn resolve_exec_solana_alias() {
-    let reqs = vec![Request { exec: "solana".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "solana".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs).unwrap();
     assert!(result.contains("Solana is NOT implemented"));
 }
@@ -632,7 +704,10 @@ fn resolve_exec_solana_alias() {
  */
 #[test]
 fn resolve_exec_unknown_command() {
-    let reqs = vec![Request { exec: "foobar_unknown".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "foobar_unknown".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs).unwrap();
     assert!(result.contains("UNKNOWN command"));
     assert!(result.contains("foobar_unknown"));
@@ -647,9 +722,15 @@ fn resolve_exec_unknown_command() {
  */
 #[test]
 fn resolve_exec_install_avax() {
-    let reqs = vec![Request { exec: "install avax".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "install avax".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
-    assert!(result.is_some(), "resolve_exec('install avax') should return Some");
+    assert!(
+        result.is_some(),
+        "resolve_exec('install avax') should return Some"
+    );
 }
 
 /**
@@ -657,9 +738,15 @@ fn resolve_exec_install_avax() {
  */
 #[test]
 fn resolve_exec_install_avalanche() {
-    let reqs = vec![Request { exec: "install avalanche".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "install avalanche".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
-    assert!(result.is_some(), "resolve_exec('install avalanche') should return Some");
+    assert!(
+        result.is_some(),
+        "resolve_exec('install avalanche') should return Some"
+    );
 }
 
 /**
@@ -667,9 +754,15 @@ fn resolve_exec_install_avalanche() {
  */
 #[test]
 fn resolve_exec_start_avax() {
-    let reqs = vec![Request { exec: "start avax".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "start avax".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
-    assert!(result.is_some(), "resolve_exec('start avax') should return Some");
+    assert!(
+        result.is_some(),
+        "resolve_exec('start avax') should return Some"
+    );
 }
 
 /**
@@ -677,9 +770,15 @@ fn resolve_exec_start_avax() {
  */
 #[test]
 fn resolve_exec_start_avalanche() {
-    let reqs = vec![Request { exec: "start avalanche".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "start avalanche".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
-    assert!(result.is_some(), "resolve_exec('start avalanche') should return Some");
+    assert!(
+        result.is_some(),
+        "resolve_exec('start avalanche') should return Some"
+    );
 }
 
 /**
@@ -687,9 +786,15 @@ fn resolve_exec_start_avalanche() {
  */
 #[test]
 fn resolve_exec_avax_status() {
-    let reqs = vec![Request { exec: "avax status".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "avax status".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
-    assert!(result.is_some(), "resolve_exec('avax status') should return Some");
+    assert!(
+        result.is_some(),
+        "resolve_exec('avax status') should return Some"
+    );
 }
 
 /**
@@ -697,9 +802,15 @@ fn resolve_exec_avax_status() {
  */
 #[test]
 fn resolve_exec_avalanche_status() {
-    let reqs = vec![Request { exec: "avalanche status".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "avalanche status".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
-    assert!(result.is_some(), "resolve_exec('avalanche status') should return Some");
+    assert!(
+        result.is_some(),
+        "resolve_exec('avalanche status') should return Some"
+    );
 }
 
 /**
@@ -707,9 +818,15 @@ fn resolve_exec_avalanche_status() {
  */
 #[test]
 fn resolve_exec_build_avax() {
-    let reqs = vec![Request { exec: "build avax".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "build avax".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
-    assert!(result.is_some(), "resolve_exec('build avax') should return Some");
+    assert!(
+        result.is_some(),
+        "resolve_exec('build avax') should return Some"
+    );
 }
 
 /**
@@ -717,9 +834,15 @@ fn resolve_exec_build_avax() {
  */
 #[test]
 fn resolve_exec_build_avalanche() {
-    let reqs = vec![Request { exec: "build avalanche".to_string(), created_at: 100 }];
+    let reqs = vec![Request {
+        exec: "build avalanche".to_string(),
+        created_at: 100,
+    }];
     let result = resolve_exec(&reqs);
-    assert!(result.is_some(), "resolve_exec('build avalanche') should return Some");
+    assert!(
+        result.is_some(),
+        "resolve_exec('build avalanche') should return Some"
+    );
 }
 
 // ---------------------------------------------------------------
@@ -757,11 +880,7 @@ async fn request_json_async_with_base_success() {
  */
 #[tokio::test]
 async fn request_json_async_with_base_connection_refused() {
-    let result = request_json_async_with_base(
-        "http://127.0.0.1:1/",
-        "sess-id",
-        1,
-    ).await;
+    let result = request_json_async_with_base("http://127.0.0.1:1/", "sess-id", 1).await;
 
     assert!(result.is_err());
 }
@@ -773,7 +892,8 @@ async fn request_json_async_with_base_connection_refused() {
 async fn request_json_async_with_base_server_error() {
     let mut server = mockito::Server::new_async().await;
 
-    let mock = server.mock("GET", "/session/1")
+    let mock = server
+        .mock("GET", "/session/1")
         .with_status(500)
         .with_body("server error")
         .create_async()
@@ -795,7 +915,8 @@ async fn request_json_async_with_base_server_error() {
 async fn request_json_async_with_base_empty_body() {
     let mut server = mockito::Server::new_async().await;
 
-    let mock = server.mock("GET", "/session/0")
+    let mock = server
+        .mock("GET", "/session/0")
         .with_status(200)
         .with_body("")
         .create_async()
@@ -816,7 +937,8 @@ async fn request_json_async_with_base_empty_body() {
 async fn response_json_async_with_base_success() {
     let mut server = mockito::Server::new_async().await;
 
-    let mock = server.mock("POST", "/session")
+    let mock = server
+        .mock("POST", "/session")
         .match_header("Content-Type", "application/json")
         .with_status(200)
         .with_body(r#"{"ok":true}"#)
@@ -824,11 +946,9 @@ async fn response_json_async_with_base_success() {
         .await;
 
     let base_url = format!("{}/", server.url());
-    let result = response_json_async_with_base(
-        &base_url,
-        "sess-abc",
-        "command output here".to_string(),
-    ).await;
+    let result =
+        response_json_async_with_base(&base_url, "sess-abc", "command output here".to_string())
+            .await;
 
     mock.assert_async().await;
     assert!(result.is_ok());
@@ -840,11 +960,8 @@ async fn response_json_async_with_base_success() {
  */
 #[tokio::test]
 async fn response_json_async_with_base_connection_refused() {
-    let result = response_json_async_with_base(
-        "http://127.0.0.1:1/",
-        "sess",
-        "data".to_string(),
-    ).await;
+    let result =
+        response_json_async_with_base("http://127.0.0.1:1/", "sess", "data".to_string()).await;
 
     assert!(result.is_err());
 }
@@ -856,18 +973,15 @@ async fn response_json_async_with_base_connection_refused() {
 async fn response_json_async_with_base_server_error() {
     let mut server = mockito::Server::new_async().await;
 
-    let mock = server.mock("POST", "/session")
+    let mock = server
+        .mock("POST", "/session")
         .with_status(500)
         .with_body("internal error")
         .create_async()
         .await;
 
     let base_url = format!("{}/", server.url());
-    let result = response_json_async_with_base(
-        &base_url,
-        "sess",
-        "output".to_string(),
-    ).await;
+    let result = response_json_async_with_base(&base_url, "sess", "output".to_string()).await;
 
     mock.assert_async().await;
     assert!(result.is_ok());
@@ -883,7 +997,8 @@ async fn response_json_async_with_base_body_structure() {
 
     let expected_body = build_exec_response_json("my-sess", "my output");
 
-    let mock = server.mock("POST", "/session")
+    let mock = server
+        .mock("POST", "/session")
         .match_body(expected_body.as_str())
         .with_status(200)
         .with_body("ok")
@@ -891,11 +1006,7 @@ async fn response_json_async_with_base_body_structure() {
         .await;
 
     let base_url = format!("{}/", server.url());
-    let result = response_json_async_with_base(
-        &base_url,
-        "my-sess",
-        "my output".to_string(),
-    ).await;
+    let result = response_json_async_with_base(&base_url, "my-sess", "my output".to_string()).await;
 
     mock.assert_async().await;
     assert!(result.is_ok());

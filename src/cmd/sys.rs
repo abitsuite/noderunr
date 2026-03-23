@@ -226,12 +226,9 @@ pub fn install_golang() -> Result<String, Box<dyn std::error::Error>> {
         "go version".to_string(),
     ];
 
-    let response = run_interactive(
-        &commands,
-        |line| {
-            println!("    ↳ {}", line);
-        },
-    )?;
+    let response = run_interactive(&commands, |line| {
+        println!("    ↳ {}", line);
+    })?;
 
     Ok(response)
 }

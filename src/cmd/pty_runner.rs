@@ -23,9 +23,7 @@ pub fn run_interactive(
     mut on_line: impl FnMut(&str),
 ) -> Result<String, Box<dyn std::error::Error>> {
     if cfg!(target_os = "windows") {
-        return Err(
-            "run_interactive is not supported on Windows.".into()
-        );
+        return Err("run_interactive is not supported on Windows.".into());
     }
 
     /* Open a PTY pair. */
@@ -72,7 +70,8 @@ pub fn run_interactive(
         return Err(format!(
             "Command exited with status {:?}.\nOutput:\n{}",
             status, collected
-        ).into());
+        )
+        .into());
     }
 
     Ok(collected)
@@ -120,12 +119,9 @@ mod pty_runner_test {
     #[test]
     #[cfg(not(target_os = "windows"))]
     fn run_interactive_echo() {
-        let result = run_interactive(
-            &["echo hello_pty_test".to_string()],
-            |line| {
-                println!("    ↳ {}", line);
-            },
-        );
+        let result = run_interactive(&["echo hello_pty_test".to_string()], |line| {
+            println!("    ↳ {}", line);
+        });
 
         assert!(
             result.is_ok(),
@@ -148,10 +144,7 @@ mod pty_runner_test {
     #[cfg(not(target_os = "windows"))]
     fn run_interactive_multiline() {
         let result = run_interactive(
-            &[
-                "echo line_one".to_string(),
-                "echo line_two".to_string(),
-            ],
+            &["echo line_one".to_string(), "echo line_two".to_string()],
             |_| {},
         );
 
@@ -167,10 +160,7 @@ mod pty_runner_test {
     #[test]
     #[cfg(not(target_os = "windows"))]
     fn run_interactive_failing_command() {
-        let result = run_interactive(
-            &["false".to_string()],
-            |_| {},
-        );
+        let result = run_interactive(&["false".to_string()], |_| {});
 
         assert!(
             result.is_err(),
@@ -186,12 +176,9 @@ mod pty_runner_test {
     fn run_interactive_callback_fires() {
         let mut line_count = 0;
 
-        let _ = run_interactive(
-            &["echo aaa".to_string(), "echo bbb".to_string()],
-            |_line| {
-                line_count += 1;
-            },
-        );
+        let _ = run_interactive(&["echo aaa".to_string(), "echo bbb".to_string()], |_line| {
+            line_count += 1;
+        });
 
         assert!(
             line_count >= 2,
@@ -236,7 +223,10 @@ mod pty_runner_test {
             },
         );
 
-        assert!(!exit_called, "on_exit callback should NOT be called on failure");
+        assert!(
+            !exit_called,
+            "on_exit callback should NOT be called on failure"
+        );
     }
 
     /**
@@ -245,10 +235,7 @@ mod pty_runner_test {
     #[test]
     #[cfg(not(target_os = "windows"))]
     fn run_interactive_empty_commands() {
-        let result = run_interactive(
-            &[],
-            |_| {},
-        );
+        let result = run_interactive(&[], |_| {});
 
         /* Empty join produces "bash -c ''" which exits 0. */
         assert!(result.is_ok());

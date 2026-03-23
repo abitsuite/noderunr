@@ -13,7 +13,9 @@ const IP_ENDPOINT: &str = "https://httpbin.org/ip";
  * Retrieves IP address from a specified URL.
  * This is the testable core; `get` delegates to it.
  */
-pub async fn get_with_url(url: &str) -> Result<HashMap<String, String>, Box<dyn std::error::Error>> {
+pub async fn get_with_url(
+    url: &str,
+) -> Result<HashMap<String, String>, Box<dyn std::error::Error>> {
     let resp = reqwest::get(url)
         .await?
         .json::<HashMap<String, String>>()

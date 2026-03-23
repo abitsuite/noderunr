@@ -88,14 +88,8 @@ pub(crate) fn extract_ip(
     response: Result<std::collections::HashMap<String, String>, Box<dyn std::error::Error>>,
 ) -> String {
     match response {
-        Ok(resp) => {
-            resp.get("origin")
-                .cloned()
-                .unwrap_or_default()
-        }
-        Err(err) => {
-            err.to_string()
-        }
+        Ok(resp) => resp.get("origin").cloned().unwrap_or_default(),
+        Err(err) => err.to_string(),
     }
 }
 

@@ -29,7 +29,11 @@ pub(crate) fn build_url_with_base(base_url: &str, endpoint: &str) -> String {
  * Make a (remote) API call against a specified base URL.
  * This is the testable core; `call` delegates to it.
  */
-pub async fn call_with_base_url(base_url: &str, _endpoint: &str, _json: &str) -> Result<String, Box<dyn std::error::Error>> {
+pub async fn call_with_base_url(
+    base_url: &str,
+    _endpoint: &str,
+    _json: &str,
+) -> Result<String, Box<dyn std::error::Error>> {
     /* Set URL (for remote API). */
     let url = build_url_with_base(base_url, _endpoint);
 

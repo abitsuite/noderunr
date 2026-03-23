@@ -13,7 +13,14 @@ use std::collections::HashMap;
  */
 #[test]
 fn build_registration_method_is_reg() {
-    let reg = build_registration("1.2.3.4", "Ubuntu 22.04", "5 days", "x86_64", "16GB", "linux");
+    let reg = build_registration(
+        "1.2.3.4",
+        "Ubuntu 22.04",
+        "5 days",
+        "x86_64",
+        "16GB",
+        "linux",
+    );
     assert_eq!(reg.method, "reg");
 }
 
@@ -92,7 +99,14 @@ fn serialize_registration_contains_method() {
  */
 #[test]
 fn serialize_registration_roundtrip() {
-    let reg = build_registration("192.168.1.1", "Fedora 39", "3d 5h", "aarch64", "32GB", "profdata");
+    let reg = build_registration(
+        "192.168.1.1",
+        "Fedora 39",
+        "3d 5h",
+        "aarch64",
+        "32GB",
+        "profdata",
+    );
     let json_str = serialize_registration(&reg);
     let parsed: Registration = from_str(&json_str).unwrap();
 

@@ -49,9 +49,7 @@ fn version_has_semver_structure() {
     let v = get_version();
 
     /* Strip the leading 'v' and trailing ' (alpha)'. */
-    let semver_part = v
-        .trim_start_matches('v')
-        .trim_end_matches(" (alpha)");
+    let semver_part = v.trim_start_matches('v').trim_end_matches(" (alpha)");
 
     let parts: Vec<&str> = semver_part.split('.').collect();
 

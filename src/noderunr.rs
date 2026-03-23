@@ -169,8 +169,7 @@ fn main() {
     // println!("  Node ID is: {}\n", node.get_id);
 
     /* Build the single tokio runtime for the entire application. */
-    let rt = tokio::runtime::Runtime::new()
-        .expect("Failed to create tokio runtime");
+    let rt = tokio::runtime::Runtime::new().expect("Failed to create tokio runtime");
 
     node::session::new(&rt);
 

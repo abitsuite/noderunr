@@ -166,7 +166,10 @@ pub(crate) async fn request_json_async_with_base(
  *
  * Make a (remote) API call.
  */
-async fn request_json_async(_sessionid: &str, _since: u64) -> Result<String, Box<dyn std::error::Error>> {
+async fn request_json_async(
+    _sessionid: &str,
+    _since: u64,
+) -> Result<String, Box<dyn std::error::Error>> {
     request_json_async_with_base(L1_ENDPOINT, _sessionid, _since).await
 }
 
@@ -437,7 +440,10 @@ pub fn by_session(rt: &tokio::runtime::Runtime, _sessionid: &str) {
         assert!(now.elapsed() >= ten_seconds);
 
         /* Make (remote) JSON (data) request. */
-        response = rt.block_on(request_json_async(_sessionid, LAST_SINCE.load(Ordering::Relaxed)));
+        response = rt.block_on(request_json_async(
+            _sessionid,
+            LAST_SINCE.load(Ordering::Relaxed),
+        ));
         // println!("\nRAW---\n{:?}\n", response);
 
         // let session_resp: Result<_, Box<dyn std::error::Error>>;

@@ -73,7 +73,8 @@ fn build_url_with_base_custom() {
 async fn request_json_with_base_url_success() {
     let mut server = mockito::Server::new_async().await;
 
-    let mock = server.mock("POST", "/session")
+    let mock = server
+        .mock("POST", "/session")
         .match_header("Content-Type", "application/json")
         .match_body(r#"{"key":"value"}"#)
         .with_status(200)
@@ -82,11 +83,8 @@ async fn request_json_with_base_url_success() {
         .await;
 
     let base_url = format!("{}/", server.url());
-    let result = super::request_json_with_base_url(
-        &base_url,
-        "session",
-        r#"{"key":"value"}"#,
-    ).await;
+    let result =
+        super::request_json_with_base_url(&base_url, "session", r#"{"key":"value"}"#).await;
 
     mock.assert_async().await;
     assert!(result.is_ok());
@@ -98,11 +96,7 @@ async fn request_json_with_base_url_success() {
  */
 #[tokio::test]
 async fn request_json_with_base_url_connection_refused() {
-    let result = super::request_json_with_base_url(
-        "http://127.0.0.1:1/",
-        "session",
-        "{}",
-    ).await;
+    let result = super::request_json_with_base_url("http://127.0.0.1:1/", "session", "{}").await;
 
     assert!(result.is_err());
 }
@@ -114,7 +108,8 @@ async fn request_json_with_base_url_connection_refused() {
 async fn request_json_with_base_url_server_error() {
     let mut server = mockito::Server::new_async().await;
 
-    let mock = server.mock("POST", "/session")
+    let mock = server
+        .mock("POST", "/session")
         .with_status(500)
         .with_body("error")
         .create_async()
@@ -135,7 +130,8 @@ async fn request_json_with_base_url_server_error() {
 async fn request_json_with_base_url_empty_response() {
     let mut server = mockito::Server::new_async().await;
 
-    let mock = server.mock("POST", "/data")
+    let mock = server
+        .mock("POST", "/data")
         .with_status(200)
         .with_body("")
         .create_async()

@@ -8,7 +8,11 @@ use super::sys;
 #[test]
 fn df_returns_ok() {
     let result = sys::df();
-    assert!(result.is_ok(), "sys::df() returned Err: {}", result.unwrap_err());
+    assert!(
+        result.is_ok(),
+        "sys::df() returned Err: {}",
+        result.unwrap_err()
+    );
 }
 
 /**
@@ -35,7 +39,11 @@ fn df_output_has_content() {
 #[test]
 fn du_returns_ok() {
     let result = sys::du();
-    assert!(result.is_ok(), "sys::du() returned Err: {}", result.unwrap_err());
+    assert!(
+        result.is_ok(),
+        "sys::du() returned Err: {}",
+        result.unwrap_err()
+    );
 }
 
 /**
@@ -44,7 +52,11 @@ fn du_returns_ok() {
 #[test]
 fn ls_returns_ok_and_non_empty() {
     let result = sys::ls();
-    assert!(result.is_ok(), "sys::ls() returned Err: {}", result.unwrap_err());
+    assert!(
+        result.is_ok(),
+        "sys::ls() returned Err: {}",
+        result.unwrap_err()
+    );
 
     let output = result.unwrap();
     assert!(!output.trim().is_empty(), "sys::ls() returned empty string");
@@ -56,7 +68,11 @@ fn ls_returns_ok_and_non_empty() {
 #[test]
 fn lsblk_returns_ok() {
     let result = sys::lsblk();
-    assert!(result.is_ok(), "sys::lsblk() returned Err: {}", result.unwrap_err());
+    assert!(
+        result.is_ok(),
+        "sys::lsblk() returned Err: {}",
+        result.unwrap_err()
+    );
 }
 
 /**
@@ -65,7 +81,11 @@ fn lsblk_returns_ok() {
 #[test]
 fn lscpu_returns_ok() {
     let result = sys::lscpu();
-    assert!(result.is_ok(), "sys::lscpu() returned Err: {}", result.unwrap_err());
+    assert!(
+        result.is_ok(),
+        "sys::lscpu() returned Err: {}",
+        result.unwrap_err()
+    );
 }
 
 /**
@@ -74,7 +94,11 @@ fn lscpu_returns_ok() {
 #[test]
 fn lshw_returns_ok() {
     let result = sys::lshw();
-    assert!(result.is_ok(), "sys::lshw() returned Err: {}", result.unwrap_err());
+    assert!(
+        result.is_ok(),
+        "sys::lshw() returned Err: {}",
+        result.unwrap_err()
+    );
 }
 
 /**
@@ -83,7 +107,11 @@ fn lshw_returns_ok() {
 #[test]
 fn mem_returns_ok() {
     let result = sys::mem();
-    assert!(result.is_ok(), "sys::mem() returned Err: {}", result.unwrap_err());
+    assert!(
+        result.is_ok(),
+        "sys::mem() returned Err: {}",
+        result.unwrap_err()
+    );
 }
 
 /**
@@ -92,7 +120,11 @@ fn mem_returns_ok() {
 #[test]
 fn ps_returns_ok_and_has_processes() {
     let result = sys::ps();
-    assert!(result.is_ok(), "sys::ps() returned Err: {}", result.unwrap_err());
+    assert!(
+        result.is_ok(),
+        "sys::ps() returned Err: {}",
+        result.unwrap_err()
+    );
 
     let output = result.unwrap();
     assert!(!output.trim().is_empty(), "sys::ps() returned empty string");
@@ -112,7 +144,11 @@ fn ps_returns_ok_and_has_processes() {
 #[test]
 fn get_uname_returns_ok_and_non_empty() {
     let result = sys::get_uname();
-    assert!(result.is_ok(), "sys::get_uname() returned Err: {}", result.unwrap_err());
+    assert!(
+        result.is_ok(),
+        "sys::get_uname() returned Err: {}",
+        result.unwrap_err()
+    );
 
     let output = result.unwrap();
     assert!(
@@ -143,7 +179,11 @@ fn get_uname_contains_os_identifier() {
 #[test]
 fn get_uptime_returns_ok() {
     let result = sys::get_uptime();
-    assert!(result.is_ok(), "sys::get_uptime() returned Err: {}", result.unwrap_err());
+    assert!(
+        result.is_ok(),
+        "sys::get_uptime() returned Err: {}",
+        result.unwrap_err()
+    );
 }
 
 /**
@@ -152,7 +192,11 @@ fn get_uptime_returns_ok() {
 #[test]
 fn get_release_returns_ok_and_non_empty() {
     let result = sys::get_release();
-    assert!(result.is_ok(), "sys::get_release() returned Err: {}", result.unwrap_err());
+    assert!(
+        result.is_ok(),
+        "sys::get_release() returned Err: {}",
+        result.unwrap_err()
+    );
 
     let output = result.unwrap();
     assert!(

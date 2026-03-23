@@ -51,10 +51,7 @@ fn avax_returns_ok() {
 fn avax_output_is_non_empty() {
     let result = avax().unwrap();
 
-    assert!(
-        !result.is_empty(),
-        "avax() should return non-empty output"
-    );
+    assert!(!result.is_empty(), "avax() should return non-empty output");
 }
 
 /**
@@ -87,10 +84,7 @@ fn avax_start_windows_guard() {
     if cfg!(target_os = "windows") {
         let result = avax_start();
 
-        assert!(
-            result.is_err(),
-            "avax_start() should return Err on Windows"
-        );
+        assert!(result.is_err(), "avax_start() should return Err on Windows");
 
         let err_msg = format!("{}", result.unwrap_err());
         assert!(
@@ -131,10 +125,7 @@ fn avax_stop_windows_guard() {
     if cfg!(target_os = "windows") {
         let result = avax_stop();
 
-        assert!(
-            result.is_err(),
-            "avax_stop() should return Err on Windows"
-        );
+        assert!(result.is_err(), "avax_stop() should return Err on Windows");
 
         let err_msg = format!("{}", result.unwrap_err());
         assert!(
@@ -242,10 +233,7 @@ fn build_avax_install_steps_starts_with_mkdir() {
 fn build_avax_install_steps_has_curl() {
     let steps = build_avax_install_steps();
     let has_curl = steps.iter().any(|(cmd, _)| cmd.contains("curl"));
-    assert!(
-        has_curl,
-        "Install steps should contain a curl command"
-    );
+    assert!(has_curl, "Install steps should contain a curl command");
 }
 
 /**
@@ -283,10 +271,7 @@ fn build_avax_test_steps_non_empty() {
 fn build_avax_test_steps_has_help() {
     let steps = build_avax_test_steps();
     let has_help = steps.iter().any(|(cmd, _)| cmd.contains("--help"));
-    assert!(
-        has_help,
-        "Test steps should contain a --help command"
-    );
+    assert!(has_help, "Test steps should contain a --help command");
 }
 
 /**
@@ -296,10 +281,7 @@ fn build_avax_test_steps_has_help() {
 fn build_avax_test_steps_has_version() {
     let steps = build_avax_test_steps();
     let has_version = steps.iter().any(|(cmd, _)| cmd.contains("--version"));
-    assert!(
-        has_version,
-        "Test steps should contain a --version command"
-    );
+    assert!(has_version, "Test steps should contain a --version command");
 }
 
 /**
@@ -375,10 +357,7 @@ fn build_avalanche_steps_non_empty() {
 fn build_avalanche_steps_has_mkdir() {
     let steps = build_avalanche_steps();
     let has_mkdir = steps.iter().any(|(cmd, _)| cmd.contains("mkdir"));
-    assert!(
-        has_mkdir,
-        "Build steps should contain a mkdir command"
-    );
+    assert!(has_mkdir, "Build steps should contain a mkdir command");
 }
 
 /**
@@ -388,10 +367,7 @@ fn build_avalanche_steps_has_mkdir() {
 fn build_avalanche_steps_has_build_script() {
     let steps = build_avalanche_steps();
     let has_build = steps.iter().any(|(cmd, _)| cmd.contains("build.sh"));
-    assert!(
-        has_build,
-        "Build steps should contain a build.sh command"
-    );
+    assert!(has_build, "Build steps should contain a build.sh command");
 }
 
 /**

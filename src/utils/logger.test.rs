@@ -15,9 +15,7 @@ fn test_log_returns_error_on_missing_file() {
     /* If it doesn't, we expect an Err. */
     /* Either outcome is valid — we just verify no panic. */
     match result {
-        Ok(()) => {
-            /* syslog exists and was readable — that's fine. */
-        }
+        Ok(()) => { /* syslog exists and was readable — that's fine. */ }
         Err(e) => {
             let msg = format!("{}", e);
             assert!(
