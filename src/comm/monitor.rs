@@ -17,10 +17,10 @@ pub(crate) struct Action {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub(crate) struct ExecResponse {
-    pub(crate) sessionid: String,
-    pub(crate) method: String,
-    pub(crate) resp: String,
+pub struct ExecResponse {
+    pub sessionid: String,
+    pub method: String,
+    pub resp: String,
 }
 
 #[allow(dead_code)]
@@ -31,21 +31,21 @@ pub(crate) struct Log {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub(crate) struct Request {
-    pub(crate) exec: String,
-    pub(crate) created_at: u64, // milliseconds
+pub struct Request {
+    pub exec: String,
+    pub created_at: u64, // milliseconds
 }
 
 #[derive(Debug, Default, Deserialize, Serialize)]
-pub(crate) struct Session {
-    pub(crate) sessionid: String,
-    pub(crate) act: Option<Vec<Action>>,
-    pub(crate) log: Option<Vec<Action>>,
-    pub(crate) req: Option<Vec<Request>>,
-    pub(crate) res: Option<Vec<Action>>,
-    pub(crate) rpt: Option<Vec<Action>>,
-    pub(crate) created_at: u32, // seconds
-    pub(crate) last_since: u64, // milliseconds
+pub struct Session {
+    pub sessionid: String,
+    pub act: Option<Vec<Action>>,
+    pub log: Option<Vec<Action>>,
+    pub req: Option<Vec<Request>>,
+    pub res: Option<Vec<Action>>,
+    pub rpt: Option<Vec<Action>>,
+    pub created_at: u32, // seconds
+    pub last_since: u64, // milliseconds
 }
 
 #[allow(dead_code)]
@@ -56,9 +56,9 @@ pub(crate) struct SessionRequest {
 }
 
 #[derive(Debug, Default, Deserialize, Serialize)]
-pub(crate) struct SessionResponse {
-    pub(crate) success: bool,
-    pub(crate) result: Session,
+pub struct SessionResponse {
+    pub success: bool,
+    pub result: Session,
 }
 
 /* Initialize constants. */
@@ -119,7 +119,7 @@ pub(crate) fn build_response_url_with_base(base_url: &str) -> String {
  *
  * Constructs the JSON string for an exec response.
  */
-pub(crate) fn build_exec_response_json(sessionid: &str, response: &str) -> String {
+pub fn build_exec_response_json(sessionid: &str, response: &str) -> String {
     let exec_response = ExecResponse {
         sessionid: sessionid.to_string(),
         method: "res".to_string(),
@@ -135,7 +135,7 @@ pub(crate) fn build_exec_response_json(sessionid: &str, response: &str) -> Strin
  * Make a (remote) API call using a custom base URL.
  * This is the testable core; request_json_async delegates to it.
  */
-pub(crate) async fn request_json_async_with_base(
+pub async fn request_json_async_with_base(
     base_url: &str,
     _sessionid: &str,
     _since: u64,
@@ -179,7 +179,7 @@ async fn request_json_async(
  * Make a (remote) API response using a custom base URL.
  * This is the testable core; response_json_async delegates to it.
  */
-pub(crate) async fn response_json_async_with_base(
+pub async fn response_json_async_with_base(
     base_url: &str,
     _sessionid: &str,
     _response: String,
@@ -222,7 +222,7 @@ async fn response_json_async(
  * Returns None if the request list is empty.
  * This function contains NO network I/O and is fully testable.
  */
-pub(crate) fn resolve_exec(_resp: &[Request]) -> Option<String> {
+pub fn resolve_exec(_resp: &[Request]) -> Option<String> {
     /* Validate response. */
     if _resp.is_empty() {
         return None;
