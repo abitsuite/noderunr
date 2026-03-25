@@ -9,11 +9,11 @@ use std::{thread, time};
 use crate::cmd;
 
 #[derive(Debug, Deserialize, Serialize)]
-pub(crate) struct Action {
-    pub(crate) actionid: Option<String>,
-    pub(crate) body: Option<String>,
-    pub(crate) target: Option<String>,
-    pub(crate) created_at: u64, // milliseconds
+pub struct Action {
+    pub actionid: Option<String>,
+    pub body: Option<String>,
+    pub target: Option<String>,
+    pub created_at: u64, // milliseconds
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -25,9 +25,9 @@ pub struct ExecResponse {
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize, Serialize)]
-pub(crate) struct Log {
-    pub(crate) body: String,
-    pub(crate) created_at: u64, // milliseconds
+pub struct Log {
+    pub body: String,
+    pub created_at: u64, // milliseconds
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -50,9 +50,9 @@ pub struct Session {
 
 #[allow(dead_code)]
 #[derive(Serialize, Deserialize)]
-pub(crate) struct SessionRequest {
-    pub(crate) sessionid: String,
-    pub(crate) since: u64, // milliseconds
+pub struct SessionRequest {
+    pub sessionid: String,
+    pub since: u64, // milliseconds
 }
 
 #[derive(Debug, Default, Deserialize, Serialize)]
@@ -62,7 +62,7 @@ pub struct SessionResponse {
 }
 
 /* Initialize constants. */
-pub(crate) const L1_ENDPOINT: &str = "https://l1.run/v1/";
+pub const L1_ENDPOINT: &str = "https://l1.run/v1/";
 
 /* Initialize globals. */
 static LAST_SINCE: AtomicU64 = AtomicU64::new(1);
@@ -73,7 +73,7 @@ static LAST_SINCE: AtomicU64 = AtomicU64::new(1);
  * Constructs the full URL for a session request.
  */
 #[cfg(test)]
-pub(crate) fn build_request_url(since: u64) -> String {
+pub fn build_request_url(since: u64) -> String {
     build_request_url_with_base(L1_ENDPOINT, since)
 }
 
@@ -82,7 +82,7 @@ pub(crate) fn build_request_url(since: u64) -> String {
  *
  * Constructs the full URL for a session request using a custom base URL.
  */
-pub(crate) fn build_request_url_with_base(base_url: &str, since: u64) -> String {
+pub fn build_request_url_with_base(base_url: &str, since: u64) -> String {
     format!("{}{}/{}", base_url, "session", since)
 }
 
@@ -91,7 +91,7 @@ pub(crate) fn build_request_url_with_base(base_url: &str, since: u64) -> String 
  *
  * Constructs the bearer authorization header value.
  */
-pub(crate) fn build_auth_header(sessionid: &str) -> String {
+pub fn build_auth_header(sessionid: &str) -> String {
     format!("{} {}", "Bearer", sessionid)
 }
 
@@ -101,7 +101,7 @@ pub(crate) fn build_auth_header(sessionid: &str) -> String {
  * Constructs the full URL for a session response post.
  */
 #[cfg(test)]
-pub(crate) fn build_response_url() -> String {
+pub fn build_response_url() -> String {
     build_response_url_with_base(L1_ENDPOINT)
 }
 
@@ -110,7 +110,7 @@ pub(crate) fn build_response_url() -> String {
  *
  * Constructs the full URL for a session response post using a custom base URL.
  */
-pub(crate) fn build_response_url_with_base(base_url: &str) -> String {
+pub fn build_response_url_with_base(base_url: &str) -> String {
     format!("{}{}", base_url, "session")
 }
 
