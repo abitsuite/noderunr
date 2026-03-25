@@ -273,11 +273,7 @@ async fn live_swagger_ui_is_reachable() {
         .await
         .expect("Failed to reach Swagger UI");
 
-    assert_eq!(
-        resp.status().as_u16(),
-        200,
-        "Swagger UI should return 200"
-    );
+    assert_eq!(resp.status().as_u16(), 200, "Swagger UI should return 200");
 
     let body = resp.text().await.unwrap();
     assert!(

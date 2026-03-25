@@ -212,8 +212,7 @@ async fn mock_session_registration_success() {
     })
     .to_string();
 
-    let result =
-        noderunr::api::call_with_base_url(&base_url, "session", &registration_json).await;
+    let result = noderunr::api::call_with_base_url(&base_url, "session", &registration_json).await;
 
     mock.assert_async().await;
     assert!(result.is_ok(), "Registration call should succeed");
@@ -461,10 +460,8 @@ async fn mock_session_poll_no_commands() {
 async fn mock_session_exec_response_body() {
     let mut server = mockito::Server::new_async().await;
 
-    let expected_json = noderunr::comm::monitor::build_exec_response_json(
-        "resp-session-id",
-        "Linux 5.15.0 x86_64",
-    );
+    let expected_json =
+        noderunr::comm::monitor::build_exec_response_json("resp-session-id", "Linux 5.15.0 x86_64");
 
     let mock = server
         .mock("POST", "/session")
@@ -492,8 +489,7 @@ async fn mock_session_exec_response_body() {
  */
 #[tokio::test]
 async fn mock_session_exec_response_method_is_res() {
-    let json_str =
-        noderunr::comm::monitor::build_exec_response_json("any-session", "any output");
+    let json_str = noderunr::comm::monitor::build_exec_response_json("any-session", "any output");
     let parsed: serde_json::Value = serde_json::from_str(&json_str).unwrap();
 
     assert_eq!(
