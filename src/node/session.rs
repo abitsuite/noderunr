@@ -159,24 +159,24 @@ pub(crate) fn extract_ip(
 pub(crate) fn collect_system_info(
     rt: &tokio::runtime::Runtime,
 ) -> (
-    String, // hostname
-    String, // os
-    String, // arch
-    String, // kernel
-    String, // machine_id
-    String, // ip
-    String, // cpu_model
-    u32,    // cpu_cores
-    u64,    // mem_total_mb
-    u64,    // disk_total_gb
-    String, // uptime
-    u8,     // disk_used_pct
-    (f64, f64, f64), // load_avg
+    String,               // hostname
+    String,               // os
+    String,               // arch
+    String,               // kernel
+    String,               // machine_id
+    String,               // ip
+    String,               // cpu_model
+    u32,                  // cpu_cores
+    u64,                  // mem_total_mb
+    u64,                  // disk_total_gb
+    String,               // uptime
+    u8,                   // disk_used_pct
+    (f64, f64, f64),      // load_avg
     Vec<ServiceSnapshot>, // services
-    String, // release (raw)
-    String, // cpu (raw)
-    String, // mem (raw)
-    String, // profile (raw)
+    String,               // release (raw)
+    String,               // cpu (raw)
+    String,               // mem (raw)
+    String,               // profile (raw)
 ) {
     /* Request IP address. */
     let ip_response = rt.block_on(utils::ip::get());

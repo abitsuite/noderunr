@@ -275,9 +275,7 @@ pub fn system_profiler() -> Result<String, Box<dyn std::error::Error>> {
  */
 pub fn get_hostname() -> Result<String, Box<dyn std::error::Error>> {
     if cfg!(target_os = "windows") {
-        let output = Command::new("cmd")
-            .args(["/C", "hostname"])
-            .output()?;
+        let output = Command::new("cmd").args(["/C", "hostname"]).output()?;
 
         Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
     } else {
@@ -356,7 +354,8 @@ pub fn get_os_pretty() -> Result<String, Box<dyn std::error::Error>> {
  */
 pub fn get_arch() -> Result<String, Box<dyn std::error::Error>> {
     if cfg!(target_os = "windows") {
-        let arch = std::env::var("PROCESSOR_ARCHITECTURE").unwrap_or_else(|_| "unknown".to_string());
+        let arch =
+            std::env::var("PROCESSOR_ARCHITECTURE").unwrap_or_else(|_| "unknown".to_string());
 
         Ok(arch)
     } else {
@@ -503,14 +502,11 @@ pub fn get_cpu_model() -> Result<String, Box<dyn std::error::Error>> {
  */
 pub fn get_cpu_cores() -> Result<u32, Box<dyn std::error::Error>> {
     if cfg!(target_os = "windows") {
-        let val =
-            std::env::var("NUMBER_OF_PROCESSORS").unwrap_or_else(|_| "0".to_string());
+        let val = std::env::var("NUMBER_OF_PROCESSORS").unwrap_or_else(|_| "0".to_string());
 
         Ok(val.trim().parse::<u32>().unwrap_or(0))
     } else if cfg!(target_os = "macos") {
-        let output = Command::new("sysctl")
-            .args(["-n", "hw.ncpu"])
-            .output()?;
+        let output = Command::new("sysctl").args(["-n", "hw.ncpu"]).output()?;
 
         let raw = String::from_utf8_lossy(&output.stdout).trim().to_string();
 
@@ -551,9 +547,7 @@ pub fn get_mem_total_mb() -> Result<u64, Box<dyn std::error::Error>> {
 
         Ok(kb / 1024)
     } else if cfg!(target_os = "macos") {
-        let output = Command::new("sysctl")
-            .args(["-n", "hw.memsize"])
-            .output()?;
+        let output = Command::new("sysctl").args(["-n", "hw.memsize"]).output()?;
 
         let raw = String::from_utf8_lossy(&output.stdout).trim().to_string();
         let bytes = raw.parse::<u64>().unwrap_or(0);
@@ -721,23 +715,27 @@ pub fn get_load_avg() -> Result<(f64, f64, f64), Box<dyn std::error::Error>> {
         /* Load average is not a native concept on Windows. */
         Ok((0.0, 0.0, 0.0))
     } else if cfg!(target_os = "macos") {
-        let output = Command::new("sysctl")
-            .args(["-n", "vm.loadavg"])
-            .output()?;
+        let output = Command::new("sysctl").args(["-n", "vm.loadavg"]).output()?;
 
         let raw = String::from_utf8_lossy(&output.stdout).trim().to_string();
 
         /* sysctl output: "{ 0.52 0.48 0.45 }" — strip braces. */
-        let cleaned = raw
-            .trim_start_matches('{')
-            .trim_end_matches('}')
-            .trim();
+        let cleaned = raw.trim_start_matches('{').trim_end_matches('}').trim();
 
         let parts: Vec<&str> = cleaned.split_whitespace().collect();
 
-        let l1 = parts.first().and_then(|s| s.parse::<f64>().ok()).unwrap_or(0.0);
-        let l5 = parts.get(1).and_then(|s| s.parse::<f64>().ok()).unwrap_or(0.0);
-        let l15 = parts.get(2).and_then(|s| s.parse::<f64>().ok()).unwrap_or(0.0);
+        let l1 = parts
+            .first()
+            .and_then(|s| s.parse::<f64>().ok())
+            .unwrap_or(0.0);
+        let l5 = parts
+            .get(1)
+            .and_then(|s| s.parse::<f64>().ok())
+            .unwrap_or(0.0);
+        let l15 = parts
+            .get(2)
+            .and_then(|s| s.parse::<f64>().ok())
+            .unwrap_or(0.0);
 
         Ok((l1, l5, l15))
     } else {
@@ -746,9 +744,18 @@ pub fn get_load_avg() -> Result<(f64, f64, f64), Box<dyn std::error::Error>> {
 
         let parts: Vec<&str> = content.split_whitespace().collect();
 
-        let l1 = parts.first().and_then(|s| s.parse::<f64>().ok()).unwrap_or(0.0);
-        let l5 = parts.get(1).and_then(|s| s.parse::<f64>().ok()).unwrap_or(0.0);
-        let l15 = parts.get(2).and_then(|s| s.parse::<f64>().ok()).unwrap_or(0.0);
+        let l1 = parts
+            .first()
+            .and_then(|s| s.parse::<f64>().ok())
+            .unwrap_or(0.0);
+        let l5 = parts
+            .get(1)
+            .and_then(|s| s.parse::<f64>().ok())
+            .unwrap_or(0.0);
+        let l15 = parts
+            .get(2)
+            .and_then(|s| s.parse::<f64>().ok())
+            .unwrap_or(0.0);
 
         Ok((l1, l5, l15))
     }

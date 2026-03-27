@@ -191,10 +191,24 @@ fn build_registration_hardware_fields() {
 #[test]
 fn build_registration_runtime_fields() {
     let reg = build_registration(
-        "h", "o", "a", "k", "m", "ip", "cpu", 1, 1, 1, "3 days, 5:22", 87,
+        "h",
+        "o",
+        "a",
+        "k",
+        "m",
+        "ip",
+        "cpu",
+        1,
+        1,
+        1,
+        "3 days, 5:22",
+        87,
         (2.5, 1.8, 1.2),
         vec![],
-        "r", "c", "m", "p",
+        "r",
+        "c",
+        "m",
+        "p",
     );
 
     assert_eq!(reg.uptime, "3 days, 5:22");
@@ -227,10 +241,24 @@ fn build_registration_with_services() {
     ];
 
     let reg = build_registration(
-        "h", "o", "a", "k", "m", "ip", "cpu", 1, 1, 1, "up", 0,
+        "h",
+        "o",
+        "a",
+        "k",
+        "m",
+        "ip",
+        "cpu",
+        1,
+        1,
+        1,
+        "up",
+        0,
         (0.0, 0.0, 0.0),
         services.clone(),
-        "r", "c", "m", "p",
+        "r",
+        "c",
+        "m",
+        "p",
     );
 
     assert_eq!(reg.services.len(), 2);
@@ -248,7 +276,18 @@ fn build_registration_with_services() {
 #[test]
 fn build_registration_legacy_fields() {
     let reg = build_registration(
-        "h", "o", "a", "k", "m", "ip", "cpu", 1, 1, 1, "up", 0,
+        "h",
+        "o",
+        "a",
+        "k",
+        "m",
+        "ip",
+        "cpu",
+        1,
+        1,
+        1,
+        "up",
+        0,
         (0.0, 0.0, 0.0),
         vec![],
         "Linux validator-01 6.5.0 ...",
@@ -269,10 +308,24 @@ fn build_registration_legacy_fields() {
 #[test]
 fn build_registration_empty_fields() {
     let reg = build_registration(
-        "", "", "", "", "", "", "", 0, 0, 0, "", 0,
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        0,
+        0,
+        "",
+        0,
         (0.0, 0.0, 0.0),
         vec![],
-        "", "", "", "",
+        "",
+        "",
+        "",
+        "",
     );
 
     assert_eq!(reg.method, "reg");
@@ -302,11 +355,24 @@ fn build_registration_empty_fields() {
 #[test]
 fn build_registration_unicode() {
     let reg = build_registration(
-        "ホスト名", "릴리스", "アーキ", "カーネル", "マシンID", "🌍", "процессор",
-        4, 8192, 100, "日本語", 50,
+        "ホスト名",
+        "릴리스",
+        "アーキ",
+        "カーネル",
+        "マシンID",
+        "🌍",
+        "процессор",
+        4,
+        8192,
+        100,
+        "日本語",
+        50,
         (1.0, 2.0, 3.0),
         vec![],
-        "릴리스", "процессор", "記憶體", "профіль",
+        "릴리스",
+        "процессор",
+        "記憶體",
+        "профіль",
     );
 
     assert_eq!(reg.hostname, "ホスト名");
@@ -320,11 +386,24 @@ fn build_registration_unicode() {
 #[test]
 fn build_registration_max_values() {
     let reg = build_registration(
-        "h", "o", "a", "k", "m", "ip", "cpu",
-        u32::MAX, u64::MAX, u64::MAX, "up", u8::MAX,
+        "h",
+        "o",
+        "a",
+        "k",
+        "m",
+        "ip",
+        "cpu",
+        u32::MAX,
+        u64::MAX,
+        u64::MAX,
+        "up",
+        u8::MAX,
         (f64::MAX, f64::MAX, f64::MAX),
         vec![],
-        "r", "c", "m", "p",
+        "r",
+        "c",
+        "m",
+        "p",
     );
 
     assert_eq!(reg.cpu_cores, u32::MAX);
@@ -343,11 +422,24 @@ fn build_registration_max_values() {
 #[test]
 fn serialize_registration_valid_json() {
     let reg = build_registration(
-        "host", "Ubuntu", "x86_64", "6.5.0", "mid123",
-        "1.2.3.4", "AMD EPYC", 8, 32768, 500, "1d", 42,
+        "host",
+        "Ubuntu",
+        "x86_64",
+        "6.5.0",
+        "mid123",
+        "1.2.3.4",
+        "AMD EPYC",
+        8,
+        32768,
+        500,
+        "1d",
+        42,
         (0.5, 0.4, 0.3),
         vec![],
-        "Ubuntu", "x86", "4GB", "linux",
+        "Ubuntu",
+        "x86",
+        "4GB",
+        "linux",
     );
     let json_str = serialize_registration(&reg);
 
@@ -362,10 +454,24 @@ fn serialize_registration_valid_json() {
 #[test]
 fn serialize_registration_contains_method() {
     let reg = build_registration(
-        "h", "o", "a", "k", "m", "1.2.3.4", "cpu", 1, 1, 1, "1d", 0,
+        "h",
+        "o",
+        "a",
+        "k",
+        "m",
+        "1.2.3.4",
+        "cpu",
+        1,
+        1,
+        1,
+        "1d",
+        0,
         (0.0, 0.0, 0.0),
         vec![],
-        "r", "c", "m", "p",
+        "r",
+        "c",
+        "m",
+        "p",
     );
     let json_str = serialize_registration(&reg);
 
@@ -377,16 +483,14 @@ fn serialize_registration_contains_method() {
  */
 #[test]
 fn serialize_registration_roundtrip() {
-    let services = vec![
-        ServiceSnapshot {
-            name: "avalanchego".to_string(),
-            display_name: "Avalanche".to_string(),
-            installed: true,
-            running: true,
-            version: "1.11.3".to_string(),
-            pid: 42,
-        },
-    ];
+    let services = vec![ServiceSnapshot {
+        name: "avalanchego".to_string(),
+        display_name: "Avalanche".to_string(),
+        installed: true,
+        running: true,
+        version: "1.11.3".to_string(),
+        pid: 42,
+    }];
 
     let reg = build_registration(
         "validator-01",
@@ -459,10 +563,24 @@ fn serialize_registration_includes_services() {
     ];
 
     let reg = build_registration(
-        "h", "o", "a", "k", "m", "ip", "cpu", 1, 1, 1, "up", 0,
+        "h",
+        "o",
+        "a",
+        "k",
+        "m",
+        "ip",
+        "cpu",
+        1,
+        1,
+        1,
+        "up",
+        0,
         (0.0, 0.0, 0.0),
         services,
-        "r", "c", "m", "p",
+        "r",
+        "c",
+        "m",
+        "p",
     );
 
     let json_str = serialize_registration(&reg);
@@ -481,10 +599,24 @@ fn serialize_registration_includes_services() {
 #[test]
 fn serialize_registration_empty_services() {
     let reg = build_registration(
-        "h", "o", "a", "k", "m", "ip", "cpu", 1, 1, 1, "up", 0,
+        "h",
+        "o",
+        "a",
+        "k",
+        "m",
+        "ip",
+        "cpu",
+        1,
+        1,
+        1,
+        "up",
+        0,
         (0.0, 0.0, 0.0),
         vec![],
-        "r", "c", "m", "p",
+        "r",
+        "c",
+        "m",
+        "p",
     );
 
     let json_str = serialize_registration(&reg);
