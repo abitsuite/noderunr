@@ -767,7 +767,7 @@ pub fn get_load_avg() -> Result<(f64, f64, f64), Box<dyn std::error::Error>> {
  * Returned by detect_service() — describes whether a known
  * service is installed and/or running on this system.
  */
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct ServiceStatus {
     pub name: String,
     pub display_name: String,
@@ -775,19 +775,6 @@ pub struct ServiceStatus {
     pub running: bool,
     pub version: String,
     pub pid: u32,
-}
-
-impl Default for ServiceStatus {
-    fn default() -> Self {
-        ServiceStatus {
-            name: String::new(),
-            display_name: String::new(),
-            installed: false,
-            running: false,
-            version: String::new(),
-            pid: 0,
-        }
-    }
 }
 
 /**
