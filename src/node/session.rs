@@ -68,50 +68,13 @@ pub(crate) struct Session {
 /**
  * Build Registration
  *
- * Pure function: builds a Registration struct from the given system info.
+ * Pure function: builds a Registration struct from pre-populated fields.
  * Contains NO network I/O and is fully testable.
+ * Accepts a partially-filled Registration and sets method to "reg".
  */
-pub(crate) fn build_registration(
-    hostname: &str,
-    os: &str,
-    arch: &str,
-    kernel: &str,
-    machine_id: &str,
-    ip: &str,
-    cpu_model: &str,
-    cpu_cores: u32,
-    mem_total_mb: u64,
-    disk_total_gb: u64,
-    uptime: &str,
-    disk_used_pct: u8,
-    load_avg: (f64, f64, f64),
-    services: Vec<ServiceSnapshot>,
-    release: &str,
-    cpu: &str,
-    mem: &str,
-    profile: &str,
-) -> Registration {
-    Registration {
-        method: "reg".to_string(),
-        hostname: hostname.to_string(),
-        os: os.to_string(),
-        arch: arch.to_string(),
-        kernel: kernel.to_string(),
-        machine_id: machine_id.to_string(),
-        ip: ip.to_string(),
-        cpu_model: cpu_model.to_string(),
-        cpu_cores,
-        mem_total_mb,
-        disk_total_gb,
-        uptime: uptime.to_string(),
-        disk_used_pct,
-        load_avg,
-        services,
-        release: release.to_string(),
-        cpu: cpu.to_string(),
-        mem: mem.to_string(),
-        profile: profile.to_string(),
-    }
+pub(crate) fn build_registration(mut reg: Registration) -> Registration {
+    reg.method = "reg".to_string();
+    reg
 }
 
 /**
@@ -155,29 +118,9 @@ pub(crate) fn extract_ip(
  * Gathers all structured system information for registration.
  * Separated from new() so it can be unit tested independently
  * (it still calls cmd::sys functions, but no network I/O).
+ * Returns a fully-populated Registration struct.
  */
-pub(crate) fn collect_system_info(
-    rt: &tokio::runtime::Runtime,
-) -> (
-    String,               // hostname
-    String,               // os
-    String,               // arch
-    String,               // kernel
-    String,               // machine_id
-    String,               // ip
-    String,               // cpu_model
-    u32,                  // cpu_cores
-    u64,                  // mem_total_mb
-    u64,                  // disk_total_gb
-    String,               // uptime
-    u8,                   // disk_used_pct
-    (f64, f64, f64),      // load_avg
-    Vec<ServiceSnapshot>, // services
-    String,               // release (raw)
-    String,               // cpu (raw)
-    String,               // mem (raw)
-    String,               // profile (raw)
-) {
+pub(crate) fn collect_system_info(rt: &tokio::runtime::Runtime) -> Registration {
     /* Request IP address. */
     let ip_response = rt.block_on(utils::ip::get());
     let ip = extract_ip(ip_response);
@@ -218,10 +161,11 @@ pub(crate) fn collect_system_info(
     /* Raw legacy fields (preserved for backward compat). */
     let release = cmd::sys::get_release().unwrap_or_default();
     let cpu = cmd::sys::lscpu().unwrap_or_default();
-    let mem = cmd::sys::mem().unwrap_or_default();
+    let mem_raw = cmd::sys::mem().unwrap_or_default();
     let profile = cmd::sys::system_profiler().unwrap_or_default();
 
-    (
+    Registration {
+        method: String::new(), // will be set by build_registration()
         hostname,
         os,
         arch,
@@ -238,9 +182,9 @@ pub(crate) fn collect_system_info(
         services,
         release,
         cpu,
-        mem,
+        mem: mem_raw,
         profile,
-    )
+    }
 }
 
 /**
@@ -250,48 +194,10 @@ pub(crate) fn collect_system_info(
  */
 pub fn new(rt: &tokio::runtime::Runtime) -> String {
     /* Collect all system information. */
-    let (
-        hostname,
-        os,
-        arch,
-        kernel,
-        machine_id,
-        ip,
-        cpu_model,
-        cpu_cores,
-        mem_total_mb,
-        disk_total_gb,
-        uptime,
-        disk_used_pct,
-        load_avg,
-        services,
-        release,
-        cpu,
-        mem,
-        profile,
-    ) = collect_system_info(rt);
+    let info = collect_system_info(rt);
 
     /* Build (registration) package. */
-    let pkg = build_registration(
-        &hostname,
-        &os,
-        &arch,
-        &kernel,
-        &machine_id,
-        &ip,
-        &cpu_model,
-        cpu_cores,
-        mem_total_mb,
-        disk_total_gb,
-        &uptime,
-        disk_used_pct,
-        load_avg,
-        services,
-        &release,
-        &cpu,
-        &mem,
-        &profile,
-    );
+    let pkg = build_registration(info);
 
     /* Encode to JSON. */
     let json_string = serialize_registration(&pkg);

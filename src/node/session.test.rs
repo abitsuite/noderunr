@@ -88,63 +88,63 @@ fn service_snapshot_clone() {
 }
 
 // ---------------------------------------------------------------
+// Helper: build a test Registration with defaults
+// ---------------------------------------------------------------
+
+/// Creates a minimal Registration with all empty/zero fields.
+/// Individual tests override the fields they care about.
+fn empty_reg() -> Registration {
+    Registration {
+        method: String::new(),
+        hostname: String::new(),
+        os: String::new(),
+        arch: String::new(),
+        kernel: String::new(),
+        machine_id: String::new(),
+        ip: String::new(),
+        cpu_model: String::new(),
+        cpu_cores: 0,
+        mem_total_mb: 0,
+        disk_total_gb: 0,
+        uptime: String::new(),
+        disk_used_pct: 0,
+        load_avg: (0.0, 0.0, 0.0),
+        services: vec![],
+        release: String::new(),
+        cpu: String::new(),
+        mem: String::new(),
+        profile: String::new(),
+    }
+}
+
+// ---------------------------------------------------------------
 // Registration — construction and serialization
 // ---------------------------------------------------------------
 
 /**
- * build_registration produces a Registration with method "reg".
+ * build_registration sets method to "reg".
  */
 #[test]
 fn build_registration_method_is_reg() {
-    let reg = build_registration(
-        "host1",
-        "Ubuntu 22.04",
-        "x86_64",
-        "6.5.0",
-        "machine-id-abc",
-        "1.2.3.4",
-        "AMD EPYC",
-        8,
-        32768,
-        500,
-        "5 days",
-        42,
-        (0.5, 0.4, 0.3),
-        vec![],
-        "Ubuntu 22.04",
-        "x86_64",
-        "16GB",
-        "linux",
-    );
+    let reg = build_registration(empty_reg());
     assert_eq!(reg.method, "reg");
 }
 
 /**
- * build_registration stores all identity fields correctly.
+ * build_registration preserves identity fields.
  */
 #[test]
 fn build_registration_identity_fields() {
-    let reg = build_registration(
-        "validator-01",
-        "Debian 12",
-        "aarch64",
-        "6.1.0-22",
-        "deadbeef12345678",
-        "10.0.0.1",
-        "Cortex-A76",
-        4,
-        8192,
-        240,
-        "2h",
-        18,
-        (0.1, 0.2, 0.15),
-        vec![],
-        "Debian 12",
-        "arm64",
-        "8GB",
-        "darwin",
-    );
+    let mut input = empty_reg();
+    input.hostname = "validator-01".to_string();
+    input.os = "Debian 12".to_string();
+    input.arch = "aarch64".to_string();
+    input.kernel = "6.1.0-22".to_string();
+    input.machine_id = "deadbeef12345678".to_string();
 
+    let reg = build_registration(input);
+
+    assert_eq!(reg.method, "reg");
     assert_eq!(reg.hostname, "validator-01");
     assert_eq!(reg.os, "Debian 12");
     assert_eq!(reg.arch, "aarch64");
@@ -153,30 +153,18 @@ fn build_registration_identity_fields() {
 }
 
 /**
- * build_registration stores all hardware fields correctly.
+ * build_registration preserves hardware fields.
  */
 #[test]
 fn build_registration_hardware_fields() {
-    let reg = build_registration(
-        "host",
-        "os",
-        "arch",
-        "kern",
-        "mid",
-        "10.0.0.1",
-        "Intel Xeon E5-2680",
-        16,
-        65536,
-        1000,
-        "10d",
-        55,
-        (1.0, 0.8, 0.6),
-        vec![],
-        "release",
-        "cpu",
-        "mem",
-        "profile",
-    );
+    let mut input = empty_reg();
+    input.ip = "10.0.0.1".to_string();
+    input.cpu_model = "Intel Xeon E5-2680".to_string();
+    input.cpu_cores = 16;
+    input.mem_total_mb = 65536;
+    input.disk_total_gb = 1000;
+
+    let reg = build_registration(input);
 
     assert_eq!(reg.ip, "10.0.0.1");
     assert_eq!(reg.cpu_model, "Intel Xeon E5-2680");
@@ -186,30 +174,16 @@ fn build_registration_hardware_fields() {
 }
 
 /**
- * build_registration stores runtime snapshot fields correctly.
+ * build_registration preserves runtime snapshot fields.
  */
 #[test]
 fn build_registration_runtime_fields() {
-    let reg = build_registration(
-        "h",
-        "o",
-        "a",
-        "k",
-        "m",
-        "ip",
-        "cpu",
-        1,
-        1,
-        1,
-        "3 days, 5:22",
-        87,
-        (2.5, 1.8, 1.2),
-        vec![],
-        "r",
-        "c",
-        "m",
-        "p",
-    );
+    let mut input = empty_reg();
+    input.uptime = "3 days, 5:22".to_string();
+    input.disk_used_pct = 87;
+    input.load_avg = (2.5, 1.8, 1.2);
+
+    let reg = build_registration(input);
 
     assert_eq!(reg.uptime, "3 days, 5:22");
     assert_eq!(reg.disk_used_pct, 87);
@@ -217,7 +191,7 @@ fn build_registration_runtime_fields() {
 }
 
 /**
- * build_registration stores services correctly.
+ * build_registration preserves services.
  */
 #[test]
 fn build_registration_with_services() {
@@ -240,26 +214,10 @@ fn build_registration_with_services() {
         },
     ];
 
-    let reg = build_registration(
-        "h",
-        "o",
-        "a",
-        "k",
-        "m",
-        "ip",
-        "cpu",
-        1,
-        1,
-        1,
-        "up",
-        0,
-        (0.0, 0.0, 0.0),
-        services.clone(),
-        "r",
-        "c",
-        "m",
-        "p",
-    );
+    let mut input = empty_reg();
+    input.services = services;
+
+    let reg = build_registration(input);
 
     assert_eq!(reg.services.len(), 2);
     assert_eq!(reg.services[0].name, "avalanchego");
@@ -275,26 +233,13 @@ fn build_registration_with_services() {
  */
 #[test]
 fn build_registration_legacy_fields() {
-    let reg = build_registration(
-        "h",
-        "o",
-        "a",
-        "k",
-        "m",
-        "ip",
-        "cpu",
-        1,
-        1,
-        1,
-        "up",
-        0,
-        (0.0, 0.0, 0.0),
-        vec![],
-        "Linux validator-01 6.5.0 ...",
-        "CPU NODE SOCKET ...",
-        "               total ...",
-        "H/W path ...",
-    );
+    let mut input = empty_reg();
+    input.release = "Linux validator-01 6.5.0 ...".to_string();
+    input.cpu = "CPU NODE SOCKET ...".to_string();
+    input.mem = "               total ...".to_string();
+    input.profile = "H/W path ...".to_string();
+
+    let reg = build_registration(input);
 
     assert_eq!(reg.release, "Linux validator-01 6.5.0 ...");
     assert_eq!(reg.cpu, "CPU NODE SOCKET ...");
@@ -303,30 +248,11 @@ fn build_registration_legacy_fields() {
 }
 
 /**
- * build_registration handles empty strings without panicking.
+ * build_registration handles empty fields without panicking.
  */
 #[test]
 fn build_registration_empty_fields() {
-    let reg = build_registration(
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        0,
-        0,
-        0,
-        "",
-        0,
-        (0.0, 0.0, 0.0),
-        vec![],
-        "",
-        "",
-        "",
-        "",
-    );
+    let reg = build_registration(empty_reg());
 
     assert_eq!(reg.method, "reg");
     assert_eq!(reg.hostname, "");
@@ -354,26 +280,12 @@ fn build_registration_empty_fields() {
  */
 #[test]
 fn build_registration_unicode() {
-    let reg = build_registration(
-        "ホスト名",
-        "릴리스",
-        "アーキ",
-        "カーネル",
-        "マシンID",
-        "🌍",
-        "процессор",
-        4,
-        8192,
-        100,
-        "日本語",
-        50,
-        (1.0, 2.0, 3.0),
-        vec![],
-        "릴리스",
-        "процессор",
-        "記憶體",
-        "профіль",
-    );
+    let mut input = empty_reg();
+    input.hostname = "ホスト名".to_string();
+    input.ip = "🌍".to_string();
+    input.cpu_model = "процессор".to_string();
+
+    let reg = build_registration(input);
 
     assert_eq!(reg.hostname, "ホスト名");
     assert_eq!(reg.ip, "🌍");
@@ -385,31 +297,31 @@ fn build_registration_unicode() {
  */
 #[test]
 fn build_registration_max_values() {
-    let reg = build_registration(
-        "h",
-        "o",
-        "a",
-        "k",
-        "m",
-        "ip",
-        "cpu",
-        u32::MAX,
-        u64::MAX,
-        u64::MAX,
-        "up",
-        u8::MAX,
-        (f64::MAX, f64::MAX, f64::MAX),
-        vec![],
-        "r",
-        "c",
-        "m",
-        "p",
-    );
+    let mut input = empty_reg();
+    input.cpu_cores = u32::MAX;
+    input.mem_total_mb = u64::MAX;
+    input.disk_total_gb = u64::MAX;
+    input.disk_used_pct = u8::MAX;
+
+    let reg = build_registration(input);
 
     assert_eq!(reg.cpu_cores, u32::MAX);
     assert_eq!(reg.mem_total_mb, u64::MAX);
     assert_eq!(reg.disk_total_gb, u64::MAX);
     assert_eq!(reg.disk_used_pct, u8::MAX);
+}
+
+/**
+ * build_registration overwrites any pre-existing method value.
+ */
+#[test]
+fn build_registration_overwrites_method() {
+    let mut input = empty_reg();
+    input.method = "something_else".to_string();
+
+    let reg = build_registration(input);
+
+    assert_eq!(reg.method, "reg");
 }
 
 // ---------------------------------------------------------------
@@ -421,26 +333,11 @@ fn build_registration_max_values() {
  */
 #[test]
 fn serialize_registration_valid_json() {
-    let reg = build_registration(
-        "host",
-        "Ubuntu",
-        "x86_64",
-        "6.5.0",
-        "mid123",
-        "1.2.3.4",
-        "AMD EPYC",
-        8,
-        32768,
-        500,
-        "1d",
-        42,
-        (0.5, 0.4, 0.3),
-        vec![],
-        "Ubuntu",
-        "x86",
-        "4GB",
-        "linux",
-    );
+    let mut input = empty_reg();
+    input.hostname = "host".to_string();
+    input.ip = "1.2.3.4".to_string();
+
+    let reg = build_registration(input);
     let json_str = serialize_registration(&reg);
 
     /* Must parse back without error. */
@@ -453,26 +350,7 @@ fn serialize_registration_valid_json() {
  */
 #[test]
 fn serialize_registration_contains_method() {
-    let reg = build_registration(
-        "h",
-        "o",
-        "a",
-        "k",
-        "m",
-        "1.2.3.4",
-        "cpu",
-        1,
-        1,
-        1,
-        "1d",
-        0,
-        (0.0, 0.0, 0.0),
-        vec![],
-        "r",
-        "c",
-        "m",
-        "p",
-    );
+    let reg = build_registration(empty_reg());
     let json_str = serialize_registration(&reg);
 
     assert!(json_str.contains("\"method\":\"reg\""));
@@ -492,26 +370,27 @@ fn serialize_registration_roundtrip() {
         pid: 42,
     }];
 
-    let reg = build_registration(
-        "validator-01",
-        "Fedora 39",
-        "aarch64",
-        "6.6.0",
-        "fedora-machine-id",
-        "192.168.1.1",
-        "Apple M2",
-        10,
-        16384,
-        256,
-        "3d 5h",
-        65,
-        (1.2, 0.9, 0.7),
-        services,
-        "Fedora 39",
-        "aarch64",
-        "32GB",
-        "profdata",
-    );
+    let mut input = empty_reg();
+    input.hostname = "validator-01".to_string();
+    input.os = "Fedora 39".to_string();
+    input.arch = "aarch64".to_string();
+    input.kernel = "6.6.0".to_string();
+    input.machine_id = "fedora-machine-id".to_string();
+    input.ip = "192.168.1.1".to_string();
+    input.cpu_model = "Apple M2".to_string();
+    input.cpu_cores = 10;
+    input.mem_total_mb = 16384;
+    input.disk_total_gb = 256;
+    input.uptime = "3d 5h".to_string();
+    input.disk_used_pct = 65;
+    input.load_avg = (1.2, 0.9, 0.7);
+    input.services = services;
+    input.release = "Fedora 39".to_string();
+    input.cpu = "aarch64".to_string();
+    input.mem = "32GB".to_string();
+    input.profile = "profdata".to_string();
+
+    let reg = build_registration(input);
     let json_str = serialize_registration(&reg);
     let parsed: Registration = from_str(&json_str).unwrap();
 
@@ -562,27 +441,10 @@ fn serialize_registration_includes_services() {
         },
     ];
 
-    let reg = build_registration(
-        "h",
-        "o",
-        "a",
-        "k",
-        "m",
-        "ip",
-        "cpu",
-        1,
-        1,
-        1,
-        "up",
-        0,
-        (0.0, 0.0, 0.0),
-        services,
-        "r",
-        "c",
-        "m",
-        "p",
-    );
+    let mut input = empty_reg();
+    input.services = services;
 
+    let reg = build_registration(input);
     let json_str = serialize_registration(&reg);
 
     assert!(json_str.contains("\"nexad\""));
@@ -598,28 +460,9 @@ fn serialize_registration_includes_services() {
  */
 #[test]
 fn serialize_registration_empty_services() {
-    let reg = build_registration(
-        "h",
-        "o",
-        "a",
-        "k",
-        "m",
-        "ip",
-        "cpu",
-        1,
-        1,
-        1,
-        "up",
-        0,
-        (0.0, 0.0, 0.0),
-        vec![],
-        "r",
-        "c",
-        "m",
-        "p",
-    );
-
+    let reg = build_registration(empty_reg());
     let json_str = serialize_registration(&reg);
+
     assert!(json_str.contains("\"services\":[]"));
 }
 
