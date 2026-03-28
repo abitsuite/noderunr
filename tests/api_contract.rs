@@ -374,7 +374,7 @@ async fn mock_session_poll_success() {
                 "sessionid": "test-session-abc",
                 "act": null,
                 "log": null,
-                "req": [{"exec": "uname", "created_at": 1700000000001}],
+                "req": [{"commandid": "cmd-001", "exec": "uname", "created_at": 1700000000001}],
                 "res": null,
                 "rpt": null,
                 "created_at": 1700000,
@@ -454,17 +454,18 @@ async fn mock_session_poll_no_commands() {
 }
 
 /**
- * POST /session (exec response) sends correctly structured JSON.
+ * POST /command (exec response) sends correctly structured JSON.
  */
 #[tokio::test]
 async fn mock_session_exec_response_body() {
     let mut server = mockito::Server::new_async().await;
 
     let expected_json =
-        noderunr::comm::monitor::build_exec_response_json("resp-session-id", "Linux 5.15.0 x86_64");
+        noderunr::comm::monitor::build_exec_response_json("cmd-resp-001", "Linux 5.15.0 x86_64");
 
     let mock = server
-        .mock("POST", "/session")
+        .mock("POST", "/command")
+        .match_header("Authorization", "Bearer resp-session-id")
         .match_header("Content-Type", "application/json")
         .match_body(expected_json.as_str())
         .with_status(200)
@@ -476,6 +477,7 @@ async fn mock_session_exec_response_body() {
     let result = noderunr::comm::monitor::response_json_async_with_base(
         &base_url,
         "resp-session-id",
+        "cmd-resp-001",
         "Linux 5.15.0 x86_64".to_string(),
     )
     .await;
@@ -485,19 +487,19 @@ async fn mock_session_exec_response_body() {
 }
 
 /**
- * POST /session (exec response) — the JSON body has method "res".
+ * POST /command (exec response) — the JSON body has method "res".
  */
 #[tokio::test]
 async fn mock_session_exec_response_method_is_res() {
-    let json_str = noderunr::comm::monitor::build_exec_response_json("any-session", "any output");
+    let json_str = noderunr::comm::monitor::build_exec_response_json("cmd-any", "any output");
     let parsed: serde_json::Value = serde_json::from_str(&json_str).unwrap();
 
     assert_eq!(
         parsed["method"], "res",
         "Exec response method should be 'res'"
     );
-    assert_eq!(parsed["sessionid"], "any-session");
-    assert_eq!(parsed["resp"], "any output");
+    assert_eq!(parsed["commandid"], "cmd-any");
+    assert_eq!(parsed["response"], "any output");
 }
 
 // ---------------------------------------------------------------
@@ -512,7 +514,7 @@ async fn mock_session_exec_response_method_is_res() {
 async fn mock_full_poll_exec_respond_cycle() {
     let mut server = mockito::Server::new_async().await;
 
-    /* Step 1: Poll returns a "uname" command. */
+    /* Step 1: Poll returns a "help" command. */
     let poll_mock = server
         .mock("GET", "/session/1")
         .match_header("Authorization", "Bearer cycle-sess")
@@ -524,7 +526,7 @@ async fn mock_full_poll_exec_respond_cycle() {
                 "sessionid": "cycle-sess",
                 "act": null,
                 "log": null,
-                "req": [{"exec": "help", "created_at": 100}],
+                "req": [{"commandid": "cmd-cycle-001", "exec": "help", "created_at": 100}],
                 "res": null,
                 "rpt": null,
                 "created_at": 50,
@@ -535,9 +537,10 @@ async fn mock_full_poll_exec_respond_cycle() {
         .create_async()
         .await;
 
-    /* Step 2: After executing, the client posts the response. */
+    /* Step 2: After executing, the client posts the response to /command. */
     let respond_mock = server
-        .mock("POST", "/session")
+        .mock("POST", "/command")
+        .match_header("Authorization", "Bearer cycle-sess")
         .match_header("Content-Type", "application/json")
         .with_status(200)
         .with_body(r#"{"success":true}"#)
@@ -569,10 +572,17 @@ async fn mock_full_poll_exec_respond_cycle() {
     let exec_output = exec_result.unwrap();
     assert!(exec_output.contains("Help is temporarily unavailable"));
 
+    /* Extract the command ID from the pending request. */
+    let commandid = req_list[0]
+        .commandid
+        .as_deref()
+        .unwrap_or("unknown");
+
     /* Respond. */
     let respond_result = noderunr::comm::monitor::response_json_async_with_base(
         &base_url,
         "cycle-sess",
+        commandid,
         exec_output,
     )
     .await;

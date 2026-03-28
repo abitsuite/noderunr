@@ -69,7 +69,7 @@ fn build_request_url_with_base_custom() {
 #[test]
 fn build_response_url_with_base_custom() {
     let url = build_response_url_with_base("http://localhost:5678/");
-    assert_eq!(url, "http://localhost:5678/session");
+    assert_eq!(url, "http://localhost:5678/command");
 }
 
 /**
@@ -96,7 +96,7 @@ fn build_auth_header_empty() {
 #[test]
 fn build_response_url_format() {
     let url = build_response_url();
-    assert_eq!(url, "https://l1.run/v1/session");
+    assert_eq!(url, "https://l1.run/v1/command");
 }
 
 /**
@@ -104,12 +104,12 @@ fn build_response_url_format() {
  */
 #[test]
 fn build_exec_response_json_valid() {
-    let json_str = build_exec_response_json("sess-123", "output data");
-    let parsed: ExecResponse = from_str(&json_str).unwrap();
+    let json_str = build_exec_response_json("cmd-123", "output data");
+    let parsed: CommandResponse = from_str(&json_str).unwrap();
 
-    assert_eq!(parsed.sessionid, "sess-123");
+    assert_eq!(parsed.commandid, "cmd-123");
     assert_eq!(parsed.method, "res");
-    assert_eq!(parsed.resp, "output data");
+    assert_eq!(parsed.response, "output data");
 }
 
 /**
@@ -118,10 +118,10 @@ fn build_exec_response_json_valid() {
 #[test]
 fn build_exec_response_json_empty() {
     let json_str = build_exec_response_json("", "");
-    let parsed: ExecResponse = from_str(&json_str).unwrap();
+    let parsed: CommandResponse = from_str(&json_str).unwrap();
 
-    assert_eq!(parsed.sessionid, "");
-    assert_eq!(parsed.resp, "");
+    assert_eq!(parsed.commandid, "");
+    assert_eq!(parsed.response, "");
 }
 
 /**
@@ -167,24 +167,24 @@ fn action_serde_with_none_fields() {
 }
 
 /**
- * ExecResponse struct serializes correctly.
+ * CommandResponse struct serializes correctly.
  */
 #[test]
-fn exec_response_serde_roundtrip() {
-    let resp = ExecResponse {
-        sessionid: "sess-123".to_string(),
+fn command_response_serde_roundtrip() {
+    let resp = CommandResponse {
         method: "res".to_string(),
-        resp: "some output".to_string(),
+        commandid: "cmd-123".to_string(),
+        response: "some output".to_string(),
     };
 
     let json = to_string(&resp).unwrap();
-    assert!(json.contains("sess-123"));
+    assert!(json.contains("cmd-123"));
     assert!(json.contains("\"method\":\"res\""));
 
-    let parsed: ExecResponse = from_str(&json).unwrap();
-    assert_eq!(parsed.sessionid, "sess-123");
+    let parsed: CommandResponse = from_str(&json).unwrap();
+    assert_eq!(parsed.commandid, "cmd-123");
     assert_eq!(parsed.method, "res");
-    assert_eq!(parsed.resp, "some output");
+    assert_eq!(parsed.response, "some output");
 }
 
 /**
@@ -210,6 +210,7 @@ fn log_serde_roundtrip() {
 #[test]
 fn request_serde_roundtrip() {
     let req = Request {
+        commandid: Some("cmd-456".to_string()),
         exec: "df".to_string(),
         created_at: 1700000002000,
     };
@@ -217,8 +218,27 @@ fn request_serde_roundtrip() {
     let json = to_string(&req).unwrap();
     let parsed: Request = from_str(&json).unwrap();
 
+    assert_eq!(parsed.commandid.unwrap(), "cmd-456");
     assert_eq!(parsed.exec, "df");
     assert_eq!(parsed.created_at, 1700000002000);
+}
+
+/**
+ * Request struct handles None commandid.
+ */
+#[test]
+fn request_serde_none_commandid() {
+    let req = Request {
+        commandid: None,
+        exec: "ls".to_string(),
+        created_at: 100,
+    };
+
+    let json = to_string(&req).unwrap();
+    let parsed: Request = from_str(&json).unwrap();
+
+    assert!(parsed.commandid.is_none());
+    assert_eq!(parsed.exec, "ls");
 }
 
 /**
@@ -253,6 +273,7 @@ fn session_serde_roundtrip() {
         }]),
         log: None,
         req: Some(vec![Request {
+            commandid: Some("cmd-789".to_string()),
             exec: "uname".to_string(),
             created_at: 200,
         }]),
@@ -268,6 +289,7 @@ fn session_serde_roundtrip() {
     assert_eq!(parsed.sessionid, "sess-full");
     assert_eq!(parsed.act.as_ref().unwrap().len(), 1);
     assert_eq!(parsed.req.as_ref().unwrap()[0].exec, "uname");
+    assert_eq!(parsed.req.as_ref().unwrap()[0].commandid.as_deref(), Some("cmd-789"));
     assert_eq!(parsed.created_at, 1000);
     assert_eq!(parsed.last_since, 2000);
 }
@@ -340,7 +362,7 @@ fn session_response_from_realistic_json() {
             "sessionid": "abc-def-123",
             "act": null,
             "log": null,
-            "req": [{"exec": "ps", "created_at": 1700000000000}],
+            "req": [{"commandid": "cmd-001", "exec": "ps", "created_at": 1700000000000}],
             "res": null,
             "rpt": null,
             "created_at": 1700000,
@@ -354,25 +376,26 @@ fn session_response_from_realistic_json() {
     assert_eq!(parsed.result.sessionid, "abc-def-123");
     assert_eq!(parsed.result.req.as_ref().unwrap().len(), 1);
     assert_eq!(parsed.result.req.as_ref().unwrap()[0].exec, "ps");
+    assert_eq!(parsed.result.req.as_ref().unwrap()[0].commandid.as_deref(), Some("cmd-001"));
     assert_eq!(parsed.result.last_since, 1700000000001);
 }
 
 /**
- * ExecResponse JSON string output matches expected structure.
+ * CommandResponse JSON string output matches expected structure.
  */
 #[test]
-fn exec_response_json_string_format() {
-    let exec_response = ExecResponse {
-        sessionid: "test-sid".to_string(),
+fn command_response_json_string_format() {
+    let cmd_response = CommandResponse {
         method: "res".to_string(),
-        resp: "command output here".to_string(),
+        commandid: "test-cmd-id".to_string(),
+        response: "command output here".to_string(),
     };
 
-    let json_string = to_string(&exec_response).unwrap();
+    let json_string = to_string(&cmd_response).unwrap();
 
-    assert!(json_string.contains("\"sessionid\":\"test-sid\""));
+    assert!(json_string.contains("\"commandid\":\"test-cmd-id\""));
     assert!(json_string.contains("\"method\":\"res\""));
-    assert!(json_string.contains("\"resp\":\"command output here\""));
+    assert!(json_string.contains("\"response\":\"command output here\""));
 }
 
 /**
@@ -390,6 +413,7 @@ fn resolve_exec_empty_returns_none() {
 #[test]
 fn resolve_exec_df() {
     let reqs = vec![Request {
+        commandid: Some("cmd-df".to_string()),
         exec: "df".to_string(),
         created_at: 100,
     }];
@@ -403,6 +427,7 @@ fn resolve_exec_df() {
 #[test]
 fn resolve_exec_du() {
     let reqs = vec![Request {
+        commandid: Some("cmd-du".to_string()),
         exec: "du".to_string(),
         created_at: 100,
     }];
@@ -416,6 +441,7 @@ fn resolve_exec_du() {
 #[test]
 fn resolve_exec_ls() {
     let reqs = vec![Request {
+        commandid: Some("cmd-ls".to_string()),
         exec: "ls".to_string(),
         created_at: 100,
     }];
@@ -429,6 +455,7 @@ fn resolve_exec_ls() {
 #[test]
 fn resolve_exec_lsblk() {
     let reqs = vec![Request {
+        commandid: Some("cmd-lsblk".to_string()),
         exec: "lsblk".to_string(),
         created_at: 100,
     }];
@@ -442,6 +469,7 @@ fn resolve_exec_lsblk() {
 #[test]
 fn resolve_exec_lscpu() {
     let reqs = vec![Request {
+        commandid: Some("cmd-lscpu".to_string()),
         exec: "lscpu".to_string(),
         created_at: 100,
     }];
@@ -455,6 +483,7 @@ fn resolve_exec_lscpu() {
 #[test]
 fn resolve_exec_lshw() {
     let reqs = vec![Request {
+        commandid: Some("cmd-lshw".to_string()),
         exec: "lshw".to_string(),
         created_at: 100,
     }];
@@ -468,6 +497,7 @@ fn resolve_exec_lshw() {
 #[test]
 fn resolve_exec_mem() {
     let reqs = vec![Request {
+        commandid: Some("cmd-mem".to_string()),
         exec: "mem".to_string(),
         created_at: 100,
     }];
@@ -481,6 +511,7 @@ fn resolve_exec_mem() {
 #[test]
 fn resolve_exec_ps() {
     let reqs = vec![Request {
+        commandid: Some("cmd-ps".to_string()),
         exec: "ps".to_string(),
         created_at: 100,
     }];
@@ -494,6 +525,7 @@ fn resolve_exec_ps() {
 #[test]
 fn resolve_exec_profiler() {
     let reqs = vec![Request {
+        commandid: Some("cmd-profiler".to_string()),
         exec: "profiler".to_string(),
         created_at: 100,
     }];
@@ -507,6 +539,7 @@ fn resolve_exec_profiler() {
 #[test]
 fn resolve_exec_uname() {
     let reqs = vec![Request {
+        commandid: Some("cmd-uname".to_string()),
         exec: "uname".to_string(),
         created_at: 100,
     }];
@@ -520,6 +553,7 @@ fn resolve_exec_uname() {
 #[test]
 fn resolve_exec_uptime() {
     let reqs = vec![Request {
+        commandid: Some("cmd-uptime".to_string()),
         exec: "uptime".to_string(),
         created_at: 100,
     }];
@@ -533,6 +567,7 @@ fn resolve_exec_uptime() {
 #[test]
 fn resolve_exec_avax() {
     let reqs = vec![Request {
+        commandid: Some("cmd-avax".to_string()),
         exec: "avax".to_string(),
         created_at: 100,
     }];
@@ -546,6 +581,7 @@ fn resolve_exec_avax() {
 #[test]
 fn resolve_exec_avalanche_alias() {
     let reqs = vec![Request {
+        commandid: Some("cmd-avalanche".to_string()),
         exec: "avalanche".to_string(),
         created_at: 100,
     }];
@@ -559,6 +595,7 @@ fn resolve_exec_avalanche_alias() {
 #[test]
 fn resolve_exec_help() {
     let reqs = vec![Request {
+        commandid: Some("cmd-help".to_string()),
         exec: "help".to_string(),
         created_at: 100,
     }];
@@ -575,6 +612,7 @@ fn resolve_exec_help() {
 #[test]
 fn resolve_exec_install_go() {
     let reqs = vec![Request {
+        commandid: Some("cmd-install-go".to_string()),
         exec: "install go".to_string(),
         created_at: 100,
     }];
@@ -588,6 +626,7 @@ fn resolve_exec_install_go() {
 #[test]
 fn resolve_exec_install_golang() {
     let reqs = vec![Request {
+        commandid: Some("cmd-install-golang".to_string()),
         exec: "install golang".to_string(),
         created_at: 100,
     }];
@@ -601,6 +640,7 @@ fn resolve_exec_install_golang() {
 #[test]
 fn resolve_exec_arb_unimplemented() {
     let reqs = vec![Request {
+        commandid: Some("cmd-arb".to_string()),
         exec: "arb".to_string(),
         created_at: 100,
     }];
@@ -614,6 +654,7 @@ fn resolve_exec_arb_unimplemented() {
 #[test]
 fn resolve_exec_arbitrum_alias() {
     let reqs = vec![Request {
+        commandid: Some("cmd-arbitrum".to_string()),
         exec: "arbitrum".to_string(),
         created_at: 100,
     }];
@@ -627,6 +668,7 @@ fn resolve_exec_arbitrum_alias() {
 #[test]
 fn resolve_exec_base_unimplemented() {
     let reqs = vec![Request {
+        commandid: Some("cmd-base".to_string()),
         exec: "base".to_string(),
         created_at: 100,
     }];
@@ -640,6 +682,7 @@ fn resolve_exec_base_unimplemented() {
 #[test]
 fn resolve_exec_nexa_unimplemented() {
     let reqs = vec![Request {
+        commandid: Some("cmd-nexa".to_string()),
         exec: "nexa".to_string(),
         created_at: 100,
     }];
@@ -653,6 +696,7 @@ fn resolve_exec_nexa_unimplemented() {
 #[test]
 fn resolve_exec_op_unimplemented() {
     let reqs = vec![Request {
+        commandid: Some("cmd-op".to_string()),
         exec: "op".to_string(),
         created_at: 100,
     }];
@@ -666,6 +710,7 @@ fn resolve_exec_op_unimplemented() {
 #[test]
 fn resolve_exec_optimism_alias() {
     let reqs = vec![Request {
+        commandid: Some("cmd-optimism".to_string()),
         exec: "optimism".to_string(),
         created_at: 100,
     }];
@@ -679,6 +724,7 @@ fn resolve_exec_optimism_alias() {
 #[test]
 fn resolve_exec_sol_unimplemented() {
     let reqs = vec![Request {
+        commandid: Some("cmd-sol".to_string()),
         exec: "sol".to_string(),
         created_at: 100,
     }];
@@ -692,6 +738,7 @@ fn resolve_exec_sol_unimplemented() {
 #[test]
 fn resolve_exec_solana_alias() {
     let reqs = vec![Request {
+        commandid: Some("cmd-solana".to_string()),
         exec: "solana".to_string(),
         created_at: 100,
     }];
@@ -705,6 +752,7 @@ fn resolve_exec_solana_alias() {
 #[test]
 fn resolve_exec_unknown_command() {
     let reqs = vec![Request {
+        commandid: Some("cmd-unknown".to_string()),
         exec: "foobar_unknown".to_string(),
         created_at: 100,
     }];
@@ -723,6 +771,7 @@ fn resolve_exec_unknown_command() {
 #[test]
 fn resolve_exec_install_avax() {
     let reqs = vec![Request {
+        commandid: Some("cmd-install-avax".to_string()),
         exec: "install avax".to_string(),
         created_at: 100,
     }];
@@ -739,6 +788,7 @@ fn resolve_exec_install_avax() {
 #[test]
 fn resolve_exec_install_avalanche() {
     let reqs = vec![Request {
+        commandid: Some("cmd-install-avalanche".to_string()),
         exec: "install avalanche".to_string(),
         created_at: 100,
     }];
@@ -755,6 +805,7 @@ fn resolve_exec_install_avalanche() {
 #[test]
 fn resolve_exec_start_avax() {
     let reqs = vec![Request {
+        commandid: Some("cmd-start-avax".to_string()),
         exec: "start avax".to_string(),
         created_at: 100,
     }];
@@ -771,6 +822,7 @@ fn resolve_exec_start_avax() {
 #[test]
 fn resolve_exec_start_avalanche() {
     let reqs = vec![Request {
+        commandid: Some("cmd-start-avalanche".to_string()),
         exec: "start avalanche".to_string(),
         created_at: 100,
     }];
@@ -787,6 +839,7 @@ fn resolve_exec_start_avalanche() {
 #[test]
 fn resolve_exec_avax_status() {
     let reqs = vec![Request {
+        commandid: Some("cmd-avax-status".to_string()),
         exec: "avax status".to_string(),
         created_at: 100,
     }];
@@ -803,6 +856,7 @@ fn resolve_exec_avax_status() {
 #[test]
 fn resolve_exec_avalanche_status() {
     let reqs = vec![Request {
+        commandid: Some("cmd-avalanche-status".to_string()),
         exec: "avalanche status".to_string(),
         created_at: 100,
     }];
@@ -819,6 +873,7 @@ fn resolve_exec_avalanche_status() {
 #[test]
 fn resolve_exec_build_avax() {
     let reqs = vec![Request {
+        commandid: Some("cmd-build-avax".to_string()),
         exec: "build avax".to_string(),
         created_at: 100,
     }];
@@ -835,6 +890,7 @@ fn resolve_exec_build_avax() {
 #[test]
 fn resolve_exec_build_avalanche() {
     let reqs = vec![Request {
+        commandid: Some("cmd-build-avalanche".to_string()),
         exec: "build avalanche".to_string(),
         created_at: 100,
     }];
@@ -931,14 +987,15 @@ async fn request_json_async_with_base_empty_body() {
 }
 
 /**
- * response_json_async_with_base posts exec response JSON and returns body.
+ * response_json_async_with_base posts command response JSON and returns body.
  */
 #[tokio::test]
 async fn response_json_async_with_base_success() {
     let mut server = mockito::Server::new_async().await;
 
     let mock = server
-        .mock("POST", "/session")
+        .mock("POST", "/command")
+        .match_header("Authorization", "Bearer sess-abc")
         .match_header("Content-Type", "application/json")
         .with_status(200)
         .with_body(r#"{"ok":true}"#)
@@ -947,7 +1004,7 @@ async fn response_json_async_with_base_success() {
 
     let base_url = format!("{}/", server.url());
     let result =
-        response_json_async_with_base(&base_url, "sess-abc", "command output here".to_string())
+        response_json_async_with_base(&base_url, "sess-abc", "cmd-001", "command output here".to_string())
             .await;
 
     mock.assert_async().await;
@@ -961,7 +1018,7 @@ async fn response_json_async_with_base_success() {
 #[tokio::test]
 async fn response_json_async_with_base_connection_refused() {
     let result =
-        response_json_async_with_base("http://127.0.0.1:1/", "sess", "data".to_string()).await;
+        response_json_async_with_base("http://127.0.0.1:1/", "sess", "cmd-x", "data".to_string()).await;
 
     assert!(result.is_err());
 }
@@ -974,14 +1031,14 @@ async fn response_json_async_with_base_server_error() {
     let mut server = mockito::Server::new_async().await;
 
     let mock = server
-        .mock("POST", "/session")
+        .mock("POST", "/command")
         .with_status(500)
         .with_body("internal error")
         .create_async()
         .await;
 
     let base_url = format!("{}/", server.url());
-    let result = response_json_async_with_base(&base_url, "sess", "output".to_string()).await;
+    let result = response_json_async_with_base(&base_url, "sess", "cmd-x", "output".to_string()).await;
 
     mock.assert_async().await;
     assert!(result.is_ok());
@@ -995,10 +1052,11 @@ async fn response_json_async_with_base_server_error() {
 async fn response_json_async_with_base_body_structure() {
     let mut server = mockito::Server::new_async().await;
 
-    let expected_body = build_exec_response_json("my-sess", "my output");
+    let expected_body = build_exec_response_json("cmd-999", "my output");
 
     let mock = server
-        .mock("POST", "/session")
+        .mock("POST", "/command")
+        .match_header("Authorization", "Bearer my-sess")
         .match_body(expected_body.as_str())
         .with_status(200)
         .with_body("ok")
@@ -1006,7 +1064,7 @@ async fn response_json_async_with_base_body_structure() {
         .await;
 
     let base_url = format!("{}/", server.url());
-    let result = response_json_async_with_base(&base_url, "my-sess", "my output".to_string()).await;
+    let result = response_json_async_with_base(&base_url, "my-sess", "cmd-999", "my output".to_string()).await;
 
     mock.assert_async().await;
     assert!(result.is_ok());

