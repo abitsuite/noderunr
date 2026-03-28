@@ -289,7 +289,10 @@ fn session_serde_roundtrip() {
     assert_eq!(parsed.sessionid, "sess-full");
     assert_eq!(parsed.act.as_ref().unwrap().len(), 1);
     assert_eq!(parsed.req.as_ref().unwrap()[0].exec, "uname");
-    assert_eq!(parsed.req.as_ref().unwrap()[0].commandid.as_deref(), Some("cmd-789"));
+    assert_eq!(
+        parsed.req.as_ref().unwrap()[0].commandid.as_deref(),
+        Some("cmd-789")
+    );
     assert_eq!(parsed.created_at, 1000);
     assert_eq!(parsed.last_since, 2000);
 }
@@ -376,7 +379,10 @@ fn session_response_from_realistic_json() {
     assert_eq!(parsed.result.sessionid, "abc-def-123");
     assert_eq!(parsed.result.req.as_ref().unwrap().len(), 1);
     assert_eq!(parsed.result.req.as_ref().unwrap()[0].exec, "ps");
-    assert_eq!(parsed.result.req.as_ref().unwrap()[0].commandid.as_deref(), Some("cmd-001"));
+    assert_eq!(
+        parsed.result.req.as_ref().unwrap()[0].commandid.as_deref(),
+        Some("cmd-001")
+    );
     assert_eq!(parsed.result.last_since, 1700000000001);
 }
 
@@ -1003,9 +1009,13 @@ async fn response_json_async_with_base_success() {
         .await;
 
     let base_url = format!("{}/", server.url());
-    let result =
-        response_json_async_with_base(&base_url, "sess-abc", "cmd-001", "command output here".to_string())
-            .await;
+    let result = response_json_async_with_base(
+        &base_url,
+        "sess-abc",
+        "cmd-001",
+        "command output here".to_string(),
+    )
+    .await;
 
     mock.assert_async().await;
     assert!(result.is_ok());
@@ -1018,7 +1028,8 @@ async fn response_json_async_with_base_success() {
 #[tokio::test]
 async fn response_json_async_with_base_connection_refused() {
     let result =
-        response_json_async_with_base("http://127.0.0.1:1/", "sess", "cmd-x", "data".to_string()).await;
+        response_json_async_with_base("http://127.0.0.1:1/", "sess", "cmd-x", "data".to_string())
+            .await;
 
     assert!(result.is_err());
 }
@@ -1038,7 +1049,8 @@ async fn response_json_async_with_base_server_error() {
         .await;
 
     let base_url = format!("{}/", server.url());
-    let result = response_json_async_with_base(&base_url, "sess", "cmd-x", "output".to_string()).await;
+    let result =
+        response_json_async_with_base(&base_url, "sess", "cmd-x", "output".to_string()).await;
 
     mock.assert_async().await;
     assert!(result.is_ok());
@@ -1064,7 +1076,9 @@ async fn response_json_async_with_base_body_structure() {
         .await;
 
     let base_url = format!("{}/", server.url());
-    let result = response_json_async_with_base(&base_url, "my-sess", "cmd-999", "my output".to_string()).await;
+    let result =
+        response_json_async_with_base(&base_url, "my-sess", "cmd-999", "my output".to_string())
+            .await;
 
     mock.assert_async().await;
     assert!(result.is_ok());

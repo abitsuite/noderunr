@@ -426,10 +426,7 @@ fn _handle_exec(rt: &tokio::runtime::Runtime, _sessionid: &str, _resp: Vec<Reque
 
     if let Some(response) = resolve_exec(&_resp) {
         /* Extract the command ID from the first pending request. */
-        let commandid = _resp[0]
-            .commandid
-            .as_deref()
-            .unwrap_or("unknown");
+        let commandid = _resp[0].commandid.as_deref().unwrap_or("unknown");
 
         let _ = rt.block_on(response_json_async(_sessionid, commandid, response));
     }

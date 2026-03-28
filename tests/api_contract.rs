@@ -573,10 +573,7 @@ async fn mock_full_poll_exec_respond_cycle() {
     assert!(exec_output.contains("Help is temporarily unavailable"));
 
     /* Extract the command ID from the pending request. */
-    let commandid = req_list[0]
-        .commandid
-        .as_deref()
-        .unwrap_or("unknown");
+    let commandid = req_list[0].commandid.as_deref().unwrap_or("unknown");
 
     /* Respond. */
     let respond_result = noderunr::comm::monitor::response_json_async_with_base(
