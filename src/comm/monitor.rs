@@ -428,7 +428,13 @@ fn _handle_exec(rt: &tokio::runtime::Runtime, _sessionid: &str, _resp: Vec<Reque
         /* Extract the command ID from the first pending request. */
         let commandid = _resp[0].commandid.as_deref().unwrap_or("unknown");
 
-        let _ = rt.block_on(response_json_async(_sessionid, commandid, response));
+        println!("  📤 Executing `{}` [{}]", &_resp[0].exec, commandid);
+
+        let post_result = rt.block_on(response_json_async(_sessionid, commandid, response));
+        match post_result {
+            Ok(_body) => println!("  ✅ Done"),
+            Err(err) => println!("  ❌ Failed to post response: {}", err),
+        }
     }
 
     // let response = "ERROR! A FATAL ERROR OCCURED :(".to_string();
@@ -449,11 +455,10 @@ pub fn by_session(rt: &tokio::runtime::Runtime, _sessionid: &str) {
 
         assert!(now.elapsed() >= ten_seconds);
 
+        let current_since = LAST_SINCE.load(Ordering::Relaxed);
+
         /* Make (remote) JSON (data) request. */
-        response = rt.block_on(request_json_async(
-            _sessionid,
-            LAST_SINCE.load(Ordering::Relaxed),
-        ));
+        response = rt.block_on(request_json_async(_sessionid, current_since));
         // println!("\nRAW---\n{:?}\n", response);
 
         // let session_resp: Result<_, Box<dyn std::error::Error>>;
@@ -464,8 +469,15 @@ pub fn by_session(rt: &tokio::runtime::Runtime, _sessionid: &str) {
         match &response {
             Ok(_data) => {
                 session_resp = from_str(_data);
+                if let Err(ref e) = session_resp {
+                    println!("  ⚠️  JSON parse error: {}", e);
+                    println!("  ⚠️  Excerpt: {}", &_data[.._data.len().min(200)]);
+                }
             }
-            Err(_) => println!("\n  ERROR: Failed to receive a response from API server."),
+            Err(err) => println!(
+                "\n  ❌ ERROR: Failed to receive a response from API server: {}",
+                err
+            ),
         }
         // println!("\nSR---\n{:?}\n", session_resp);
 
@@ -490,7 +502,35 @@ pub fn by_session(rt: &tokio::runtime::Runtime, _sessionid: &str) {
         // println!("     CREATED -> {}", remote_data.result.created_at);
         // println!("  LAST SINCE -> {}", remote_data.result.last_since);
 
+        let has_req = remote_data.result.req.is_some();
+        let has_act = remote_data.result.act.is_some();
+        let has_log = remote_data.result.log.is_some();
+        let has_res = remote_data.result.res.is_some();
+        let has_rpt = remote_data.result.rpt.is_some();
+
+        /* Only log when there is meaningful activity (suppress quiet polls). */
+        if has_req || has_act || has_log || has_res || has_rpt {
+            let mut parts: Vec<&str> = Vec::new();
+            if has_req {
+                parts.push("req");
+            }
+            if has_act {
+                parts.push("act");
+            }
+            if has_log {
+                parts.push("log");
+            }
+            if has_res {
+                parts.push("res");
+            }
+            if has_rpt {
+                parts.push("rpt");
+            }
+            println!("  📥 [{}]", parts.join(", "));
+        }
+
         if let Some(_data) = remote_data.result.req {
+            println!("  🔧 Processing {} command(s)...", _data.len());
             _handle_exec(rt, &remote_data.result.sessionid, _data)
         }
     }
